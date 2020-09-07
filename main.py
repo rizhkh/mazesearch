@@ -2,6 +2,7 @@ import pygame as pygame
 import numpy as np
 import random
 #import alg
+import time
 from alg import *
 from sys import exit
 from collections import deque
@@ -21,12 +22,21 @@ class maze:
     last_row = row - 1
     first_col = 0
     last_col = col - 1
+    screen = None
 
-    def __init__(self):
-        self.maze_array = np.zeros((self.row, self.col), dtype=int)
-        #Function below are called to set the outer border and player position
-        self.Apply_border(self.maze_array)  # Sets array values for the border
-        self.move_player_to_create_maze()
+    # def __init__(self, sc_py):
+    #     print("1")
+    #     #self.maze_array = np.zeros((self.row, self.col), dtype=int)
+    #     #Function below are called to set the outer border and player position
+    #     # print("2")
+    #     # self.Apply_border(self.maze_array)  # Sets array values for the border
+    #     # print("3")
+    #     # self.move_player_to_create_maze()
+    #     # print("4")
+    #     self.screen = sc_py
+
+    def __init__(self, sc_py):
+        self.screen = sc_py
 
 # PYGAMEWIDTH = 600 # 600   # Do not change this: This is window sizing
 # PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
@@ -73,18 +83,18 @@ class maze:
                     self.maze_array[i, j] = 8
 
     # Functionality: This function gets non repeating numbers and sets those as mazes // is not a maze yet
-    def Generate_Maze(self,arr):
-        #print(maze_array)
-        number = []
-        stored_num = []
-        for i in range(0,80):
-            index_i = random.randint(1, self.row-1)
-            index_j = random.randint(1, self.col-1)
-            number = [index_i, index_j]
-            if number not in stored_num:
-                stored_num.append(number)
-
-        return stored_num
+    # def Generate_Maze(self,arr):
+    #     #print(maze_array)
+    #     number = []
+    #     stored_num = []
+    #     for i in range(0,80):
+    #         index_i = random.randint(1, self.row-1)
+    #         index_j = random.randint(1, self.col-1)
+    #         number = [index_i, index_j]
+    #         if number not in stored_num:
+    #             stored_num.append(number)
+    #
+    #     return stored_num
 
     # Functionality: Displays boxes on the screen
     def maze_generator(self,display, color, row_x , col_y):
@@ -164,22 +174,57 @@ class maze:
         else:
             self.player_movement.append([i,j])
 
-    def start_game(self):
-        a = BFS()   # MY OWN CLASS
+    def m_pattern(self,i,j):
+        self.set_maze_pattern(self.screen, i, j)
+
+    def set_maze_pattern(self, screen, i, j):
+        #self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))
+        self.maze_array[i, j] = 1
+        self.maze_generator(screen, (255, 0, 255), i * (self.box_width + 1), j * (self.box_height + 1))
+        pygame.display.flip()
+        time.sleep(0.1)
+
+    def set_screen(self , scrn):   # returns screen object for canvas
+        self.screen = scrn
+        print(self.screen)
+
+    def get_screen(self):   # returns screen object for canvas
+        return self.screen
+
+    def start_game(self, obj):
+        ThingsToAppearOnScreen_Display = self.screen
+        # pygame.init()   # initializes the pygame object - Required to run the window on screen
+        #
+        # resolution = (self.PYGAMEWIDTH, self.PYGAMEHEIGHT)    # screen resolution
+        # flags = pygame.DOUBLEBUF    # Dont use noframe - easier when you update the screen
+        #
+        # ThingsToAppearOnScreen_Display = pygame.display.set_mode(resolution, flags) # This sets the width and height of the screen that pops up
+        #
+        # print(ThingsToAppearOnScreen_Display)
+        # self.screen = ThingsToAppearOnScreen_Display
+        # self.set_screen(ThingsToAppearOnScreen_Display)
+        self.maze_array = np.zeros((self.row, self.col), dtype=int)
+        self.Apply_border(self.maze_array)  # Sets array values for the border
+        #time.sleep(3)
+        self.move_player_to_create_maze()
+        pygame.display.set_caption("TITLE", "ASD")
+        pygame.display.flip()
+        green = (0,128,0)
+        self.draw_maze(ThingsToAppearOnScreen_Display, green)
+        print(obj)
+        # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
+        a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
+        pygame.display.flip()
         a.maze_generate_with_probability_BFS()
+        # a = BFS()   # MY OWN CLASS
+        # a.maze_generate_with_probability_BFS()
 
-        pygame.init()   # initializes the pygame object - Required to run the window on screen
-
-        resolution = (self.PYGAMEWIDTH, self.PYGAMEHEIGHT)    # screen resolution
-        flags = pygame.DOUBLEBUF    # Dont use noframe - easier when you update the screen
-
-        ThingsToAppearOnScreen_Display = pygame.display.set_mode(resolution, flags) # This sets the width and height of the screen that pops up
         # background_colour = (255, 255, 255)
         # ThingsToAppearOnScreen_Display.fill(background_colour)
         #pygame.display.flip()
-        pygame.display.set_caption("TITLE","ASD")
+        #pygame.display.set_caption("TITLE","ASD")
         green = (0,128,0)
-        self.draw_maze(ThingsToAppearOnScreen_Display, green)
+        #self.draw_maze(ThingsToAppearOnScreen_Display, green)
         pygame.display.flip()
 
         window_display_status = True
@@ -210,8 +255,14 @@ class maze:
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    m = maze()
-    m.start_game()
+    pygame.init()  # initializes the pygame object - Required to run the window on screen
+    resolution = (600, 600)  # screen resolution
+    flags = pygame.DOUBLEBUF  # Dont use noframe - easier when you update the screen
+    ThingsToAppearOnScreen_Display = pygame.display.set_mode(resolution,flags)  # This sets the width and height of the screen that pops up
+    m = maze(ThingsToAppearOnScreen_Display)
+    #time.sleep(1)
+    # m passed to start_game is for ref so no new object is called/copied instead I deal with the one I want to deal with
+    m.start_game(m)
     #print_hi('PyCharm')
 
 # References:
