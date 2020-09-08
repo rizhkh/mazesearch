@@ -16,28 +16,31 @@ class BFS:
 
     q_visited = [] #[[1, 1]]  # stack to store visited nodes
     q_list_of_visited_nodes = [] #[[1,1]]
-    start_i = 5  # starting index i for current node (parent node)
-    start_j = 5  # starting index j for current node (parent node)
+    start_i = 10#25  # starting index i for current node (parent node)
+    start_j = 10#25  # starting index j for current node (parent node)
 
     def __init__(self , x, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = x #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
+        # self.start_i =  self.m.row / 2 # 25  # starting index i for current node (parent node)
+        # self.start_j =  self.m.col / 2 # 25  # starting index j for current node (parent node)
 
     # This calcs prob of cell being blocked or not
     def calc(self):
         # prob = number of filled cells/NxN -> number of filled cells = prob * (NxN) - have an int set to number of filled cells , random whenever you num = 1 ,
         # set cell as filled and decrement number of filled cells n--
-        #p = random.uniform(0, 1)
-        p = 0.2
+        p = random.uniform(0, 1)
+        #p = 0.2
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
     def maze_generate_with_probability_BFS(self):
         filled_cells = self.calc()
         print(filled_cells)
-        filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1)    # This function sets the parent node
+        filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1, 0)    # This function sets the parent node
         self.current_node(self.start_i, self.start_j)   # This function sets the current node
+        inc = 0
         while self.q:
             self.q_visited.pop()
             cur_n = self.q.popleft()
@@ -47,16 +50,17 @@ class BFS:
             self.highlight_cur_node(start_point,end_point)  # This function highlights current active nodes
 
             self.current_node(start_point, end_point)    #adds it in the visited node
-            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point, filled_cells)  # check up
-            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point, filled_cells)  # check down
-            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells)  # check left
-            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells)  # check right
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point, filled_cells, inc)  # check up
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point, filled_cells, inc)  # check down
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells, inc)  # check left
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells, inc)  # check right
+            inc += 1
 
-    def visit_Neighbor_bfs(self, scrn, i, j, filled_cells):
+    def visit_Neighbor_bfs(self, scrn, i, j, filled_cells, inc):
         num = random.randint(0, 1)
         if [i,j] not in self.q_list_of_visited_nodes:
             if self.maze_array[i][j] == 0:
-                if num == 1 and filled_cells > 0:
+                if num == 1 and filled_cells > 0 and inc%2>0:  # mod inc % 2 checks for even number. On every even Increment (inc passed) that is even and num = 1 it is allowed to block that cell
                     filled_cells = filled_cells - 1
                     pos = [i, j]
                     #self.q.append(pos)

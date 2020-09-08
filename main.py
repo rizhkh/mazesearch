@@ -12,8 +12,8 @@ from collections import deque
 class maze:
     PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 10  # row
-    col = 10  # col
+    row = 20  # row
+    col = 20  # col
     box_width = 10
     box_height = 10
     maze_array = np.zeros((0, 0), dtype=int)
@@ -127,7 +127,7 @@ class maze:
         self.maze_array[i, j] = 1
         self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        time.sleep(1)
+        #time.sleep(0.1)
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -138,7 +138,7 @@ class maze:
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        time.sleep(1)
+        #time.sleep(0.1)
 
 # # DELETE THIS LATER
 #     def aaa(self, screen, i, j):
@@ -151,6 +151,15 @@ class maze:
 
     def get_screen(self):   # returns screen object for canvas
         return self.screen
+
+    #Functionality: Convert and color unreached/blocked cells are maze generation for GUI
+    def render_maze(self):
+        for i in range(1, self.row-1):
+            for j in range(1, self.col-1):
+                if self.maze_array[i][j]==0:
+                    self.maze_array[i][j] = 8
+                    self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
+
 
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
@@ -172,7 +181,8 @@ class maze:
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         a.maze_generate_with_probability_BFS()
         #a.generate_maze_no_alg()
-        #print(self.maze_array)
+        self.render_maze()  # This is to reach blocked cells after maze is generated
+        print(self.maze_array)
 
 
         #self.draw_maze(ThingsToAppearOnScreen_Display, green)
