@@ -127,7 +127,7 @@ class maze:
         self.maze_array[i, j] = 1
         self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        time.sleep(0.1)
+        time.sleep(1)
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -138,7 +138,7 @@ class maze:
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        time.sleep(0.1)
+        time.sleep(1)
 
 # # DELETE THIS LATER
 #     def aaa(self, screen, i, j):
@@ -170,12 +170,12 @@ class maze:
         pygame.display.flip()
 
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
-        #a.maze_generate_with_probability_BFS()
-        a.generate_maze_no_alg()
+        a.maze_generate_with_probability_BFS()
+        #a.generate_maze_no_alg()
         #print(self.maze_array)
 
 
-        self.draw_maze(ThingsToAppearOnScreen_Display, green)
+        #self.draw_maze(ThingsToAppearOnScreen_Display, green)
         green = (0,128,0)
         #self.draw_maze(ThingsToAppearOnScreen_Display, green)
         pygame.display.flip()

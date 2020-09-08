@@ -16,8 +16,8 @@ class BFS:
 
     q_visited = [] #[[1, 1]]  # stack to store visited nodes
     q_list_of_visited_nodes = [] #[[1,1]]
-    start_i = 1  # starting index i for current node (parent node)
-    start_j = 1  # starting index j for current node (parent node)
+    start_i = 5  # starting index i for current node (parent node)
+    start_j = 5  # starting index j for current node (parent node)
 
     def __init__(self , x, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
@@ -29,12 +29,14 @@ class BFS:
         # prob = number of filled cells/NxN -> number of filled cells = prob * (NxN) - have an int set to number of filled cells , random whenever you num = 1 ,
         # set cell as filled and decrement number of filled cells n--
         #p = random.uniform(0, 1)
-        p = 0.3
+        p = 0.2
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
     def maze_generate_with_probability_BFS(self):
-        self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j)    # This function sets the parent node
+        filled_cells = self.calc()
+        print(filled_cells)
+        filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1)    # This function sets the parent node
         self.current_node(self.start_i, self.start_j)   # This function sets the current node
         while self.q:
             self.q_visited.pop()
@@ -42,75 +44,36 @@ class BFS:
             start_point = cur_n[0] #get index i for current node
             end_point = cur_n[1]    #get index j for current node
 
-            #self.highlight_cur_node(start_point,end_point)  # This function highlights current active nodes
+            self.highlight_cur_node(start_point,end_point)  # This function highlights current active nodes
 
             self.current_node(start_point, end_point)    #adds it in the visited node
-            self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point)  # check up
-            self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point)  # check down
-            self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1)  # check left
-            self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1)  # check right
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point, filled_cells)  # check up
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point, filled_cells)  # check down
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells)  # check left
+            filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells)  # check right
 
-        print(self.q)
-        print( self.q_visited)
-
-    def visit_Neighbor_bfs(self,scrn,i,j):
+    def visit_Neighbor_bfs(self, scrn, i, j, filled_cells):
+        num = random.randint(0, 1)
         if [i,j] not in self.q_list_of_visited_nodes:
             if self.maze_array[i][j] == 0:
-                pos = [i, j]
-                self.q.append(pos)
-                color = (255, 0, 255) # pink
-                self.m.m_pattern(i, j, color)   # This paints the neighbouring blocks of the active node
-                self.maze_array[i][j] = 1
+                if num == 1 and filled_cells > 0:
+                    filled_cells = filled_cells - 1
+                    pos = [i, j]
+                    #self.q.append(pos)
+                    color = (0,128,0)
+                    self.m.m_pattern(i, j, color)   # This paints the neighbouring blocks of the active node
+                    self.maze_array[i][j] = 8
+                else:  # elif filled_cells <=0:    # if filled cells are empty run this condition
+                    pos = [i, j]
+                    self.q.append(pos)
+                    color = (255, 0, 255)
+                    self.m.m_pattern(i, j, color)  # shows current node being traversed
+                    self.maze_array[i][j] = 1
+        return filled_cells
 
     # This function highlights the current active node
     def highlight_cur_node(self, i ,j):
         self.m.m_pattern(i, j , (125, 0, 255))
-
-        # if self.maze_array[i][j] == 0 :
-        #     pos = [i , j]
-        #     self.q.append(pos)
-        #     #m = maze(scrn)
-        #     self.m.m_pattern( i , j )
-        #     self.maze_array[i][j] = 1
-
-    # To generate maze using BFS
-    # def maze_generate_with_probability_BFS(self):
-    #     filled_cells = 0 #self.calc()
-    #     filled_cells = self.visit_Neighbor(self.start_i-1 , self.start_j, filled_cells) # check up
-    #     filled_cells = self.visit_Neighbor(self.start_i + 1, self.start_j, filled_cells)  # check down
-    #     filled_cells = self.visit_Neighbor(self.start_i, self.start_j-1, filled_cells)  # check left
-    #     filled_cells = self.visit_Neighbor(self.start_i, self.start_j+1, filled_cells)  # check right
-    #     while self.q:
-    #         self.q_visited.pop()    #removes prev visited node from visited list
-    #         cur_n = self.q.popleft()    # Gets left most value from 'q' and sets it as current active node that is being move - that is added as currently visited node
-    #         start_point = cur_n[0] #get index i for current node
-    #         end_point = cur_n[1]    #get index j for current node
-    #         self.current_node(start_point, end_point)    #adds it in the visited node
-    #         #self.m.aaa(self.screen, self.start_i, self.start_j+1)
-    #         filled_cells = self.visit_Neighbor(self.start_i - 1, self.start_j, filled_cells)  # check up
-    #         filled_cells = self.visit_Neighbor(self.start_i + 1, self.start_j, filled_cells)  # check down
-    #         filled_cells = self.visit_Neighbor(self.start_i, self.start_j - 1, filled_cells)  # check left
-    #         filled_cells = self.visit_Neighbor(self.start_i, self.start_j + 1, filled_cells)  # check right
-    #     print(self.q_visited)
-    #
-    # def visit_Neighbor(self, i, j, filled_cells):
-    #     num = random.randint(0, 1)
-    #     #if num == 1 and filled_cells> 0 :
-    #     if self.maze_array[i][j] == 0:
-    #         filled_cells = filled_cells - 1
-    #         pos = [i , j]
-    #         self.q.append(pos)  # adds the index to the queue
-    #         self.m.m_pattern_for_blockedpaths( i , j )   # If a cell is to be blocked then it would color that block and set its position to physical = 8
-    #         self.maze_array[i][j] = 8
-    #     else:   #elif filled_cells <=0:    # if filled cells are empty run this condition
-    #         pos = [i , j]
-    #         self.q.append(pos)
-    #         self.m.m_pattern( i , j )   # shows current node being traversed
-    #         self.maze_array[i][j] = 1
-    #     return filled_cells
-
-
-###################################################################
 
     # Functionality: this method iterates over 2d array and over each array checks prob and fills it - no algorithm
     def generate_maze_no_alg(self):
