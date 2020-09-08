@@ -14,8 +14,8 @@ class BFS:
     q = deque() # where list of active nodes are stored
     q_visited = []
     q_list_of_visited_nodes = [] #[[1,1]]
-    start_i = 10    # starting index i for current node (parent node)
-    start_j = 10    # starting index j for current node (parent node)
+    start_i = 5    # starting index i for current node (parent node)
+    start_j = 5    # starting index j for current node (parent node)
 
     def __init__(self , x, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
@@ -31,11 +31,91 @@ class BFS:
         return  int(filled_cells)
 
 
+
+#### DFS TO TRAVERSE
+    # NOTE: IF YOU USE THIS, MAKE SURE YOU SET THE STARTING SELF.MAZEARRAY=1 IN MAIN.PY
+    def maze_generate_DFS(self):
+        # Algorithm: Add the starting position as parent node
+        # Go to neighbor (using function call visit_neighbor_dfs)
+        # that function calls func that checks if cell is visited or not
+        inc = 0
+        filled_cells = self.calc_prob()
+        self.maze_array[self.start_i, self.start_j] = 1
+        self.q.append( [self.start_i, self.start_j] )
+        self.current_node(self.start_i, self.start_j)
+        pos = self.q[-1]  # peek the top most element on stack
+        i = pos[0]
+        j = pos[1]
+        self.visit_neighbor_dfs( i , j , filled_cells, inc)    # down
+
+    def visit_neighbor_dfs(self, i , j, filled_cells, inc):
+        self.traverse_dfs(i - 1, j , filled_cells, inc) # up
+        self.traverse_dfs(i + 1, j , filled_cells, inc)  # down
+        self.traverse_dfs(i , j + 1 , filled_cells, inc)   # right
+        self.traverse_dfs(i, j - 1 , filled_cells, inc)  # left
+        if self.q:
+            self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
+
+    # Functionality:  To check cell is visited or not
+    def traverse_dfs(self, i, j, filled_cells, inc):
+        num = random.randint(0, 1)
+        if self.maze_array[i][j] == 0:
+            inc += 1
+            if [i,j] not in self.q_list_of_visited_nodes:
+                if num == 1 and filled_cells > 0 and inc % 2 > 0:
+                    filled_cells = filled_cells - 1
+                    color = (0,128,0)
+                    self.m.m_pattern(i, j, color, "blocked")
+                    self.maze_array[i][j] = 8
+                    self.visit_neighbor_dfs(i,j , filled_cells, inc)
+                else:
+                    pos = [i, j]
+                    self.q.append(pos)
+                    self.current_node(i, j)
+                    color = (178, 0, 178)
+                    self.m.m_pattern(i, j, color, "open")
+                    self.maze_array[i][j] = 1
+                    self.visit_neighbor_dfs(i, j, filled_cells, inc)
+
+    # def maze_generate_DFS(self):
+    #     # Algorithm: Add the starting position as parent node
+    #     # Go to neighbor (using function call visit_neighbor_dfs)
+    #     # that function calls func that checks if cell is visited or not
+    #     self.maze_array[self.start_i, self.start_j] = 1
+    #     self.q.append( [self.start_i, self.start_j] )
+    #     self.current_node(self.start_i, self.start_j)
+    #     pos = self.q[-1]  # peek the top most element on stack
+    #     i = pos[0]
+    #     j = pos[1]
+    #     self.visit_neighbor_dfs( i , j)   # down
+    #
+    # def visit_neighbor_dfs(self, i , j):
+    #     # pos = self.q[-2]
+    #     # self.highlight_cur_node(pos)
+    #
+    #     self.traverse_dfs(i - 1, j)  # up
+    #     self.traverse_dfs(i + 1, j ) # down
+    #     self.traverse_dfs(i , j + 1)  # right
+    #     self.traverse_dfs(i, j - 1)  # left
+    #     self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
+    #
+    # # Functionality:  To check cell is visited or not
+    # def traverse_dfs(self, i, j):
+    #     #if self.maze_array[i][j] != 8:
+    #     if self.maze_array[i][j] == 0:
+    #         if [i,j] not in self.q_list_of_visited_nodes:
+    #             pos = [i,j]
+    #             self.q.append(pos)
+    #             self.current_node(i, j)
+    #             color = (178, 0, 178)
+    #             self.m.m_pattern(i, j, color, "open")
+    #             self.maze_array[i][j] = 4
+    #             self.visit_neighbor_dfs(i,j)
+
     # ********* MAKE SURE THE BFS PSEUDOCODE MATCHES WITH DESCRIPTION
     # Functionality: Follows BFS algorithm to generaze path. Whenever a random blocked cell is during the search process, BFS algorithm jumps to next neighbor in queue
     def maze_generate_with_probability_BFS(self):
         filled_cells = self.calc_prob()
-        print(filled_cells)
         filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1, 0)    # Sets the parent node - Look at start_i for index position
         self.current_node(self.start_i, self.start_j)   # Sets parent node as current node
         inc = 0
@@ -51,6 +131,9 @@ class BFS:
             filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells, inc)  # move left
             filled_cells = self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells, inc)  # move right
             inc += 1
+        self.q_visited.clear()
+        self.q_list_of_visited_nodes.clear()
+        self.q.clear()
 
     def visit_Neighbor_bfs(self, scrn, i, j, filled_cells, inc):
         num = random.randint(0, 1)

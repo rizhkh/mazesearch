@@ -12,8 +12,8 @@ from collections import deque
 class maze:
     PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 20  # row
-    col = 20  # col
+    row = 10  # row
+    col = 10  # col
     box_width = 15
     box_height = 15
     maze_array = np.zeros((0, 0), dtype=int)
@@ -129,7 +129,7 @@ class maze:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        #time.sleep(0.1)
+        time.sleep(0.05)
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -158,6 +158,16 @@ class maze:
                     self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
 
 
+    def generate_maze(self, obj):
+        # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
+        obj.maze_generate_with_probability_BFS()
+        #obj.maze_generate_DFS()
+        print(self.maze_array)
+        # print()
+        # a.generate_maze_no_alg()
+        self.render_maze()  # This is to reach blocked cells after maze is generated
+        # print(self.maze_array)
+
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
         self.maze_array = np.zeros((self.row, self.col), dtype=int)
@@ -175,14 +185,7 @@ class maze:
         a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
         pygame.display.flip()
 
-        # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
-        a.maze_generate_with_probability_BFS()
-        print(self.maze_array)
-        print()
-        #a.generate_maze_no_alg()
-        self.render_maze()  # This is to reach blocked cells after maze is generated
-        print(self.maze_array)
-
+        self.generate_maze(a)
 
         #self.draw_maze(ThingsToAppearOnScreen_Display, green)
         green = (0,128,0)
@@ -222,7 +225,6 @@ if __name__ == '__main__':
     flags = pygame.DOUBLEBUF  # Dont use noframe - easier when you update the screen
     ThingsToAppearOnScreen_Display = pygame.display.set_mode(resolution,flags)  # This sets the width and height of the screen that pops up
     m = maze(ThingsToAppearOnScreen_Display)
-    #time.sleep(1)
     # m passed to start_game is for ref so no new object is called/copied instead I deal with the one I want to deal with
     m.start_game(m)
     #print_hi('PyCharm')
