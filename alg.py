@@ -7,7 +7,6 @@ import random
 
 # # Functionality: We use BFS to expand the whole map and on each exploring cell we use probability  (0<p<1) if cell is filled or not
 
-
 class BFS:
     m = None    # empty object
     maze_array = []
@@ -23,12 +22,11 @@ class BFS:
         self.screen = x #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
 
-    # This calcs prob of cell being blocked or not
+    # Functionality: Calculates the number of cell blocks to be included in the map using random generated probabily and dimension of the map
     def calc_prob(self):
         # prob = number of filled cells/NxN -> number of filled cells = prob * (NxN) - have an int set to number of filled cells , random whenever you num = 1 ,
         # set cell as filled and decrement number of filled cells n--
         p = random.uniform(0, 1)
-        #p = 0.2
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
@@ -38,8 +36,8 @@ class BFS:
     def maze_generate_with_probability_BFS(self):
         filled_cells = self.calc_prob()
         print(filled_cells)
-        filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1, 0)    # This function sets the parent node
-        self.current_node(self.start_i, self.start_j)   # This function sets the current node
+        filled_cells = self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1, 0)    # Sets the parent node - Look at start_i for index position
+        self.current_node(self.start_i, self.start_j)   # Sets parent node as current node
         inc = 0
         while self.q:
             self.q_visited.pop()
@@ -58,14 +56,15 @@ class BFS:
         num = random.randint(0, 1)
         if [i,j] not in self.q_list_of_visited_nodes:
             if self.maze_array[i][j] == 0:
-                if num == 1 and filled_cells > 0 and inc%2>0:  # mod inc % 2 checks for even number. On every even Increment (inc passed) that is even and num = 1 it is allowed to block that cell
+                # Blocked cells are generated on every odd inc and random number is 1
+                if num == 1 and filled_cells > 0 and inc%2>0:
                     filled_cells = filled_cells - 1
-                    pos = [i, j]
+                    pos = [i, j]    # index i and j are stored in as [i,j] in the fringe
                     #self.q.append(pos)
-                    color = (0,128,0)
-                    self.m.m_pattern(i, j, color, "blocked")   # This paints the neighbouring blocks of the active node
+                    color = (0,128,0)   # color of the block
+                    self.m.m_pattern(i, j, color, "blocked")   # Colors the neighbouring blocks of the active node
                     self.maze_array[i][j] = 8
-                else:  # elif filled_cells <=0:    # if filled cells are empty run this condition
+                else:  # if filled_cells<=0 then only open cells are generated
                     pos = [i, j]
                     self.q.append(pos)
                     color = (255, 0, 255)
@@ -102,7 +101,7 @@ class BFS:
                 self.maze_array[i][j] = 1
         return filled_cells
 
-    # Adds the current active node in the visited list
+    # Adds the current active node in the visited list for the Fringe
     def current_node(self,i,j):
         self.q_visited.append([i,j])
         self.q_list_of_visited_nodes.append([i,j])

@@ -42,8 +42,7 @@ class maze:
 
     # Functionality: Displays boxes on the screen
     def maze_generator(self,display, color, row_x , col_y):
-        # row_x=row and col_y=col is the position where the box will be displayed
-        pygame.draw.rect(display, color, [col_y, row_x, self.box_width, self.box_height])
+        pygame.draw.rect(display, color, [col_y, row_x, self.box_width, self.box_height])   # row_x=row and col_y=col is the position where the box will be displayed
 
     # Functionality: This function draws the maze on the pygame canvas/screen
     def draw_maze(self,screen, color):
@@ -53,8 +52,7 @@ class maze:
                 if self.maze_array[i,j] == 8:
                     self.maze_generator(screen, color, i * (self.box_width+1), j * (self.box_height+1))
                 if self.maze_array[i, j] == 1:
-                    self.maze_generator(screen, (255,255,255), i * (self.box_width + 1), j * (self.box_height + 1))
-                    #Note: *6 should be changed according to box_width and box_height (always add + 1 to  box_width and box_height above)
+                    self.maze_generator(screen, (255,255,255), i * (self.box_width + 1), j * (self.box_height + 1)) # +1 is to add a border shade to the cells
 
     # Functionality: Sets player position at 1,1 as a starting point
     # def move_player_to_create_maze(self):
