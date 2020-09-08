@@ -4,6 +4,7 @@ import numpy as np
 #import alg
 import time
 from alg import *
+from route import *
 from sys import exit
 from collections import deque
 
@@ -129,7 +130,7 @@ class maze:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.05)
+        time.sleep(0.1)
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -161,11 +162,12 @@ class maze:
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         obj.maze_generate_with_probability_BFS()
-        #obj.maze_generate_DFS()
-        print(self.maze_array)
+        # obj.maze_generate_DFS()
+        #obj.generate_maze_no_alg()
+        #print(self.maze_array)
         # print()
-        # a.generate_maze_no_alg()
-        self.render_maze()  # This is to reach blocked cells after maze is generated
+        #obj.generate_maze_no_alg()
+        self.render_maze()  # This is to reach and color blocked cells after maze is generated
         # print(self.maze_array)
 
     def start_game(self, obj):
@@ -183,13 +185,20 @@ class maze:
 
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
         a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
+
+        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
+
+        b.player_move_dfs()
+
+        #print(self.maze_array)
+
         pygame.display.flip()
 
-        self.generate_maze(a)
+        # self.generate_maze(a)
+        # print(self.maze_array)
 
-        #self.draw_maze(ThingsToAppearOnScreen_Display, green)
+
         green = (0,128,0)
-        #self.draw_maze(ThingsToAppearOnScreen_Display, green)
         pygame.display.flip()
 
         window_display_status = True

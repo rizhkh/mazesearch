@@ -32,7 +32,8 @@ class BFS:
 
 
 
-#### DFS TO TRAVERSE
+### ************ DFS  ************ ###
+
     # NOTE: IF YOU USE THIS, MAKE SURE YOU SET THE STARTING SELF.MAZEARRAY=1 IN MAIN.PY
     def maze_generate_DFS(self):
         # Algorithm: Add the starting position as parent node
@@ -62,12 +63,12 @@ class BFS:
         if self.maze_array[i][j] == 0:
             inc += 1
             if [i,j] not in self.q_list_of_visited_nodes:
-                if num == 1 and filled_cells > 0 and inc % 2 > 0:
+                if num == 1 and filled_cells > 0 and inc % 2 > 0:    # Note: remove inc%2 to remove more random generation aspect of block generation
                     filled_cells = filled_cells - 1
                     color = (0,128,0)
                     self.m.m_pattern(i, j, color, "blocked")
                     self.maze_array[i][j] = 8
-                    self.visit_neighbor_dfs(i,j , filled_cells, inc)
+                    #self.visit_neighbor_dfs(i,j , filled_cells, inc)
                 else:
                     pos = [i, j]
                     self.q.append(pos)
@@ -77,40 +78,7 @@ class BFS:
                     self.maze_array[i][j] = 1
                     self.visit_neighbor_dfs(i, j, filled_cells, inc)
 
-    # def maze_generate_DFS(self):
-    #     # Algorithm: Add the starting position as parent node
-    #     # Go to neighbor (using function call visit_neighbor_dfs)
-    #     # that function calls func that checks if cell is visited or not
-    #     self.maze_array[self.start_i, self.start_j] = 1
-    #     self.q.append( [self.start_i, self.start_j] )
-    #     self.current_node(self.start_i, self.start_j)
-    #     pos = self.q[-1]  # peek the top most element on stack
-    #     i = pos[0]
-    #     j = pos[1]
-    #     self.visit_neighbor_dfs( i , j)   # down
-    #
-    # def visit_neighbor_dfs(self, i , j):
-    #     # pos = self.q[-2]
-    #     # self.highlight_cur_node(pos)
-    #
-    #     self.traverse_dfs(i - 1, j)  # up
-    #     self.traverse_dfs(i + 1, j ) # down
-    #     self.traverse_dfs(i , j + 1)  # right
-    #     self.traverse_dfs(i, j - 1)  # left
-    #     self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
-    #
-    # # Functionality:  To check cell is visited or not
-    # def traverse_dfs(self, i, j):
-    #     #if self.maze_array[i][j] != 8:
-    #     if self.maze_array[i][j] == 0:
-    #         if [i,j] not in self.q_list_of_visited_nodes:
-    #             pos = [i,j]
-    #             self.q.append(pos)
-    #             self.current_node(i, j)
-    #             color = (178, 0, 178)
-    #             self.m.m_pattern(i, j, color, "open")
-    #             self.maze_array[i][j] = 4
-    #             self.visit_neighbor_dfs(i,j)
+### ************ BFS  ************ ###
 
     # ********* MAKE SURE THE BFS PSEUDOCODE MATCHES WITH DESCRIPTION
     # Functionality: Follows BFS algorithm to generaze path. Whenever a random blocked cell is during the search process, BFS algorithm jumps to next neighbor in queue
@@ -140,7 +108,7 @@ class BFS:
         if [i,j] not in self.q_list_of_visited_nodes:
             if self.maze_array[i][j] == 0:
                 # Blocked cells are generated on every odd inc and random number is 1
-                if num == 1 and filled_cells > 0 and inc%2>0:
+                if num == 1 and filled_cells > 0 and inc%2>0:    # Note: remove inc%2 to remove more random generation aspect of block generation
                     filled_cells = filled_cells - 1
                     pos = [i, j]    # index i and j are stored in as [i,j] in the fringe
                     #self.q.append(pos)
@@ -160,17 +128,21 @@ class BFS:
         color = (255, 255, 255)# purple -(125, 0, 255)
         self.m.m_pattern(i, j , color, "open")
 
+### ************ NO ALGORITHM MAZE  ************ ###
+
     # Functionality: this method iterates over 2d array and over each array checks prob and fills it - no algorithm
     def generate_maze_no_alg(self):
+        inc = 0
         filled_cells = self.calc_prob()
         for index_i in range( 1, self.m.col-1):
             for index_j in range(1,self.m.col-1):
-                filled_cells = self.visit_Neighbor_generate_maze_no_alg(index_i, index_j, filled_cells)
+                filled_cells = self.visit_Neighbor_generate_maze_no_alg(index_i, index_j, filled_cells, inc)
+                inc += 1
 
-    def visit_Neighbor_generate_maze_no_alg(self, i, j, filled_cells):
+    def visit_Neighbor_generate_maze_no_alg(self, i, j, filled_cells, inc):
         num = random.randint(0, 1)
         if self.maze_array[i][j] == 0:
-            if num == 1 and filled_cells> 0 :
+            if num == 1 and filled_cells> 0 and inc%2>0:    # Note: remove inc%2 to remove more random generation aspect of block generation
                 filled_cells = filled_cells - 1
                 pos = [i , j]
                 self.q.append(pos)  # adds the index to the queue
