@@ -77,7 +77,8 @@ class BFS:
 
     # This function highlights the current active node
     def highlight_cur_node(self, i ,j):
-        self.m.m_pattern(i, j , (125, 0, 255))
+        color = (255, 255, 255)# purple -(125, 0, 255)
+        self.m.m_pattern(i, j , color)
 
     # Functionality: this method iterates over 2d array and over each array checks prob and fills it - no algorithm
     def generate_maze_no_alg(self):

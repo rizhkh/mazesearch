@@ -140,11 +140,6 @@ class maze:
         pygame.display.flip()
         #time.sleep(0.1)
 
-# # DELETE THIS LATER
-#     def aaa(self, screen, i, j):
-#         self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))
-#         pygame.display.flip()
-
     def set_screen(self , scrn):   # returns screen object for canvas
         self.screen = scrn
         print(self.screen)
