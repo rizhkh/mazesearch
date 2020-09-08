@@ -14,8 +14,8 @@ class maze:
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
     row = 20  # row
     col = 20  # col
-    box_width = 10
-    box_height = 10
+    box_width = 15
+    box_height = 15
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
@@ -119,14 +119,18 @@ class maze:
             self.player_movement.append([i,j])
 
     # This is to color the moving routes
-    def m_pattern(self,i,j,color):
-        self.set_maze_pattern(self.screen, i, j,color)
+    def m_pattern(self, i, j, color, status):
+        self.set_maze_pattern(self.screen, i, j, color, status)
 
-    def set_maze_pattern(self, screen, i, j , color):
-        #self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))
-        self.maze_array[i, j] = 1
-        self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
-        pygame.display.flip()
+    def set_maze_pattern(self, screen, i, j , color, status):
+        if status == 'blocked':
+            self.maze_array[i, j] = 8
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
+        else:
+            self.maze_array[i, j] = 1
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
         #time.sleep(0.1)
 
     # This is not color blocked cells
@@ -175,6 +179,8 @@ class maze:
 
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         a.maze_generate_with_probability_BFS()
+        print(self.maze_array)
+        print()
         #a.generate_maze_no_alg()
         self.render_maze()  # This is to reach blocked cells after maze is generated
         print(self.maze_array)
