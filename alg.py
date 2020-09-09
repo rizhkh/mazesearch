@@ -33,8 +33,6 @@ class mazeGen:
         # Algorithm: Add the starting position as parent node
         # Go to neighbor (using function call visit_neighbor_dfs)
         # that function calls func that checks if cell is visited or not
-
-        inc = 0
         filled_cells = []
         filled_cells.append(self.calc_prob())
         self.maze_array[self.start_i, self.start_j] = 1
@@ -43,40 +41,34 @@ class mazeGen:
         pos = self.q[-1]  # peek the top most element on stack
         i = pos[0]
         j = pos[1]
-        self.visit_neighbor_dfs( i , j , filled_cells, inc)    # down
+        self.visit_neighbor_dfs( i , j , filled_cells)    # down
         return self.maze_array
 
-    def visit_neighbor_dfs(self, i , j, filled_cells, inc):
-        self.traverse_dfs(i - 1, j , filled_cells, inc) # up
-        self.traverse_dfs(i + 1, j , filled_cells, inc)  # down
-        self.traverse_dfs(i , j + 1 , filled_cells, inc)   # right
-        self.traverse_dfs(i, j - 1 , filled_cells, inc)  # left
+    def visit_neighbor_dfs(self, i , j, filled_cells):
+        self.traverse_dfs(i - 1, j , filled_cells) # up
+        self.traverse_dfs(i + 1, j , filled_cells)  # down
+        self.traverse_dfs(i , j + 1 , filled_cells)   # right
+        self.traverse_dfs(i, j - 1 , filled_cells)  # left
         if self.q:
             self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
 
     # Functionality:  To check cell is visited or not
-    def traverse_dfs(self, i, j, filled_cells, inc):
+    def traverse_dfs(self, i, j, filled_cells):
         num = random.randint(0, 3)
         if self.maze_array[i][j] == 0:
-            inc += 1
             if [i,j] not in self.q_list_of_visited_nodes:
                 if num == 1 and filled_cells[-1] > 0:
-                #if num == 1 and filled_cells[-1] > 0 and inc % 2 > 0:    # Note: remove inc%2 to remove more random generation aspect of block generation
                     f_c = filled_cells[-1]
                     f_c = f_c - 1
                     filled_cells.pop()
                     filled_cells.append(f_c)
-                    # color = (0,128,0)
-                    #self.m.m_pattern_for_blockedpaths( i , j )
                     self.maze_array[i][j] = 8
                 else:
                     pos = [i, j]
                     self.q.append(pos)
                     self.current_node(i, j)
-                    color = (255, 255, 255)
-                    #self.m.m_pattern(i, j, color, "open")
                     self.maze_array[i][j] = 1
-                    self.visit_neighbor_dfs(i, j, filled_cells, inc)
+                    self.visit_neighbor_dfs(i, j, filled_cells)
 
 # what if I just pass back the array and color the rest in main.py
 # make filled_cells as list and just peek it change value and thats it dont return it its more messy that way
@@ -88,50 +80,36 @@ class mazeGen:
     def maze_generate_BFS(self):
         filled_cells = []
         filled_cells.append(self.calc_prob())
-        #filled_cells = self.calc_prob()
-        self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j, filled_cells, 0)
-        #self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j,filled_cells+1, 0)    # Sets the parent node - Look at start_i for index position
-        self.current_node(self.start_i, self.start_j)   # Sets parent node as current node
-        inc = 0
+        self.visit_Neighbor_bfs(self.screen, self.start_i, self.start_j, filled_cells)
+        self.current_node(self.start_i, self.start_j)   # Sets parent node as current node and adds it to list of visited nodes and in queue of nodes
         while self.q:
-            self.q_visited.pop()
-            cur_n = self.q.popleft()
+            #self.q_visited.pop()
+            cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node
             start_point = cur_n[0] #get index i for current node
             end_point = cur_n[1]    #get index j for current node
-            #### - Don't delete this yet ----> self.highlight_cur_node(start_point,end_point)  # This function highlights current active nodes
-            self.current_node(start_point, end_point)    #adds it in the visited node
-            self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point, filled_cells, inc)  # move up
-            self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point, filled_cells, inc)  # move down
-            self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells, inc)  # move left
-            self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells, inc)  # move right
-            inc += 1
-        # self.q_visited.clear()
-        # self.q_list_of_visited_nodes.clear()
-        # self.q.clear()
+            self.current_node(start_point, end_point)    #adds active node in list of visited nodes
+            self.visit_Neighbor_bfs(self.screen, start_point - 1, end_point, filled_cells)  # move up
+            self.visit_Neighbor_bfs(self.screen, start_point + 1, end_point, filled_cells)  # move down
+            self.visit_Neighbor_bfs(self.screen, start_point, end_point - 1, filled_cells)  # move left
+            self.visit_Neighbor_bfs(self.screen, start_point, end_point + 1, filled_cells)  # move right
+        self.q_visited.clear()
+        self.q_list_of_visited_nodes.clear()
+        self.q.clear()
         return self.maze_array
 
-    def visit_Neighbor_bfs(self, scrn, i, j, filled_cells, inc):
+    def visit_Neighbor_bfs(self, scrn, i, j, filled_cells):
         num = random.randint(0, 3)
-        if [i,j] not in self.q_list_of_visited_nodes:
+        if [i,j] not in self.q_list_of_visited_nodes:   # Checks whether neighbor of current element has been visited or not
             if self.maze_array[i][j] == 0:
-                # Blocked cells are generated on every odd inc and random number is 1
-                if num == 1 and filled_cells[-1] > 0:
-                #if num == 1 and filled_cells[-1] > 0 and inc%2 > 0:    # Note: remove inc%2 to remove more random generation aspect of block generation
-                    f_c = filled_cells[-1]
+                if num == 1 and filled_cells[-1] > 0:   # Random decision using random.int - if condition is true then it would generate a blocked cell
+                    f_c = filled_cells[-1]  # f_c and Filled_cells are the number of cells that has to be generated as blocks on map
                     f_c = f_c - 1
                     filled_cells.pop()
                     filled_cells.append(f_c)
-                    #filled_cells = filled_cells - 1
-                    #pos = [i, j]    # index i and j are stored in as [i,j] in the fringe
-                    #self.q.append(pos)
-                    color = (0,128,0)   # color of the block
-                    #### - Don't delete this yet ----> self.m.m_pattern_for_blockedpaths( i , j )   # Colors the neighbouring blocks of the active node
                     self.maze_array[i][j] = 8
-                else:  # if filled_cells<=0 then only open cells are generated
+                else:  # Generates open cells
                     pos = [i, j]
                     self.q.append(pos)
-                    color = (255, 0, 255)
-                    #### - Don't delete this yet ----> self.m.m_pattern(i, j, color , "open")  # shows current node being traversed
                     self.maze_array[i][j] = 1
 
     # This function highlights the current active node
@@ -139,9 +117,7 @@ class mazeGen:
         color = (255, 255, 255)# purple -(125, 0, 255)
         self.m.m_pattern(i, j , color, "open")
 
-### ************ NO ALGORITHM MAZE  ************ ###
-
-    # Functionality: this method iterates over 2d array and over each array checks prob and fills it - no algorithm
+    # Functionality: this method iterates over 2d array and over each array checks prob and fills it - no algorithm maze generation
     def generate_maze_no_alg(self):
         inc = 0
         filled_cells = []
@@ -155,21 +131,15 @@ class mazeGen:
     def visit_Neighbor_generate_maze_no_alg(self, i, j, filled_cells, inc):
         num = random.randint(0, 4)
         if self.maze_array[i][j] == 0:
-            if num == 1 and filled_cells[-1] > 0:
-            #if num == 1 and filled_cells[-1]>0 and inc%2>0:    # Note: remove inc%2 to remove more random generation aspect of block generation
-                f_c = filled_cells[-1]
+            if num == 1 and filled_cells[-1] > 0:   # Random decision using random.int - if condition is true then it would generate a blocked cell
+                f_c = filled_cells[-1]   # f_c and Filled_cells are the number of cells that has to be generated as blocks on map
                 f_c = f_c - 1
                 filled_cells.pop()
                 filled_cells.append(f_c)
-                pos = [i , j]
-                #self.q.append(pos)  # adds the index to the queue
-                #### - Don't delete this yet ----> self.m.m_pattern_for_blockedpaths( i , j )   # If a cell is to be blocked then it would color that block and set its position to physical = 8
                 self.maze_array[i][j] = 8
-            else:   #elif filled_cells <=0:    # if filled cells are empty run this condition
+            else:   # Generates open cells
                 pos = [i , j]
                 self.q.append(pos)
-                color =  (255, 255, 255)    #White color in path generation in maze
-                #### - Don't delete this yet ----> self.m.m_pattern( i , j , color, "open")   # shows current node being traversed
                 self.maze_array[i][j] = 1
 
     # Adds the current active node in the visited list for the Fringe
