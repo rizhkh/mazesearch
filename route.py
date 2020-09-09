@@ -27,34 +27,30 @@ class move:
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
-        self.target_i = 18 #obj.row - 2
-        self.target_j = 18 #obj.col - 2
+        self.target_i = obj.row - 2
+        self.target_j = obj.col - 2
 
     # Clears path if surrounding paths are blocked for player at starting position
-    def makeWay(self):
-        self.maze_array[1][1] = 1
-        self.maze_array[2][1] = 1
-        self.maze_array[1][2] = 1
-        self.maze_array[2][2] = 1
-        # if self.maze_array[2][1] == 8:
-        #     self.maze_array[2][1] = 1
-        # if self.maze_array[1][2] == 8:
-        #     self.maze_array[1][2] = 1
+    def cls_start_end_points(self):
+        self.maze_array[1][1] = self.maze_array[2][1] = self.maze_array[1][2] = self.maze_array[2][2] = 0
+        self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = 0
+
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node
         # Go to neighbor (using function call visit_neighbor_dfs)
         # that function calls func that checks if cell is visited or not
+        color = (0, 0, 204)   # blue color for starting point
+        self.m.m_pattern(self.start_i , self.start_j, (0, 0, 204), "start")
         target = [self.target_i, self.target_j]
         color = (204, 0, 102)
         self.m.m_pattern(self.target_i, self.target_j, color, "open")
-        self.maze_array[self.start_i, self.start_j] = 1
+
         self.q.append( [self.start_i, self.start_j] )
         self.current_node(self.start_i, self.start_j)
         pos = self.q[-1]  # peek the top most element on stack
         i = pos[0]
         j = pos[1]
-
         p = deque()
         p = self.visit_neighbor_dfs( i , j, target,False)   # down
         print("end : " , self.q)
@@ -72,17 +68,13 @@ class move:
         if status is not True:
             status = self.traverse_dfs(i, j - 1, target, status) # left
 
-        # status = self.traverse_dfs(i - 1, j, target, status)  # up
-        # status = self.traverse_dfs(i + 1, j, target, status) # down
-        # status = self.traverse_dfs(i , j + 1, target, status)  # right
-        # status = self.traverse_dfs(i, j - 1, target, status) # left
-
         if  status == True:
             return True
+
         if self.q:
             self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
-            color = (0,0,255) # vlue color when backtracked
-            self.m.player_movement(i, j, color, "open")
+            color = (255,255,255) #   (55,0,255) # blue color when backtracked
+            self.m.player_movement(i, j, color, "back track")
         return False
 
     # Functionality:  To check cell is visited or not
@@ -91,7 +83,6 @@ class move:
             return True
 
         if [i , j] == target:
-            print( [i,j] , " - True")
             color = (178, 103, 100)
             self.m.player_movement(i, j, color, "open")
             return True

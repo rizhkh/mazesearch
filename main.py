@@ -13,10 +13,10 @@ from collections import deque
 class maze:
     PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 20  # row
-    col = 20  # col
-    box_width = 10
-    box_height = 10
+    row = 10  # row
+    col = 10  # col
+    box_width = 18
+    box_height = 18
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
@@ -55,10 +55,6 @@ class maze:
                 if self.maze_array[i, j] == 1:
                     self.maze_generator(screen, (255,255,255), i * (self.box_width + 1), j * (self.box_height + 1)) # +1 is to add a border shade to the cells
 
-    # Functionality: Sets player position at 1,1 as a starting point
-    # def move_player_to_create_maze(self):
-    #     self.maze_array[1][1] = 1
-
     # This is to color the moving routes
     def m_pattern(self, i, j, color, status):
         self.set_maze_pattern(self.screen, i, j, color, status)
@@ -68,11 +64,15 @@ class maze:
         if status == 'blocked':
             self.maze_array[i, j] = 8
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
-            pygame.display.flip()
+            #pygame.display.flip()
+        if status == 'start':
+            self.maze_array[i, j] = 4
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            #pygame.display.flip()
         else:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
-            pygame.display.flip()
+            #pygame.display.flip()
         #time.sleep(0.1)
 
 
@@ -86,6 +86,10 @@ class maze:
             self.maze_array[i, j] = 8
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
+        if status == 'back track':
+            self.maze_array[i, j] = 1
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
         else:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
@@ -97,18 +101,10 @@ class maze:
         self.set_maze_blocks(self.screen, i, j)
 
     def set_maze_blocks(self, screen, i, j):
-        #self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        time.sleep(0.1)
-
-    def set_screen(self , scrn):   # returns screen object for canvas
-        self.screen = scrn
-        print(self.screen)
-
-    def get_screen(self):   # returns screen object for canvas
-        return self.screen
+        #time.sleep(0.1)
 
     #Functionality: Convert and color unreached/blocked cells are maze generation for GUI
     def render_maze(self):
@@ -118,35 +114,42 @@ class maze:
                     self.maze_array[i][j] = 8
                     self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
 
+    def val_for_Astr(self):
+        for i in range(1, self.row-1):
+            for j in range(1, self.col-1):
+                if self.maze_array[i][j] == 1:
+                    self.maze_array[i][j] = 0
+
 
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
-        #obj.maze_generate_with_probability_BFS()
-        #obj.maze_generate_DFS()
-        obj.generate_maze_no_alg()
-        #print(self.maze_array)
-        # print()
-        #obj.generate_maze_no_alg()
-        self.render_maze()  # This is to reach and color blocked cells after maze is generated
-        # print(self.maze_array)
+        #obj.maze_generate_with_probability_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
+        #obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
+        obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        self.render_maze()  # Renders the map
 
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
         self.maze_array = np.zeros((self.row, self.col), dtype=int)
         self.Apply_border(self.maze_array)  # Sets array values for the border
+
         #self.move_player_to_create_maze()  # USE THIS TO SET THE PLAYER ON MAP
+
         pygame.display.set_caption("TITLE", "ASD")
         pygame.display.flip()
         green = (0,128,0)
         self.draw_maze(ThingsToAppearOnScreen_Display, green)
         #print(self.maze_array)
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
-        a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
+        a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
         self.generate_maze(a)
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
-        b.makeWay()
+        b.cls_start_end_points()
         b.player_move_dfs()
-        # print(self.maze_array)
+
+        self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
+
+        print(self.maze_array)
         pygame.display.flip()
         # self.generate_maze(a)
         # print(self.maze_array)

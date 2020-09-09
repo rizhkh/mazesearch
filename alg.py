@@ -3,7 +3,7 @@ from collections import deque
 import random
 
 
-class BFS:
+class mazeGen:
     m = None    # empty object
     maze_array = []
     screen = None
@@ -15,7 +15,7 @@ class BFS:
 
     def __init__(self , x, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
-        self.screen = x #obj.get_screen()
+        self.screen = x
         self.maze_array = np.copy(arr)  # (obj.get_arr())
 
     # Functionality: Calculates the number of cell blocks to be included in the map using random generated probabily and dimension of the map
@@ -149,7 +149,7 @@ class BFS:
                 self.q.append(pos)
                 color =  (255, 255, 255)    #White color in path generation in maze
                 self.m.m_pattern( i , j , color, "open")   # shows current node being traversed
-                self.maze_array[i][j] = 1
+                #self.maze_array[i][j] = 1
         return filled_cells
 
     # Adds the current active node in the visited list for the Fringe
