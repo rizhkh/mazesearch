@@ -141,18 +141,13 @@ class maze:
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
-        #array = obj.maze_generate_with_probability_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
+        array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
         # array = obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
-        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-
-        print("in main")
+        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
         self.maze_array = array
-        print(self.maze_array)
-
         #self.render_maze()  # Renders the map
         self.map_values() # To map values on 2d array maze map
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
-        print(self.maze_array)
 
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
