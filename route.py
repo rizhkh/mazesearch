@@ -23,7 +23,6 @@ class move:
     target_j = 0
 
     def __init__(self , scrn, arr, obj):
-        print("inside route.py")
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
@@ -31,9 +30,20 @@ class move:
         self.target_j = obj.col - 2
 
     # Clears path if surrounding paths are blocked for player at starting position
-    def cls_start_end_points(self):
-        self.maze_array[1][1] = self.maze_array[2][1] = self.maze_array[1][2] = self.maze_array[2][2] = 0
-        self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i][self.target_j] = 0
+    # def cls_start_end_points(self):
+    #     self.maze_array[1][1] = self.maze_array[2][1] = self.maze_array[1][2] = self.maze_array[2][2] = 0
+    #     self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i-1][self.target_j] = self.maze_array[self.target_i][self.target_j-1] = self.maze_array[self.target_i-1][self.target_j-1] = 0
+    #     c = [ [1,1] , [2,1] , [1,2] , [2,2] ]
+    #     c_1 = [
+    #         [self.target_i , self.target_j] ,
+    #         [self.target_i - 1 , self.target_j] ,
+    #         [self.target_i , self.target_j - 1] ,
+    #         [self.target_i - 1 , self.target_j - 1]
+    #     ]
+    #     for i in c:
+    #         self.m.m_pattern(i[0], i[1], (255,255,255), "open")
+    #     for j in c_1:
+    #         self.m.m_pattern(j[0], j[1], (255,255,255), "open")
 
 
     def player_move_dfs(self):
@@ -94,6 +104,7 @@ class move:
                 self.current_node(i, j)
                 color = (178, 0, 178)
                 self.m.player_movement(i, j, color, "open")
+                self.m.player_movement(i, j, (255, 255, 9), "open")
                 status = self.visit_neighbor_dfs(i, j, target, status)
         return status
 

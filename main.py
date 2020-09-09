@@ -11,12 +11,12 @@ from collections import deque
 # To comment blocks of code press ctrl + /
 
 class maze:
-    PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
-    PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 10  # row
-    col = 10  # col
-    box_width = 18
-    box_height = 18
+    PYGAMEWIDTH = 300  # 600   # Do not change this: This is window sizing
+    PYGAMEHEIGHT = 300  # Do not change this: This is window sizing
+    row = 20  # row
+    col = 20  # col
+    box_width = 10
+    box_height = 10
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
@@ -73,7 +73,7 @@ class maze:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             #pygame.display.flip()
-        #time.sleep(0.1)
+        #time.sleep(0.2)
 
 
     # This is to color the moving routes
@@ -104,15 +104,32 @@ class maze:
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        #time.sleep(0.1)
+        #time.sleep(1)
 
-    #Functionality: Convert and color unreached/blocked cells are maze generation for GUI
+    #Functionality: Converts closed mazes into open deadend spaces
     def render_maze(self):
+        num = random.randint(0, 3)
+        for i in range(2, self.row-2):
+            for j in range(2, self.col-2):
+                if self.maze_array[i][j]==0:
+                    n2 = random.randint(0, 3)
+                    if num == 1 and n2== 0 and self.maze_array[i-1][j]  == 8:
+                        self.maze_array[i-1][j] = 1
+                    if num == 1 and n2== 1 and self.maze_array[i+1][j]  == 8:
+                        self.maze_array[i+1][j] = 1
+                    if num == 1 and n2== 2 and self.maze_array[i][j-1]  == 8:
+                        self.maze_array[i][j-1] = 1
+                    if num == 1 and n2== 3 and self.maze_array[i][j+1] == 8:
+                        self.maze_array[i][j+1] = 1
+                    #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
+
+    #Functionality: maps values to 2d maze
+    def map_values(self):
         for i in range(1, self.row-1):
             for j in range(1, self.col-1):
                 if self.maze_array[i][j]==0:
-                    self.maze_array[i][j] = 8
-                    self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
+                    self.maze_array[i][j] = 1
+                    #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
 
     def val_for_Astr(self):
         for i in range(1, self.row-1):
@@ -123,10 +140,19 @@ class maze:
 
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
-        #obj.maze_generate_with_probability_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
-        #obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
-        obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        self.render_maze()  # Renders the map
+        array = []
+        #array = obj.maze_generate_with_probability_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
+        # array = obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
+        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+
+        print("in main")
+        self.maze_array = array
+        print(self.maze_array)
+
+        #self.render_maze()  # Renders the map
+        self.map_values() # To map values on 2d array maze map
+        self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
+        print(self.maze_array)
 
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
@@ -137,20 +163,25 @@ class maze:
 
         pygame.display.set_caption("TITLE", "ASD")
         pygame.display.flip()
-        green = (0,128,0)
-        self.draw_maze(ThingsToAppearOnScreen_Display, green)
-        #print(self.maze_array)
+        # green = (0,128,0)
+        # self.draw_maze(ThingsToAppearOnScreen_Display, green)
+
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
         a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
         self.generate_maze(a)
-        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
-        b.cls_start_end_points()
-        b.player_move_dfs()
 
-        self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
-
-        print(self.maze_array)
+        #print(self.maze_array)
         pygame.display.flip()
+        #
+        # b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
+        # pygame.display.flip()
+        # # b.cls_start_end_points()
+        # b.player_move_dfs()
+        #
+        # #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
+        #
+        # print(self.maze_array)
+        # pygame.display.flip()
         # self.generate_maze(a)
         # print(self.maze_array)
         pygame.display.flip()
