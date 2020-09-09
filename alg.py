@@ -1,11 +1,7 @@
 import numpy as np
-import main
-from main import maze
-#from main import maze
 from collections import deque
 import random
 
-# # Functionality: We use BFS to expand the whole map and on each exploring cell we use probability  (0<p<1) if cell is filled or not
 
 class BFS:
     m = None    # empty object
@@ -13,7 +9,7 @@ class BFS:
     screen = None
     q = deque() # where list of active nodes are stored
     q_visited = []
-    q_list_of_visited_nodes = [] #[[1,1]]
+    q_list_of_visited_nodes = []    #[[1,1]]
     start_i = 5    # starting index i for current node (parent node)
     start_j = 5    # starting index j for current node (parent node)
 
@@ -73,7 +69,7 @@ class BFS:
                     pos = [i, j]
                     self.q.append(pos)
                     self.current_node(i, j)
-                    color = (178, 0, 178)
+                    color = (255, 255, 255)
                     self.m.m_pattern(i, j, color, "open")
                     self.maze_array[i][j] = 1
                     self.visit_neighbor_dfs(i, j, filled_cells, inc)
@@ -151,7 +147,7 @@ class BFS:
             else:   #elif filled_cells <=0:    # if filled cells are empty run this condition
                 pos = [i , j]
                 self.q.append(pos)
-                color = (255, 0, 255)
+                color =  (255, 255, 255)    #White color in path generation in maze
                 self.m.m_pattern( i , j , color, "open")   # shows current node being traversed
                 self.maze_array[i][j] = 1
         return filled_cells

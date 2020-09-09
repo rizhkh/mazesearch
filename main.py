@@ -13,8 +13,8 @@ from collections import deque
 class maze:
     PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 50  # row
-    col = 50  # col
+    row = 20  # row
+    col = 20  # col
     box_width = 10
     box_height = 10
     maze_array = np.zeros((0, 0), dtype=int)
@@ -58,64 +58,6 @@ class maze:
     # Functionality: Sets player position at 1,1 as a starting point
     # def move_player_to_create_maze(self):
     #     self.maze_array[1][1] = 1
-
-
-    ## This is temporary:
-    # player_movement is a stack that stores the last moved position by player - will be overwritten by traverse algorith
-    # when a new movement is made the last made movement is removed and the new position(i,j) is saved in the stack
-    # so that a new index can be called out when a movement has to be made
-
-    def moveDown(self,screen):
-        result = self.player_movement.pop()
-        i = result[0]
-        j= result[1]
-        print("Pressed down: ", i, j)
-        if self.maze_array[i+1, j] != 8:
-            self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))  # this leave white trail color on paths visited// paths
-            self.maze_array[i+1, j] = 1
-            self.player_movement.append( [i+1, j] )
-            self.maze_generator(screen, (255, 0, 255), (i + 1) * (self.box_width + 1), j * (self.box_height + 1)) # current position color
-        else:
-            self.player_movement.append([i,j])
-
-    def moveUp(self,screen):
-        result = self.player_movement.pop()
-        i = result[0]
-        j = result[1]
-        print("Pressed up: ", i, j)
-        if self.maze_array[i - 1, j] != 8:
-            self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))  # this leave white trail color on paths visited// paths
-            self.maze_array[i - 1, j] = 1
-            self.player_movement.append([i - 1, j])
-            self.maze_generator(screen, (255, 0, 255), (i - 1) * (self.box_width + 1), j * (self.box_height + 1)) # current position color
-        else:
-            self.player_movement.append([i,j])
-
-    def moveLeft(self,screen):
-        result = self.player_movement.pop()
-        i = result[0]
-        j = result[1]
-        print("Pressed left: ", i, j)
-        if  self.maze_array[i, j - 1] != 8:
-            self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))  # this leave white trail color on paths visited// paths
-            self.maze_array[i, j - 1] = 1
-            self.player_movement.append([i, j - 1])
-            self.maze_generator(screen, (255, 0, 255), i * (self.box_width + 1), (j - 1) * (self.box_height + 1)) # current position color
-        else:
-            self.player_movement.append([i,j])
-
-    def moveRight(self,screen):
-        result = self.player_movement.pop()
-        i = result[0]
-        j = result[1]
-        print("Pressed right: ", i, j)
-        if self.maze_array[i, j + 1] != 8:
-            self.maze_generator(screen, (255, 255, 255), i * (self.box_width + 1), j * (self.box_height + 1))  # this leave white trail color on paths visited// paths
-            self.maze_array[i, j + 1] = 1
-            self.player_movement.append([i, j + 1])
-            self.maze_generator(screen, (255, 0, 255), i * (self.box_width + 1), (j + 1) * (self.box_height + 1)) # current position color
-        else:
-            self.player_movement.append([i,j])
 
     # This is to color the moving routes
     def m_pattern(self, i, j, color, status):
@@ -179,9 +121,9 @@ class maze:
 
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
-        obj.maze_generate_with_probability_BFS()
-        # obj.maze_generate_DFS()
-        #obj.generate_maze_no_alg()
+        #obj.maze_generate_with_probability_BFS()
+        #obj.maze_generate_DFS()
+        obj.generate_maze_no_alg()
         #print(self.maze_array)
         # print()
         #obj.generate_maze_no_alg()
@@ -192,31 +134,22 @@ class maze:
         ThingsToAppearOnScreen_Display = self.screen
         self.maze_array = np.zeros((self.row, self.col), dtype=int)
         self.Apply_border(self.maze_array)  # Sets array values for the border
-
         #self.move_player_to_create_maze()  # USE THIS TO SET THE PLAYER ON MAP
-
         pygame.display.set_caption("TITLE", "ASD")
         pygame.display.flip()
         green = (0,128,0)
         self.draw_maze(ThingsToAppearOnScreen_Display, green)
         #print(self.maze_array)
-
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
         a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
         self.generate_maze(a)
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
-
+        b.makeWay()
         b.player_move_dfs()
-
         # print(self.maze_array)
-
         pygame.display.flip()
-
         # self.generate_maze(a)
         # print(self.maze_array)
-
-
-        green = (0,128,0)
         pygame.display.flip()
 
         window_display_status = True
@@ -224,22 +157,6 @@ class maze:
         # Keeps the window running unless specifically you hit the x to close it
         while window_display_status:
                 for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_DOWN:
-                            self.moveDown(ThingsToAppearOnScreen_Display)
-                            pygame.display.flip()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_UP:
-                            self.moveUp(ThingsToAppearOnScreen_Display)
-                            pygame.display.flip()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_LEFT:
-                            self.moveLeft(ThingsToAppearOnScreen_Display)
-                            pygame.display.flip()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_RIGHT:
-                            self.moveRight(ThingsToAppearOnScreen_Display)
-                            pygame.display.flip()
                     if event.type == pygame.QUIT:
                         window_display_status = False
                         pygame.quit()
