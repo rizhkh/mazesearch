@@ -27,8 +27,8 @@ class move:
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
-        self.target_i = 3 #obj.row - 2
-        self.target_j = 1 #obj.col - 2
+        self.target_i = 8 #obj.row - 2
+        self.target_j = 8 #obj.col - 2
 
     # Clears path if surrounding paths are blocked for player at starting position
     def makeWay(self):
@@ -45,6 +45,12 @@ class move:
         color = (200, 200, 200)
         self.m.m_pattern(self.target_i, self.target_j, color, "open")
 
+        # self.maze_array[5][1] = 8
+        # self.maze_array[5][2] = 8
+        # self.maze_array[4][2] = 8
+        # self.maze_array[3][2] = 8
+        # self.maze_array[2][2] = 8
+
         self.maze_array[self.start_i, self.start_j] = 1
         self.q.append( [self.start_i, self.start_j] )
         self.current_node(self.start_i, self.start_j)
@@ -57,30 +63,40 @@ class move:
         print("end : " , self.q)
 
     def visit_neighbor_dfs(self, i , j, target, status):
-        # pos = self.q[-2]
-        # self.highlight_cur_node(pos)
-        #print(status)
-        status = self.traverse_dfs(i - 1, j, target, status)  # up
-        status = self.traverse_dfs(i + 1, j, target, status) # down
-        status = self.traverse_dfs(i , j + 1, target, status)  # right
-        status = self.traverse_dfs(i, j - 1, target, status) # left
+        if status is not True:
+            status = self.traverse_dfs(i - 1, j, target, status)  # up
+
+        if status is not True:
+            status = self.traverse_dfs(i + 1, j, target, status) # down
+
+        if status is not True:
+            status = self.traverse_dfs(i , j + 1, target, status)  # right
+
+        if status is not True:
+            status = self.traverse_dfs(i, j - 1, target, status) # left
+
+        # status = self.traverse_dfs(i - 1, j, target, status)  # up
+        # status = self.traverse_dfs(i + 1, j, target, status) # down
+        # status = self.traverse_dfs(i , j + 1, target, status)  # right
+        # status = self.traverse_dfs(i, j - 1, target, status) # left
 
         if  status == True:
-            return self.q
-
+            return True
         if self.q:
             self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
+            self.m.player_movement(i, j, (88,88,88), "open")
+        return False
 
     # Functionality:  To check cell is visited or not
     def traverse_dfs(self, i, j , target, status):
         #if self.maze_array[i][j] != 8:
-
         if status == True:
-            print(self.q)
             return True
 
         if [i , j] == target:
             print( [i,j] , " - True")
+            color = (178, 103, 100)
+            self.m.player_movement(i, j, color, "open")
             return True
 
         if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
@@ -89,11 +105,14 @@ class move:
                 self.q.append(pos)
                 self.current_node(i, j)
                 color = (178, 0, 178)
-                self.m.m_pattern(i, j, color, "open")
-                self.maze_array[i][j] = 4
-                self.visit_neighbor_dfs(i, j, target, False)
+                self.m.player_movement(i, j, color, "open")
+                #self.maze_array[i][j] = 4
+                status = self.visit_neighbor_dfs(i, j, target, status)
         #else:
-        return False
+        return status
+
+    def highlight_cur_node(self, i ,j, color):
+        self.m.player_movement(i, j , color, "open")
 
     def current_node(self,i,j):
         self.q_visited.append([i,j])

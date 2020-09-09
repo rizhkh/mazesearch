@@ -13,10 +13,10 @@ from collections import deque
 class maze:
     PYGAMEWIDTH = 600  # 600   # Do not change this: This is window sizing
     PYGAMEHEIGHT = 600  # Do not change this: This is window sizing
-    row = 10  # row
-    col = 10  # col
-    box_width = 15
-    box_height = 15
+    row = 50  # row
+    col = 50  # col
+    box_width = 10
+    box_height = 10
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
@@ -121,6 +121,7 @@ class maze:
     def m_pattern(self, i, j, color, status):
         self.set_maze_pattern(self.screen, i, j, color, status)
 
+    # Functionality: Sets the canvas color for cells and values for the array indices
     def set_maze_pattern(self, screen, i, j , color, status):
         if status == 'blocked':
             self.maze_array[i, j] = 8
@@ -128,6 +129,23 @@ class maze:
             pygame.display.flip()
         else:
             self.maze_array[i, j] = 1
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
+        #time.sleep(0.1)
+
+
+    # This is to color the moving routes
+    def player_movement(self, i, j, color, status):
+        self.set_player_movement(self.screen, i, j, color, status)
+
+    # Functionality: Sets the player movement values on the array
+    def set_player_movement(self, screen, i, j , color, status):
+        if status == 'blocked':
+            self.maze_array[i, j] = 8
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
+        else:
+            self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
         time.sleep(0.1)
@@ -141,7 +159,7 @@ class maze:
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        #time.sleep(0.1)
+        time.sleep(0.1)
 
     def set_screen(self , scrn):   # returns screen object for canvas
         self.screen = scrn
@@ -185,12 +203,12 @@ class maze:
 
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
         a = BFS(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
-
+        self.generate_maze(a)
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
 
         b.player_move_dfs()
 
-        #print(self.maze_array)
+        # print(self.maze_array)
 
         pygame.display.flip()
 
