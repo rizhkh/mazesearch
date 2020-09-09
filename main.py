@@ -141,7 +141,7 @@ class maze:
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
-        #array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
+        array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
         #array = obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
         array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
         self.maze_array = array
@@ -156,31 +156,28 @@ class maze:
         self.maze_array = np.zeros((self.row, self.col), dtype=int)
         self.Apply_border(self.maze_array)  # Sets array values for the border
 
-        #self.move_player_to_create_maze()  # USE THIS TO SET THE PLAYER ON MAP
-
         pygame.display.set_caption("TITLE", "ASD")
         pygame.display.flip()
-        # green = (0,128,0)
-        # self.draw_maze(ThingsToAppearOnScreen_Display, green)
 
         # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
         a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
-        self.generate_maze(a)
+        self.generate_maze(a)   # This function draws the maze
+
+        #print(self.maze_array)
+        #pygame.display.flip()
+
+        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
+        pygame.display.flip()
+        # b.cls_start_end_points()
+        b.player_move_dfs()
+
+        #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
 
         #print(self.maze_array)
         pygame.display.flip()
-        #
-        # b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
-        # pygame.display.flip()
-        # # b.cls_start_end_points()
-        # b.player_move_dfs()
-        #
-        # #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
-        #
-        # print(self.maze_array)
-        # pygame.display.flip()
-        # self.generate_maze(a)
-        # print(self.maze_array)
+        self.generate_maze(a)
+        #print(self.maze_array)
+
         pygame.display.flip()
 
         window_display_status = True
