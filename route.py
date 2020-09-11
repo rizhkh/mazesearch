@@ -24,6 +24,9 @@ class move:
     target_i = 0
     target_j = 0
 
+    dup = 0
+
+
     def __init__(self , scrn, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
@@ -193,48 +196,24 @@ class move:
 ############### BFS ########################
 
     def player_move_BFS(self, i , j):
-
+        # self.q has the list of current fire  cells
         color = (0, 0, 204)   # blue color for starting point
         #self.m.m_pattern(i , j, (255, 128, 0), "start")
-        target = [1, 1]
-        color = (204, 0, 102)
-        self.m.m_pattern(self.target_i, self.target_j, color, "open")
+        target = [1, 1] # **************************** THIS WILL CONSTANTLY CHANGE
+        status = False  # This boolean variable will be utilized to stop traversing when target is reached
+        self.visit_Neighbor_bfs(i, j, target ,status)   #<- function that adds parent node to list of visited cells to be tracked
 
-        #self.fire_cells.append(self.fire_prob(i, j, self.m.get_arr())) # stores probability for the second step to be on fire after initializing
-
-        status = False
-
-        self.visit_Neighbor_bfs(i, j, target ,status)
-        # self.q_visited.append([i,j])
-        # self.q_list_of_visited_nodes.append([i,j])
-        i = 0
-        #while i<7:
         while self.q or status == False:
-            #i += 1
-            print(" i is " , i)
-            #self.q_visited.pop()
             if self.q:
-                cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node
-
+                cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node and removes to tackle duplicate nodes
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-
-                self.highlight_cur_node(start_point,end_point, (255, 0, 0))
-
-                #p = self.fire_prob(start_point, end_point, self.m.get_arr())
-                #self.fire_cells.append(p)  # stores probability for the second step to be on fire after initializing
-                # print(self.fire_cells)
-
-                # self.q_visited.append([start_point, end_point])
-                # self.q_list_of_visited_nodes.append([i, j])
-                #if [start_point, end_point] not in self.q_list_of_visited_nodes:
-                self.current_node(start_point,end_point)
-
+                self.highlight_cur_node(start_point,end_point, (255, 0, 0)) # CAN BE REMOVED: THIS IS TO HIGHLIGH CURRENT CELL
+                #self.current_node(start_point,end_point)
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, target, status)  # move up
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, target, status)  # move down
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, target, status)  # move left
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, target, status)  # move right
-
             else:
                 print(cur_n , " is not on fire")
                 if self.last_fire_cells:
@@ -248,23 +227,8 @@ class move:
                 #self.q.append(cur_n)
                 #print(self.q)
                 #status = True
-
-            # start_point = cur_n[0] #get index i for current node
-            # end_point = cur_n[1]    #get index j for current node
-            #
-            # p = self.fire_prob(start_point, end_point, self.m.get_arr())
-            # self.fire_cells.append(p)  # stores probability for the second step to be on fire after initializing
-            # #print(self.fire_cells)
-            #
-            # self.q_visited.append([start_point, end_point])
-            # self.q_list_of_visited_nodes.append([i, j])
-            # status = self.visit_Neighbor_bfs(start_point - 1, end_point, target ,status)  # move up
-            # status = self.visit_Neighbor_bfs(start_point + 1, end_point, target ,status)  # move down
-            # status = self.visit_Neighbor_bfs(start_point, end_point - 1, target ,status) # move left
-            # status = self.visit_Neighbor_bfs(start_point, end_point + 1, target ,status)  # move right
-        #last_index_of_fire = q_list_of_visited_nodes
-
         print(" List of visited nodes " , self.q_list_of_visited_nodes)
+        print("duplicate nodes:" , self.dup)
 
         self.q_visited.clear()
         self.q_list_of_visited_nodes.clear()
@@ -290,10 +254,12 @@ class move:
                     p = self.fire_prob(i, j, self.m.get_arr())  # if prob is close to 0 and cell is not on fire this gen fire for the next traverse
                     self.fire_cells.append(p)
 
-                    if pos in self.q:
-                        print(" $#%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%")
-                        print(pos , " in self.q [duplicate]")
-                        print(" $#%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%")
+                    # if pos not in self.q:
+                    #     print(" $#%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%")
+                    #     print(pos , " in self.q [duplicate]")
+                    #     print(" $#%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%#$%")
+                    #     self.dup += 1
+                    #     self.q.append(pos)
                     self.q.append(pos)
                     self.current_node(i, j)
                     color = (255, 128, 0)
