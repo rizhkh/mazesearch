@@ -18,12 +18,15 @@ class move:
     q = deque() # where list of active nodes are stored
     q_visited = []
     q_list_of_visited_nodes = [] #[[1,1]]
+
     start_i = 1    # starting index i for current node (parent node)
     start_j = 1    # starting index j for current node (parent node)
 
     target_i = 0
     target_j = 0
 
+    f_visit = []  # fire cell
+    f_list_of_visited_nodes = []
     dup = 0
 
 
@@ -66,7 +69,8 @@ class move:
         self.m.m_pattern(self.target_i, self.target_j, color, "open")
 
         self.q.append( [self.start_i, self.start_j] )   # adds parent node to list of nodes
-        self.current_node(self.start_i, self.start_j)   # adds parent node to list of visited nodes and as active node
+        self.current_node(self.q_visited, self.q_list_of_visited_nodes,self.start_i, self.start_j)   # adds parent node to list of visited nodes and as active node
+
         pos = self.q[-1]  # peek the top most element on stack ( in this sit. get index of parent node to start traversing)
         i = pos[0]
         j = pos[1]
@@ -110,7 +114,7 @@ class move:
             if [i,j] not in self.q_list_of_visited_nodes:
                 pos = [i,j]
                 self.q.append(pos)
-                self.current_node(i, j)
+                self.current_node(self.q_visited, self.q_list_of_visited_nodes, i, j)
                 color = (178, 0, 178)
                 self.m.player_movement(i, j, color, "open")
                 self.m.player_movement(i, j, (255, 255, 9), "open")
@@ -121,17 +125,6 @@ class move:
 
 
 ## FIRE GENERATION
-
-    f_steps = []  # Stores the position of cells currently on fire
-
-        # Functionality:
-    # def fire_prob(self, b_neighbor):
-    #     # b_neigbor is the number of burning neigbors to an empty cell
-    #     q = random.uniform(0, 1)
-    #     q_pow = pow((1 - q), b_neighbor)
-    #     p = 1 - q_pow
-    #     return p
-
     def fire_prob(self, i,j,arr):
         n = 0   # number of neighbors
         if  arr[i-1][j] == 1 or arr[i-1][j] == 0:   # check neighbor on top
@@ -198,7 +191,7 @@ class move:
                 #self.current_node(start_point,end_point)
 
                 #p = self.fire_prob(start_point - 1, end_point, self.m.get_arr())  # generate prob
-                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, target, status)  # move up
 
                 #p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
@@ -212,31 +205,25 @@ class move:
                 #p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, target, status)  # move right
-            else:
-                if self.last_fire_cells:
+            else:   # This condition checks if prob. value of 0 for the open cell then that cell is added in queue again for future estimation (this cell is neighbor of fire cells)
+                if self.last_fire_cells:    # last position of cell on fire - func. above will check its neighbor(determine that if they are open) and start from there just incase queue gets empty
                     print(" q  is empty - append away: " , self.q)
                     cur_n = self.last_fire_cells[-1]
                     self.q.append(cur_n)
-                else:
-                    print("about to try again")
+                else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
                     self.q.append( cur_n )
-                print(" -> " , self.q)
                 #self.q.append(cur_n)
                 #print(self.q)
                 #status = True
-        print(" List of visited nodes " , self.q_list_of_visited_nodes)
+        print(" List of visited nodes " , self.f_list_of_visited_nodes)
         print("duplicate nodes:" , self.dup)
-
         self.q_visited.clear()
-        self.q_list_of_visited_nodes.clear()
+        self.f_list_of_visited_nodes.clear()
         self.q.clear()
 
 
     def visit_Neighbor_bfs(self,i, j , target, status):
         prob = self.fire_cells[-1]  # retrieves the prob to generate a fire cell
-
-        # if self.maze_array[i][j] != 8:
-        #     self.highlight_cur_node(i, j, (0, 0, 0))
 
         if status == True:  # if Target state is reached in other neighbors - This would return True as well instead of traversing (this should not be reached)
             return True
@@ -253,12 +240,13 @@ class move:
             #     self.m.player_movement(i, j, color, "open")
             #     return True
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
-                if [i,j] not in self.q_list_of_visited_nodes:   # Checks if current cell has not been visited already
+                if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
                     pos = [i,j]
                     # p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
                     # self.fire_cells.append(p)
                     self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
-                    self.current_node(i, j)
+                    self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
+                    #self.current_node(i, j)
                     color = (255, 128, 0)
                     self.m.player_movement(i, j, color, "fire")
                     #self.highlight_cur_node(i, j, (51, 153, 255))
@@ -281,6 +269,12 @@ class move:
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
 
-    def current_node(self,i,j):
-        self.q_visited.append([i,j])
-        self.q_list_of_visited_nodes.append([i,j])
+    def current_node(self,q_v,q_l_v,i,j):
+        # self.q_visited.append([i,j])
+        # self.q_list_of_visited_nodes.append([i,j])
+        q_v.append([i,j])
+        q_l_v.append([i,j])
+
+    # def current_node(self,i,j):
+    #     self.q_visited.append([i,j])
+    #     self.q_list_of_visited_nodes.append([i,j])

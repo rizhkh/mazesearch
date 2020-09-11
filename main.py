@@ -73,7 +73,7 @@ class maze:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             #pygame.display.flip()
-        #time.sleep(1)
+        #time.sleep(1) # MAZE
 
 
     # This is to color the moving routes
@@ -98,7 +98,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        #time.sleep(0.2)
+        time.sleep(0.1) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -180,8 +180,8 @@ class maze:
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
         # b.cls_start_end_points()
-        b.fire_movement()
-        #b.player_move_dfs()
+        #b.fire_movement()
+        b.player_move_dfs()
 
         #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
 
