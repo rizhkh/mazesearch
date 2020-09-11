@@ -243,7 +243,6 @@ class move:
 
         if [i , j] == target:   # Returns true to stop fire traverse if it reaches player
             color = (0, 0, 0)#(178, 103, 100)
-            print("FINITO ###########")
             self.m.player_movement(i, j, color, "open")
             return True
 
@@ -255,19 +254,15 @@ class move:
             #     return True
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 if [i,j] not in self.q_list_of_visited_nodes:   # Checks if current cell has not been visited already
-                    #self.highlight_cur_node(i, j, (51, 153, 255))    # CAN BE REMOVED: HIGHLIGHTS THE NEIGHBOR OF CURRENT BFS NODE
                     pos = [i,j]
                     # p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
                     # self.fire_cells.append(p)
-                    self.q.append(pos)
+                    self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
                     self.current_node(i, j)
                     color = (255, 128, 0)
                     self.m.player_movement(i, j, color, "fire")
-                    self.m.player_movement(i, j, (255, 128, 0), "fire")
-                    self.highlight_cur_node(i, j, (51, 153, 255))
+                    #self.highlight_cur_node(i, j, (51, 153, 255))
                     self.last_fire_cells.append( [i,j] )
-            if self.maze_array[i][j] == 7:
-                print("$$$$$$$$$$$$ TRUE")
         else:
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 # print(" prob less than 0.5 : " , [i,j])
