@@ -15,8 +15,8 @@ class maze:
     PYGAMEHEIGHT = 300  # Do not change this: This is window sizing
     row = 20  # row
     col = 20  # col
-    box_width = 10
-    box_height = 10
+    box_width = 15
+    box_height = 15
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
@@ -86,6 +86,10 @@ class maze:
             self.maze_array[i, j] = 8
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
+        if status == 'fire':
+            self.maze_array[i, j] = 7
+            self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
+            pygame.display.flip()
         if status == 'back track':
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
@@ -141,11 +145,18 @@ class maze:
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
-        array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
+        #array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
         #array = obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
+        #
+        ######
+
         array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
         self.maze_array = array
+
+        #########
         #self.render_maze()  # Renders the map
+
+
         self.map_values() # To map values on 2d array maze map
 
 
@@ -169,7 +180,8 @@ class maze:
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
         # b.cls_start_end_points()
-        b.player_move_dfs()
+        b.fire_movement()
+        #b.player_move_dfs()
 
         #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
 
