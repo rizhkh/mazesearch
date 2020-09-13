@@ -33,7 +33,7 @@ class move:
     open_list = deque()
     closed_list = []
     val = []
-    node_key_val_h = []
+    node_key_fval = [] # [ ['position','func(n)'] ]
     node_key = []
     node_gval = []
     node_fval = []
@@ -44,8 +44,8 @@ class move:
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
         self.maze_array = np.copy(arr)  # (obj.get_arr())
-        self.target_i = 10#obj.row - 2
-        self.target_j = 10#obj.col - 2
+        self.target_i = obj.row - 2
+        self.target_j = obj.col - 2
 
     # Clears path if surrounding paths are blocked for player at starting position
     # def cls_start_end_points(self):
@@ -87,32 +87,34 @@ class move:
         #     return 1000
 
 
-    def expand_neighbor_astar(self, i, j, current_node):
+    # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
+    def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
+        n_cost = 500
         if [i,j] not in self.closed_list:
             if self.visit_neighbor_astar(i,j) != 8:
-                print("node not in closed list ready to be explored : ", [i, j])
-                print("current node  : ", current_node)
-                # print("current node being processed : ", [i, j])
                 cn_i = current_node[0]
                 cn_j = current_node[1]
-                dist = self.visit_neighbor_astar(i, j)  # returns value of current explored cell
-                h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
-                g_prev = self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
+                g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
                 g = g_prev + self.maze_array[i][j]
-                # print("g_prev ", g_prev)
-                # print("self.maze_array[i][j] ", self.maze_array[i][j])
-                # print("g(n) ", g)
+                self.maze_array[i][j] = g
+                dist = self.visit_neighbor_astar(i, j)  #there could be a prob here *******************************************************
+                h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
                 n_cost = g + h
+
+                # if n_cost <= prev_gn[0]:
+                #     prev_gb[0] = n_cost
+                #     prev[1] = [i,j]
 
                 print("f(n) : ", n_cost)
                 print()
                 if [i,j] not in self.open_list:
+                    #self.node_key_fval.append( [i,j], n_cost )
                     self.open_list.append( [i, j] )
                     self.node_key.append( [i,j] )
-                    self.node_gval.append(g)  #   cell value
                     self.node_fval.append(n_cost)  # cell value
                     self.h_val.append(h) # heuristic value
-        #return [n_cost,g]
+        #return prev_gn # [ncost, [index]]
+        return  n_cost
 
     # Functionality: returns the smallest f(n) value of all the nodes in open list so we can select the next current node
     def get_smallest_fn(self, cn):
@@ -134,14 +136,14 @@ class move:
     def clearItem_new_current_node(self, i, j):
         index = self.node_key.index( [i,j] )
         self.node_fval.pop(index)
-        self.node_gval.pop(index)
         self.h_val.pop(index)
         self.node_key.pop(index)
 
+    NOTE: WHEN YOU ARE ABOUT TO BACKTRACK - ADD THAT CURRENT NODE TO CLOSED NODES
+    TO BACKTRACK KEEP A TRACK OF PREV_NODE AND CHECK AT THE TIME OF BACKTRACKING IF ITS IN CLOSED_LIST OR OPEN_LIST AND CHANGE CURRENT NODE TO THAT
 
     def a_star(self):
         print()
-
         #notes:
         # start from position 0,0 (say our start_pos has three neighbors)
 
@@ -162,13 +164,17 @@ class move:
 
         #put starting node in OPEN_LIST with the function f(start_node) = h(start_node)
         self.open_list.append( [1,1] )
+        self.maze_array[1][1] = 0
+        print(self.maze_array)
         self.node_key.append( [1,1] )
+        self.closed_list.append([1,1])
         self.node_gval.append(0)  #   cell value
         self.node_fval = [5000]
         self.h_val.append(5000) # heuristic value
         #                         ( [index, c_val, heur] )
-        self.node_key_val_h.append( [ [1,1], 5000, 5000] )
+        #self.node_key_val_h.append( [ [1,1], 5000, 5000] )
         current_node = [1,1]
+        gn = [1111, [1,1]]
         #self.book_list['1,1'] = 0
 
         while self.open_list:
@@ -187,61 +193,65 @@ class move:
             # explored_neighbor = 0 # stored in this shape [f(n),g(n)]
             index_i = current_node[0]
             index_j = current_node[1]
-            self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
-            self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
-            self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
-            self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
+            nc1 = 0
+            nc2 = 0
+            pos = 0
+            pos2=0
+            a = self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
+            b = self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
+            c = self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
+            d = self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
 
+            if a<=b:
+                nc1 = a
+                pos = [index_i - 1, index_j]
+            else:
+                nc1 = b
+                pos = [index_i + 1, index_j]
+
+            if c<=d :
+                nc2=c
+                pos2 = [index_i, index_j - 1]
+            else:
+                nc2=d
+                pos2 = [index_i, index_j + 1]
+
+            nc = 0
+            np =0
+            if nc1<nc2:
+                nc = nc1
+                np = pos
+            else:
+                nc = nc2
+                np = pos2
+
+
+            # instead of storing g(n) in a list just self.mazearray = g(n) and call that
             # Just add the position in openlist in expand_neighbor_astar
             # in smallest fn using a for loop recalc the f(n) and select the smallest one
 
-            new_current_node = self.get_smallest_fn(current_node)   # Note: I am still not comparing f(n) im straight getting the min f(n)
-            print(" new current node is: ",new_current_node)
+            #new_current_node = self.get_smallest_fn(current_node)   # Note: I am still not comparing f(n) im straight getting the min f(n)
+            #print(" new current node is: ",new_current_node)
+            print(" new current node is: ", np)
             print("old current node : " , current_node)
             self.open_list.remove( [current_node[0] , current_node[1] ] )
-            self.closed_list.append(current_node)
+            #self.closed_list.append(current_node)
             self.clearItem_new_current_node(current_node[0], current_node[1])
 
-            current_node = new_current_node
+            #current_node = new_current_node
+            current_node = np
 
-            self.m.player_movement(new_current_node[0], new_current_node[1], (0, 0, 255), "open")
-            self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "open")
+            #self.m.player_movement(new_current_node[0], new_current_node[1], (0, 0, 255), "open")
+            self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
+            #self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "open")
 
             print(self.open_list)
             #self.clearItem_new_current_node(current_node[0], current_node[1])
-            self.closed_list.append( new_current_node )
+            #self.closed_list.append( new_current_node )
+            self.closed_list.append(np)
 
-
-            # for k in neighbors:
-            #     h = self.calc_heuristic(k[0], k[1], self.target_i, self.target_j, self.visit_neighbor_astar(k[0], k[1]) ) # w(CURRENT_NODE, SUCCESSOR_NODE) # <----- THESE MIGHT HAVE PROBLEMS
-            #     g = self.maze_array[k[0]][k[1]] + self.maze_array[index_i][index_j]
-            #     #self.tot_distance(k[0], k[1], current_node, min_val) # g(current_node) not neighbor index   # <----- THESE MIGHT HAVE PROBLEMS
-            #     n_cost = g + h
-            #     self.open_list.append( [ k[0], k[1] ] )
-            #     if k in self.open_list:
-            #         print(True)
-            #         self.m.player_movement(k[0], k[1], (255, 153, 255), "open")
-            #         g_of_neighhbor = self.maze_array[k[0]][k[1]] + min_val
-            #         if g_of_neighhbor <= n_cost:
-            #             continue
-            #         elif [k[0],k[1]] in self.closed_list:
-            #             if g_of_neighhbor <= n_cost:
-            #                 continue
-            #             self.closed_list.remove( [k[0]],k[1] )
-            #             self.open_list.append([k[0]], k[1])
-            #         else:
-            #             self.open_list.append( [k[0],k[1]] ) # set h(SUCCESSOR_NODE) to heuristic distance to GOAL_NODE
-            #             self.node_key.append( [k[0],k[1]] )
-            #             self.node_val.append(0)
-            #             self.h_val.append(h)
-            #     g_of_neighhbor = n_cost
-            #     current_node = [ k[0], k[1]]
-            #     index_i = current_node[0]
-            #     index_j = current_node[1]
-            # self.closed_list.append(current_node)
-
-
-
+        for i in self.closed_list:
+            self.m.player_movement(i[0], i[1], (0, 0, 0), "open")
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node

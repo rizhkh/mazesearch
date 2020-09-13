@@ -87,7 +87,7 @@ class maze:
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
         if status == 'fire':
-            self.maze_array[i, j] = 7
+            self.maze_array[i, j] = 200
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
         if status == 'back track':
@@ -150,8 +150,8 @@ class maze:
         #
         ######
 
-        # array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # self.maze_array = array
+        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        self.maze_array = array
 
         #########
         #self.render_maze()  # Renders the map
@@ -176,7 +176,7 @@ class maze:
         self.generate_maze(a)   # This function draws the maze
 
         #print(self.maze_array)
-        #pygame.display.flip()
+        pygame.display.flip()
 
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
