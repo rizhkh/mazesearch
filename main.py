@@ -98,7 +98,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.1) # PLAYER
+        time.sleep(0.3) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -150,12 +150,13 @@ class maze:
         #
         ######
 
-        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        self.maze_array = array
+        # array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        # self.maze_array = array
 
         #########
         #self.render_maze()  # Renders the map
 
+        ## $$$$$$$ MAKE SURE YOU ADD THE CODE TO CLEAR THE STARTING AND ENDING POSITION BLOCKS
 
         self.map_values() # To map values on 2d array maze map
 
@@ -181,13 +182,14 @@ class maze:
         pygame.display.flip()
         # b.cls_start_end_points()
         #b.fire_movement()
-        b.player_move_dfs()
+        #b.player_move_dfs()
+        b.a_star()
 
         #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
 
         #print(self.maze_array)
         pygame.display.flip()
-        self.generate_maze(a)
+        #self.generate_maze(a)
         #print(self.maze_array)
 
         pygame.display.flip()
