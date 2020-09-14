@@ -130,7 +130,7 @@ class mazeGen:
 
     def DELETETHISFUNCT(self):
         self.maze_array[8][1] = 8
-        self.maze_array[8][2] = 1
+        self.maze_array[8][2] = 8
         self.maze_array[8][3] = 8
         self.maze_array[8][4] = 8
         self.maze_array[8][5] = 8
@@ -151,10 +151,14 @@ class mazeGen:
         self.maze_array[6][7] = 8
         self.maze_array[6][6] = 8
 
+        self.maze_array[7][4] = 8
+        self.maze_array[6][4] = 8
+        self.maze_array[5][4] = 8
+
         return self.maze_array
 
     def visit_Neighbor_generate_maze_no_alg(self, i, j, filled_cells, inc):
-        num = random.randint(0, 4)
+        num = random.randint(0, 2)
         if self.maze_array[i][j] == 0:
             if num == 1 and filled_cells[-1] > 0:   # Random decision using random.int - if condition is true then it would generate a blocked cell
                 f_c = filled_cells[-1]   # f_c and Filled_cells are the number of cells that has to be generated as blocks on map

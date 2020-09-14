@@ -189,6 +189,7 @@ class move:
         return [ cost, index ]
 
     def backtracking(self, pos):
+        self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
         print("adding pos in restricted_cells : ", pos  )
         print( self.restricted_cells )
         self.restricted_cells.append(pos)
@@ -218,6 +219,10 @@ class move:
         while self.open_list:
             status = False
             print("new WHILE loop starting with pos: " , current_node)
+
+            if current_node == [0,0]:
+                break
+
             #self.clearItem_new_current_node(current_node[0], current_node[1])
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
                 break
@@ -332,7 +337,9 @@ class move:
                 current_node = np
                 # prev_cost = nc
                 # prev_cell = current_node
+
                 self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
+                self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
 
                 self.a_visit.append( [np[0], np[1]] )
 

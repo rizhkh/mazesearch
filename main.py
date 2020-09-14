@@ -150,7 +150,7 @@ class maze:
         #
         ######
 
-        # array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
         array = obj.DELETETHISFUNCT()
         self.maze_array = array
 
