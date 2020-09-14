@@ -4,7 +4,7 @@ import alg
 #from main import maze
 from collections import deque
 import random
-
+import time
 
 # This class is to move the agent from target to solution
 
@@ -35,10 +35,12 @@ class move:
     val = []
     node_key_fval = [] # [ ['position','func(n)'] ]
     node_key = []
-    node_gval = []
     node_fval = []
-    h_val = []
     book_list = {} # To book keep index and their func values
+    restricted_cells = []
+    a_visit = []
+    net_cost = []
+
 
     def __init__(self , scrn, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
@@ -70,13 +72,12 @@ class move:
         return h
 
     # Functionality: returns g(n) of current_node during the expanding process to calc g(n) => g(n)=valuefromthisFunc + exploredcellvalue
-    def get_gVal(self,pos):
-
-        print(self.node_key)
-        print(pos)
-        index = self.node_key.index(pos)  # gets the index of the value so it can be traced to the position of index in node_key
-        current_gValue = self.node_gval[index]  # current node is set to the node with the lowest func value
-        return current_gValue
+    # def get_gVal(self,pos):
+    #     print(self.node_key)
+    #     print(pos)
+    #     index = self.node_key.index(pos)  # gets the index of the value so it can be traced to the position of index in node_key
+    #     #current_gValue = self.node_gval[index]  # current node is set to the node with the lowest func value
+    #     return current_gValue
 
     # Returns the cell value of the current explored neighbor cell from map
     def visit_neighbor_astar(self, i, j):
@@ -89,9 +90,9 @@ class move:
 
     # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
     def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
-        n_cost = 500
-        if [i,j] not in self.closed_list:
-            if self.visit_neighbor_astar(i,j) != 8:
+        n_cost =9000
+        if self.visit_neighbor_astar(i,j) != 8:
+            if [i,j] not in self.closed_list and self.restricted_cells:
                 cn_i = current_node[0]
                 cn_j = current_node[1]
                 g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
@@ -100,33 +101,23 @@ class move:
                 dist = self.visit_neighbor_astar(i, j)  #there could be a prob here *******************************************************
                 h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
                 n_cost = g + h
-
-                # if n_cost <= prev_gn[0]:
-                #     prev_gb[0] = n_cost
-                #     prev[1] = [i,j]
-
-                print("f(n) : ", n_cost)
+                print([i,j])
+                # print("f(n) : ", n_cost)
                 print()
                 if [i,j] not in self.open_list:
-                    #self.node_key_fval.append( [i,j], n_cost )
                     self.open_list.append( [i, j] )
                     self.node_key.append( [i,j] )
                     self.node_fval.append(n_cost)  # cell value
-                    self.h_val.append(h) # heuristic value
-        #return prev_gn # [ncost, [index]]
+        if self.visit_neighbor_astar(i, j) == 8:
+            self.restricted_cells.append( [i ,j] )
         return  n_cost
 
     # Functionality: returns the smallest f(n) value of all the nodes in open list so we can select the next current node
     def get_smallest_fn(self, cn):
-        # print("in get_smallest_fn()")
         print(self.node_fval)
         print(self.node_key)
         min_val = min(self.node_fval)  # gets the lowest value of all func(n) that is stored in list node_val
-        # print("tttt")
-        # print(min_val)
-        # print(self.node_fval)
         index = self.node_fval.index(min_val)  # gets the index of the value so it can be traced to the position of index in node_key
-        # print("got the index for fval", index)
         if cn == self.node_key[index]:
             index += 1
         current_node = self.node_key[index]  # current node is set to the node with the lowest func value
@@ -136,54 +127,31 @@ class move:
     def clearItem_new_current_node(self, i, j):
         index = self.node_key.index( [i,j] )
         self.node_fval.pop(index)
-        self.h_val.pop(index)
         self.node_key.pop(index)
 
-    NOTE: WHEN YOU ARE ABOUT TO BACKTRACK - ADD THAT CURRENT NODE TO CLOSED NODES
-    TO BACKTRACK KEEP A TRACK OF PREV_NODE AND CHECK AT THE TIME OF BACKTRACKING IF ITS IN CLOSED_LIST OR OPEN_LIST AND CHANGE CURRENT NODE TO THAT
 
+    def get_net_cost(self, list, i,j):
+
+
+    # NOTE: WHEN YOU ARE ABOUT TO BACKTRACK - ADD THAT CURRENT NODE TO CLOSED NODES
+    # TO BACKTRACK KEEP A TRACK OF PREV_NODE AND CHECK AT THE TIME OF BACKTRACKING IF ITS IN CLOSED_LIST OR OPEN_LIST AND CHANGE CURRENT NODE TO THAT
     def a_star(self):
-        print()
-        #notes:
-        # start from position 0,0 (say our start_pos has three neighbors)
-
-        # calculate total distance and heurisitcs from start pos to neighbor a and add it to queue (priority queue)
-
-        # calculate total distance and heurisitcs from start pos to neighbor b and add it to queue - if the total dist is greater than A then add after neigh a if smaller then add before neigh a (priority queue)
-
-        # Basically if the total dist is greatest then add it on right if smallest left
-
-        # when a node is expanded - remove it from open list and add it to closed_list
-
-        # now note if you have new func value greater than the smallest one you  change the current node to that node with the smallest func value and expand from their
-
-        # open : nodes that are visited but not expanded ( successor have not been explored yet ) This is list of pending tasks
-        # closed : Nodes that have been visited and expandeed (successor have beene explored already and included
-        # in the open list
-        # f(n) = total distance from node to current node g(n) + heuristic of the current node you are travelling to h(n)
-
-        #put starting node in OPEN_LIST with the function f(start_node) = h(start_node)
         self.open_list.append( [1,1] )
+        self.maze_array[3][1] = 8
+
         self.maze_array[1][1] = 0
         print(self.maze_array)
         self.node_key.append( [1,1] )
         self.closed_list.append([1,1])
-        self.node_gval.append(0)  #   cell value
         self.node_fval = [5000]
-        self.h_val.append(5000) # heuristic value
-        #                         ( [index, c_val, heur] )
-        #self.node_key_val_h.append( [ [1,1], 5000, 5000] )
         current_node = [1,1]
-        gn = [1111, [1,1]]
-        #self.book_list['1,1'] = 0
+        prev_cost = 5000
+        prev_cell = [1,1]
+
+        status = False
 
         while self.open_list:
-            # print("hello $$$$$$$$$$$$$$")
-            # min_val = min(self.node_val)    # gets the lowest value of all func(n) that is stored in list node_val
-            # index = self.node_val.index(min_val)    # gets the index of the value so it can be traced to the position of index in node_key
-            # current_node = self.node_key[index]    # current node is set to the node with the lowest func value
-            # print(current_node)
-
+            status = False
             #self.clearItem_new_current_node(current_node[0], current_node[1])
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
                 break
@@ -197,10 +165,19 @@ class move:
             nc2 = 0
             pos = 0
             pos2=0
+
+
             a = self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
+            pos = [index_i - 1, index_j]
+            self.net_cost.append( [] )
             b = self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
             c = self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
             d = self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
+
+            # a = self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
+            # b = self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
+            # c = self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
+            # d = self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
 
             if a<=b:
                 nc1 = a
@@ -222,36 +199,59 @@ class move:
                 nc = nc1
                 np = pos
             else:
-                nc = nc2
-                np = pos2
+                nc = nc2    #net_cost
+                np = pos2   #n_position
 
+            if nc <= prev_cost:
+                prev_cost = nc
+                prev_cell = np
 
-            # instead of storing g(n) in a list just self.mazearray = g(n) and call that
-            # Just add the position in openlist in expand_neighbor_astar
-            # in smallest fn using a for loop recalc the f(n) and select the smallest one
+            if np in self.closed_list:
+                print("Deadend")
+                self.closed_list.pop()
+                self.closed_list.remove(np)
+                # print("yes xxxxxxxxxxxx")
+                # if np == prev_cell:
+                #     print("zxczxczxczxczxc xxxxxxxxxxxx")
+                # if np not in self.open_list:
+                #     # put a while loop here while neighbors of np is in open.list
+                #     i = np[0][0]
+                #     j = np[0][1]
+                #     print(np)
+                #     print( " ==========")
+                #     print([i,j])
+                #     print("DEADEND $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                #     print(self.closed_list)
+                #     self.closed_list.pop()
+                #     print(self.closed_list)
+                #     self.closed_list.pop()
+                #     self.closed_list.pop()
+                #     self.closed_list.append(np)
+                #     print(self.closed_list)
+                #     self.m.player_movement(np[0], np[1], (255, 0, 0), "open")
+                #     status = True
 
-            #new_current_node = self.get_smallest_fn(current_node)   # Note: I am still not comparing f(n) im straight getting the min f(n)
-            #print(" new current node is: ",new_current_node)
-            print(" new current node is: ", np)
-            print("old current node : " , current_node)
-            self.open_list.remove( [current_node[0] , current_node[1] ] )
-            #self.closed_list.append(current_node)
-            self.clearItem_new_current_node(current_node[0], current_node[1])
+            if status == False:
+                # print(" new current node is: ", np)
+                # print("old current node : " , current_node)
+                self.open_list.remove( [current_node[0] , current_node[1] ] )
+                self.clearItem_new_current_node(current_node[0], current_node[1])
+                current_node = np
+                prev_cost = nc
+                prev_cell = current_node
+                self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
 
-            #current_node = new_current_node
-            current_node = np
+                self.a_visit.append( [np[0], np[1]] )
 
-            #self.m.player_movement(new_current_node[0], new_current_node[1], (0, 0, 255), "open")
-            self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
-            #self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "open")
+                print(self.open_list)
 
-            print(self.open_list)
-            #self.clearItem_new_current_node(current_node[0], current_node[1])
-            #self.closed_list.append( new_current_node )
-            self.closed_list.append(np)
+                self.closed_list.append(np)
+            # else:
+            #     print("stopping because status = true")
+            #     break
 
-        for i in self.closed_list:
-            self.m.player_movement(i[0], i[1], (0, 0, 0), "open")
+        # for i in self.closed_list:
+        #     self.m.player_movement(i[0], i[1], (0, 0, 0), "open")
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node
