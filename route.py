@@ -40,6 +40,7 @@ class move:
     restricted_cells = []
     a_visit = []
     net_cost = []
+    est_cost = []  # stores [index,cost]
 
 
     def __init__(self , scrn, arr, obj):
@@ -71,22 +72,9 @@ class move:
         h = distance  * (dx + dy)
         return h
 
-    # Functionality: returns g(n) of current_node during the expanding process to calc g(n) => g(n)=valuefromthisFunc + exploredcellvalue
-    # def get_gVal(self,pos):
-    #     print(self.node_key)
-    #     print(pos)
-    #     index = self.node_key.index(pos)  # gets the index of the value so it can be traced to the position of index in node_key
-    #     #current_gValue = self.node_gval[index]  # current node is set to the node with the lowest func value
-    #     return current_gValue
-
     # Returns the cell value of the current explored neighbor cell from map
     def visit_neighbor_astar(self, i, j):
         return self.maze_array[i][j]
-        # if self.maze_array[i][j] != 8:
-        #     return self.maze_array[i][j]
-        # if self.maze_array[i][j] == 8:
-        #     return 1000
-
 
     # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
     def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
@@ -112,41 +100,11 @@ class move:
                         self.open_list.append( [i, j] )
                         self.node_key.append( [i,j] )
                         self.node_fval.append(n_cost)  # cell value
-            # if [i,j] not in self.closed_list and self.restricted_cells:
-            #     print("===")
-            #     print("current node : " , current_node)
-            #     print("nodes being viewed : ", [i,j])
-            #     print("===")
-            #     cn_i = current_node[0]
-            #     cn_j = current_node[1]
-            #     g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
-            #     g = g_prev + self.maze_array[i][j]
-            #     self.maze_array[i][j] = g
-            #     dist = self.visit_neighbor_astar(i, j)  #there could be a prob here *******************************************************
-            #     h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
-            #     n_cost = g + h
-            #     # print("f(n) : ", n_cost)
-            #     print()
-            #     if [i,j] not in self.open_list:
-            #         self.open_list.append( [i, j] )
-            #         self.node_key.append( [i,j] )
-            #         self.node_fval.append(n_cost)  # cell value
         if self.visit_neighbor_astar(i, j) == 8:
             self.restricted_cells.append( [i ,j] )
         else:
             print("time to backtrack $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         return  n_cost
-
-    # # Functionality: returns the smallest f(n) value of all the nodes in open list so we can select the next current node
-    # def get_smallest_fn(self, cn):
-    #     print(self.node_fval)
-    #     print(self.node_key)
-    #     min_val = min(self.node_fval)  # gets the lowest value of all func(n) that is stored in list node_val
-    #     index = self.node_fval.index(min_val)  # gets the index of the value so it can be traced to the position of index in node_key
-    #     if cn == self.node_key[index]:
-    #         index += 1
-    #     current_node = self.node_key[index]  # current node is set to the node with the lowest func value
-    #     return current_node
 
     # Functionality: removes the heuristic and fn value for the new current node from list
     def clearItem_new_current_node(self, i, j):
@@ -260,73 +218,6 @@ class move:
                 print()
 
             self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
-
-            #status = False
-            # returns the smallest g(n) of the expanded neighbors
-
-            #break
-            # a = self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
-            # b = self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
-            # c = self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
-            # d = self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
-
-            # a = self.expand_neighbor_astar( index_i - 1, index_j, current_node) # up
-            # b = self.expand_neighbor_astar( index_i + 1, index_j, current_node) # down
-            # c = self.expand_neighbor_astar( index_i, index_j - 1, current_node) # left
-            # d = self.expand_neighbor_astar( index_i, index_j + 1, current_node) # right
-
-            # if a<=b:
-            #     nc1 = a
-            #     pos = [index_i - 1, index_j]
-            # else:
-            #     nc1 = b
-            #     pos = [index_i + 1, index_j]
-            #
-            # if c<=d :
-            #     nc2=c
-            #     pos2 = [index_i, index_j - 1]
-            # else:
-            #     nc2=d
-            #     pos2 = [index_i, index_j + 1]
-            #
-            # nc = 0
-            # np =0
-            # if nc1<nc2:
-            #     nc = nc1
-            #     np = pos
-            # else:
-            #     nc = nc2    #net_cost
-            #     np = pos2   #n_position
-            #
-            # if nc <= prev_cost:
-            #     prev_cost = nc
-            #     prev_cell = np
-            #
-            # if np in self.closed_list:
-            #     print("Deadend")
-            #     self.closed_list.pop()
-            #     self.closed_list.remove(np)
-            #     # print("yes xxxxxxxxxxxx")
-            #     # if np == prev_cell:
-            #     #     print("zxczxczxczxczxc xxxxxxxxxxxx")
-            #     # if np not in self.open_list:
-            #     #     # put a while loop here while neighbors of np is in open.list
-            #     #     i = np[0][0]
-            #     #     j = np[0][1]
-            #     #     print(np)
-            #     #     print( " ==========")
-            #     #     print([i,j])
-            #     #     print("DEADEND $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-            #     #     print(self.closed_list)
-            #     #     self.closed_list.pop()
-            #     #     print(self.closed_list)
-            #     #     self.closed_list.pop()
-            #     #     self.closed_list.pop()
-            #     #     self.closed_list.append(np)
-            #     #     print(self.closed_list)
-            #     #     self.m.player_movement(np[0], np[1], (255, 0, 0), "open")
-            #     #     status = True
-            #
             if status == False:
                 np = result[1]
                 print(" new current node is: ", np)
@@ -342,18 +233,9 @@ class move:
                 self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
 
                 self.a_visit.append( [np[0], np[1]] )
-
-                #print(self.a_visit)
-                #print(self.open_list)
-
                 self.closed_list.append(np)
+                self.est_cost.append([np, result[0]])  # [index,cost]
         print(self.open_list)
-            # else:
-            #     print("stopping because status = true")
-            #     break
-
-        # for i in self.closed_list:
-        #     self.m.player_movement(i[0], i[1], (0, 0, 0), "open")
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node

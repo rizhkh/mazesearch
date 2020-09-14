@@ -73,7 +73,6 @@ class maze:
             self.maze_array[i, j] = 1
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             #pygame.display.flip()
-        #time.sleep(1) # MAZE
 
 
     # This is to color the moving routes
