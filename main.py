@@ -107,7 +107,6 @@ class maze:
         self.maze_array[i, j] = 8
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
-        #time.sleep(1)
 
     #Functionality: Converts closed mazes into open deadend spaces
     def render_maze(self):
@@ -149,8 +148,8 @@ class maze:
         #
         ######
 
-        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        array = obj.DELETETHISFUNCT()
+        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        #array = obj.DELETETHISFUNCT()
         self.maze_array = array
 
         #########

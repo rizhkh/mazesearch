@@ -40,7 +40,7 @@ class move:
     restricted_cells = []
     a_visit = []
     net_cost = []
-    est_cost = []  # stores [index,cost]
+    est_cost = [] #dict()  # stores [index,cost]
 
 
     def __init__(self , scrn, arr, obj):
@@ -70,7 +70,7 @@ class move:
         dx = abs(current_i - goal_i)
         dy = abs(current_j - goal_j)
         h = distance  * (dx + dy)
-        return h
+        return (dx + dy) # LOOOOOOK AT THISESSSSSSSSSSSSSSSSSSSSSSSSSS
 
     # Returns the cell value of the current explored neighbor cell from map
     def visit_neighbor_astar(self, i, j):
@@ -82,18 +82,22 @@ class move:
         if self.visit_neighbor_astar(i,j) != 8:
             if [i,j] not in self.closed_list:
                 if [i,j] not in self.restricted_cells:
-                    print("===")
-                    print("current node : " , current_node)
-                    print("nodes being viewed : ", [i,j])
-                    print("===")
+                    # self.m.player_movement(i, j, (255, 51, 255), "open")
+                    # self.m.player_movement(i, j, (255, 255, 255), "open")
                     cn_i = current_node[0]
                     cn_j = current_node[1]
                     g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
                     g = g_prev + self.maze_array[i][j]
                     self.maze_array[i][j] = g
                     dist = self.visit_neighbor_astar(i, j)  #there could be a prob here *******************************************************
-                    h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
+                    #h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
+                    h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
                     n_cost = g + h
+                    print("===")
+                    print("current node : " , current_node)
+                    print("node being viewed : ", [i,j])
+                    print("f(n) : ", g , " + " , h , " = " , n_cost)
+                    print("===")
                     # print("f(n) : ", n_cost)
                     print()
                     if [i,j] not in self.open_list:
@@ -118,7 +122,16 @@ class move:
         cost = 9999
         inc_backtrack = 0
         for i in list:
+            index = [ i[1] , i[2]]
+            if index in self.a_visit:
+                print( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" )
+                for j in self.est_cost:
+                    if j[0] == index:
+                        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+                        print(j)
+                        print(self.est_cost)
             if i[0] <= cost and i[0] != 9000:
+                #if [ i[1], i[2] ] in self.a_visit:
                 print(" in ASDDASDASDSAD")
                 print(i[0])
                 print(" positin ")
@@ -126,6 +139,13 @@ class move:
                 cost = i[0]
                 pos_i = i[1]
                 pos_j = i[2]
+                # print(" in ASDDASDASDSAD")
+                # print(i[0])
+                # print(" positin ")
+                # print(  [i[1],i[2]] )
+                # cost = i[0]
+                # pos_i = i[1]
+                # pos_j = i[2]
             if i[0] == 9000:
                 inc_backtrack += 1
 
