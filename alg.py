@@ -128,6 +128,31 @@ class mazeGen:
                 inc += 1
         return self.maze_array
 
+    def DELETETHISFUNCT(self):
+        self.maze_array[8][1] = 8
+        self.maze_array[8][2] = 1
+        self.maze_array[8][3] = 8
+        self.maze_array[8][4] = 8
+        self.maze_array[8][5] = 8
+        self.maze_array[8][6] = 8
+        self.maze_array[8][7] = 8
+        self.maze_array[8][8] = 8
+
+
+        self.maze_array[1][8] = 8
+        self.maze_array[2][8] = 8
+        self.maze_array[3][8] = 8
+        self.maze_array[4][8] = 8
+        self.maze_array[5][8] = 8
+        self.maze_array[6][8] = 8
+        self.maze_array[7][8] = 8
+        self.maze_array[8][8] = 8
+
+        self.maze_array[6][7] = 8
+        self.maze_array[6][6] = 8
+
+        return self.maze_array
+
     def visit_Neighbor_generate_maze_no_alg(self, i, j, filled_cells, inc):
         num = random.randint(0, 4)
         if self.maze_array[i][j] == 0:
