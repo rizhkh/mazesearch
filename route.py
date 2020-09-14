@@ -93,11 +93,11 @@ class move:
                     #h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
                     h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
                     n_cost = g + h
-                    print("===")
-                    print("current node : " , current_node)
-                    print("node being viewed : ", [i,j])
-                    print("f(n) : ", g , " + " , h , " = " , n_cost)
-                    print("===")
+                    # print("===")
+                    # print("current node : " , current_node)
+                    # print("node being viewed : ", [i,j])
+                    # print("f(n) : ", g , " + " , h , " = " , n_cost)
+                    # print("===")
                     # print("f(n) : ", n_cost)
                     print()
                     if [i,j] not in self.open_list:
@@ -106,8 +106,8 @@ class move:
                         self.node_fval.append(n_cost)  # cell value
         if self.visit_neighbor_astar(i, j) == 8:
             self.restricted_cells.append( [i ,j] )
-        else:
-            print("time to backtrack $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        # else:
+        #     print("time to backtrack $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         return  n_cost
 
     # Functionality: removes the heuristic and fn value for the new current node from list
@@ -123,19 +123,19 @@ class move:
         inc_backtrack = 0
         for i in list:
             index = [ i[1] , i[2]]
-            if index in self.a_visit:
-                print( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" )
-                for j in self.est_cost:
-                    if j[0] == index:
-                        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-                        print(j)
-                        print(self.est_cost)
+            # if index in self.a_visit:
+            #     print( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" )
+            #     for j in self.est_cost:
+            #         if j[0] == index:
+            #             print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+            #             print(j)
+            #             print(self.est_cost)
             if i[0] <= cost and i[0] != 9000:
                 #if [ i[1], i[2] ] in self.a_visit:
-                print(" in ASDDASDASDSAD")
-                print(i[0])
-                print(" positin ")
-                print(  [i[1],i[2]] )
+                # print(" in ASDDASDASDSAD")
+                # print(i[0])
+                # print(" positin ")
+                # print(  [i[1],i[2]] )
                 cost = i[0]
                 pos_i = i[1]
                 pos_j = i[2]
@@ -150,13 +150,13 @@ class move:
                 inc_backtrack += 1
 
         if inc_backtrack==4:
-            print("DAMN WE REALLY NEED TO BACKTRACK $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-            print()
-            print()
-            print("open list:" , self.open_list)
-            print("closed list:", self.closed_list)
-            print()
-            print()
+            # print("DAMN WE REALLY NEED TO BACKTRACK $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+            # print()
+            # print()
+            # print("open list:" , self.open_list)
+            # print("closed list:", self.closed_list)
+            # print()
+            # print()
 
             position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
             pos_i = position[0]
@@ -168,8 +168,8 @@ class move:
 
     def backtracking(self, pos):
         self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
-        print("adding pos in restricted_cells : ", pos  )
-        print( self.restricted_cells )
+        # print("adding pos in restricted_cells : ", pos  )
+        # print( self.restricted_cells )
         self.restricted_cells.append(pos)
         #self.closed_list.append(pos)
         self.closed_list.pop()
@@ -184,7 +184,7 @@ class move:
         self.maze_array[3][1] = 8
 
         self.maze_array[1][1] = 0
-        print(self.maze_array)
+        #print(self.maze_array)
         self.node_key.append( [1,1] )
         self.closed_list.append([1,1])
         self.node_fval = [5000]
@@ -196,7 +196,7 @@ class move:
 
         while self.open_list:
             status = False
-            print("new WHILE loop starting with pos: " , current_node)
+            # print("new WHILE loop starting with pos: " , current_node)
 
             if current_node == [0,0]:
                 break
@@ -222,26 +222,26 @@ class move:
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node) , index_i, index_j - 1 ] )
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node) , index_i, index_j + 1 ] )
 
-            print(self.net_cost)
+            # print(self.net_cost)
 
             result = self.get_net_cost(self.net_cost, current_node)   # results is [cost,index]
 
             if result[0] == 9000:
-                print("BACKTRACKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                print(self.closed_list)
+                # print("BACKTRACKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                # print(self.closed_list)
                 current_node = self.closed_list[-1]
-                print("current active node: " , current_node)
+                # print("current active node: " , current_node)
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
                 status = True
-                print()
-                print()
+                # print()
+                # print()
 
             self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
             if status == False:
                 np = result[1]
-                print(" new current node is: ", np)
-                print("old current node : " , current_node)
+                # print(" new current node is: ", np)
+                # print("old current node : " , current_node)
                 self.open_list.remove( [current_node[0] , current_node[1] ] )
                 #self.clearItem_new_current_node(current_node[0], current_node[1])
 

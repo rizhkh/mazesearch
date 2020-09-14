@@ -128,6 +128,26 @@ class mazeGen:
                 inc += 1
         return self.maze_array
 
+    def clear_start(self, arr, start, end):
+        i = self.m.row - 2
+        j = self.m.col - 2
+        arr[1][1] = 1
+        arr[1][2] = 1
+        arr[2][1] = 1
+        arr[2][2] = 1
+        arr[3][1] = 1
+        arr[1][3] = 1
+
+        arr[i-1][j] = 1
+        arr[i-2][j] = 1
+        arr[i-3][j] = 1
+        arr[i - 4][j] = 1
+        arr[i - 5][j] = 1
+        arr[i][j-1] = 1
+
+        return arr
+
+
     def DELETETHISFUNCT(self):
         self.maze_array[8][1] = 8
         self.maze_array[8][2] = 1
