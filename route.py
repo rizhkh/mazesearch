@@ -172,12 +172,11 @@ class move:
         self.restricted_cells.append(pos)
         #self.closed_list.append(pos)
         self.closed_list.pop()
-        # if self.closed_list:
-        #     index = self.closed_list[-1]
-        # else:
-        #     index = [1,1]
-        #     self.closed_list.clear()
-        index = self.closed_list[-1]
+        if self.closed_list:
+            index = self.closed_list[-1]
+        else:
+            index = [0,0]
+        #index = self.closed_list[-1]
         return index
 
 
