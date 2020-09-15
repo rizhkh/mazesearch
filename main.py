@@ -90,7 +90,7 @@ class maze:
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
         if status == 'fire':
-            self.maze_array[i, j] = 200
+            self.maze_array[i, j] = 1100
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
         if status == 'back track':
@@ -101,7 +101,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        #time.sleep(0.06) # PLAYER
+        time.sleep(0.1) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -152,12 +152,12 @@ class maze:
         #
         ######
 
-        #array = obj.maze_generate_BFS( self.maze_array )
-        # array = obj.maze_generate_DFS()
-        # #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # array = obj.make_path_door(array)
-        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        array = obj.DELETETHISFUNCT()
+        array = obj.maze_generate_BFS( self.maze_array )
+        #array = obj.maze_generate_DFS()
+        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.make_path_door(array)
+        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
+        #array = obj.DELETETHISFUNCT()
         #obj.clear_start
 
         self.maze_array = array
@@ -191,12 +191,16 @@ class maze:
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
 
+        move_player = b.player_init()
         b.init_fire()
+
         i = 0
         status = False
         while i<5 or status == False:
             status = b.fire_movement_process(status,i)
-            if status == True:
+            move_player = b.player_move_process(move_player)
+
+            if status == True or move_player == True:
                 break
             i += 1
             if i==5:

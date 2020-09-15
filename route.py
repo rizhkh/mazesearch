@@ -35,14 +35,12 @@ class move:
     closed_list = []
     val = []
     node_key_fval = [] # [ ['position','func(n)'] ]
-    node_key = []
-    node_fval = []
     book_list = {} # To book keep index and their func values
     restricted_cells = []
     a_visit = []
     net_cost = []
     est_cost = [] #dict()  # stores [index,cost]
-    current_move = [ [1,1] ]
+    current_move = [ ]
 
 
     def __init__(self , scrn, arr, obj):
@@ -78,17 +76,9 @@ class move:
                     n_cost = g + h
                     if [i,j] not in self.open_list:
                         self.open_list.append( [i, j] )
-                        self.node_key.append( [i,j] )
-                        self.node_fval.append(n_cost)  # cell value
         if self.visit_neighbor_astar(i, j) == 8:
             self.restricted_cells.append( [i ,j] )
         return  n_cost
-
-    # Functionality: removes the heuristic and fn value for the new current node from list
-    def clearItem_new_current_node(self, i, j):
-        index = self.node_key.index( [i,j] )
-        self.node_fval.pop(index)
-        self.node_key.pop(index)
 
     # returns smallest f(n) of the nodes being checked
     def get_net_cost(self, list, current_node):
@@ -126,21 +116,33 @@ class move:
 
     # NOTE: WHEN YOU ARE ABOUT TO BACKTRACK - ADD THAT CURRENT NODE TO CLOSED NODES
     # TO BACKTRACK KEEP A TRACK OF PREV_NODE AND CHECK AT THE TIME OF BACKTRACKING IF ITS IN CLOSED_LIST OR OPEN_LIST AND CHANGE CURRENT NODE TO THAT
-    def a_star(self):
-        self.open_list.append( [1,1] )
-        self.maze_array[3][1] = 8
-        self.maze_array[1][1] = 0
-        self.node_key.append( [1,1] )
-        self.closed_list.append([1,1])
-        self.node_fval = [5000]
-        current_node = [1,1]
 
-        while self.open_list:
+    def player_init(self):
+        self.open_list.append([1, 1])
+        self.closed_list.append([1,1])
+        current_node = [1, 1]
+        self.current_move.append( current_node )
+        move = self.player_move_process([1,1])
+        return move
+
+    def player_move_process(self,current_node):
+        current_node = self.a_star(current_node)
+        return current_node
+
+    def a_star(self, current_node):
+        if self.open_list:
             status = False
+
+            if  current_node in self.fire_cells:
+                print(1)
+                return True
+            if self.maze_array[current_node[0]][current_node[1]] == 1100:
+                print(2)
+                return True
             if current_node == [0,0]:
-                break
+                return True
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
-                break
+                return True
             index_i = current_node[0]
             index_j = current_node[1]
             self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node) , index_i + 1, index_j ] ) # down
@@ -167,7 +169,54 @@ class move:
                 if self.current_move:
                     self.current_move.clear()
                 self.current_move.append( np )
-        print(self.open_list)
+        return current_node
+
+    # def a_star(self):
+    #     self.open_list.append([1, 1])
+    #     self.maze_array[3][1] = 8
+    #     self.maze_array[1][1] = 0
+    #     self.node_key.append([1, 1])
+    #     self.closed_list.append([1, 1])
+    #     self.node_fval = [5000]
+    #     current_node = [1, 1]
+    #
+    #     while self.open_list:
+    #         status = False
+    #         if current_node == [0, 0]:
+    #             break
+    #         if current_node == [self.target_i, self.target_j]:  # IF CURRENT NODE IS GOAL CELL
+    #             break
+    #         index_i = current_node[0]
+    #         index_j = current_node[1]
+    #         self.net_cost.append(
+    #             [self.expand_neighbor_astar(index_i + 1, index_j, current_node), index_i + 1, index_j])  # down
+    #         self.net_cost.append(
+    #             [self.expand_neighbor_astar(index_i, index_j - 1, current_node), index_i, index_j - 1])  # right
+    #         self.net_cost.append(
+    #             [self.expand_neighbor_astar(index_i - 1, index_j, current_node), index_i - 1, index_j])  # up
+    #         self.net_cost.append(
+    #             [self.expand_neighbor_astar(index_i, index_j + 1, current_node), index_i, index_j + 1])  # left
+    #         result = self.get_net_cost(self.net_cost, current_node)  # results is [cost,index]
+    #
+    #         if result[0] == 9000:
+    #             current_node = self.closed_list[-1]
+    #             if current_node not in self.open_list:
+    #                 self.open_list.append(current_node)
+    #             status = True
+    #         self.net_cost.clear()  # we clear the last list so new nodes and their fn is saved
+    #         if status == False:
+    #             np = result[1]
+    #             self.open_list.remove([current_node[0], current_node[1]])
+    #             current_node = np
+    #             self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
+    #             self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
+    #             self.a_visit.append([np[0], np[1]])  # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
+    #             self.closed_list.append(np)
+    #             self.est_cost.append([np, result[0]])  # [index,cost]
+    #             if self.current_move:
+    #                 self.current_move.clear()
+    #             self.current_move.append(np)
+    #     print(self.open_list)
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node

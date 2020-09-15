@@ -105,7 +105,6 @@ class mazeGen:
         num = random.randint(0, 1)
         #print(filled_cells)
         if [i,j] not in self.q_list_of_visited_nodes:   # Checks whether neighbor of current element has been visited or not
-            print("hello")
             if arr[i][j] == 0:
                 print(True)
                 if num == 1 and filled_cells[-1] > 0:   # Random decision using random.int - if condition is true then it would generate a blocked cell
