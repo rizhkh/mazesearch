@@ -152,14 +152,14 @@ class maze:
         #
         ######
 
-        #array = obj.maze_generate_BFS( self.maze_array )
-        array = obj.maze_generate_DFS()
-        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        #array = obj.make_path_door(array)
-        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        #array = obj.DELETETHISFUNCT()
-        #obj.clear_start
-        self.maze_array = array
+        # #array = obj.maze_generate_BFS( self.maze_array )
+        # array = obj.maze_generate_DFS()
+        # #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        # #array = obj.make_path_door(array)
+        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
+        # #array = obj.DELETETHISFUNCT()
+        # #obj.clear_start
+        # self.maze_array = array
 
         #print(self.maze_array)
 
@@ -191,10 +191,22 @@ class maze:
 
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
+
+        b.init_fire()
+        i = 0
+        status = False
+        while i<5 or status == False:
+            status = b.fire_movement_process(status,i)
+            if status == True:
+                break
+            i += 1
+            if i==5:
+                i=0
+
         # b.cls_start_end_points()
-        #b.fire_movement()
+        # b.fire_movement()
         #b.player_move_dfs()
-        b.a_star()
+        # b.a_star()
 
         #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
 

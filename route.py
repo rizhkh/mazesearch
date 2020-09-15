@@ -28,6 +28,7 @@ class move:
     f_visit = []  # fire cell
     f_list_of_visited_nodes = []
     dup = 0
+    cur_n_fire = []
 
 
     open_list = deque()
@@ -41,6 +42,7 @@ class move:
     a_visit = []
     net_cost = []
     est_cost = [] #dict()  # stores [index,cost]
+    current_move = [ [1,1] ]
 
 
     def __init__(self , scrn, arr, obj):
@@ -49,22 +51,6 @@ class move:
         self.maze_array = np.copy(arr)  # (obj.get_arr())
         self.target_i = obj.row - 2
         self.target_j = obj.col - 2
-
-    # Clears path if surrounding paths are blocked for player at starting position
-    # def cls_start_end_points(self):
-    #     self.maze_array[1][1] = self.maze_array[2][1] = self.maze_array[1][2] = self.maze_array[2][2] = 0
-    #     self.maze_array[self.target_i][self.target_j] = self.maze_array[self.target_i-1][self.target_j] = self.maze_array[self.target_i][self.target_j-1] = self.maze_array[self.target_i-1][self.target_j-1] = 0
-    #     c = [ [1,1] , [2,1] , [1,2] , [2,2] ]
-    #     c_1 = [
-    #         [self.target_i , self.target_j] ,
-    #         [self.target_i - 1 , self.target_j] ,
-    #         [self.target_i , self.target_j - 1] ,
-    #         [self.target_i - 1 , self.target_j - 1]
-    #     ]
-    #     for i in c:
-    #         self.m.m_pattern(i[0], i[1], (255,255,255), "open")
-    #     for j in c_1:
-    #         self.m.m_pattern(j[0], j[1], (255,255,255), "open")
 
     def calc_heuristic(self,current_i,current_j,goal_i,goal_j,distance):
         dx = abs(current_i - goal_i)
@@ -82,31 +68,20 @@ class move:
         if self.visit_neighbor_astar(i,j) != 8:
             if [i,j] not in self.closed_list:
                 if [i,j] not in self.restricted_cells:
-                    # self.m.player_movement(i, j, (255, 51, 255), "open")
-                    # self.m.player_movement(i, j, (255, 255, 255), "open")
                     cn_i = current_node[0]
                     cn_j = current_node[1]
                     g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
                     g = g_prev + self.maze_array[i][j]
                     self.maze_array[i][j] = g
-                    dist = self.visit_neighbor_astar(i, j)  #there could be a prob here *******************************************************
-                    #h = self.calc_heuristic(i, j, self.target_i, self.target_j, dist)
+                    #dist = self.visit_neighbor_astar(i, j)
                     h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
                     n_cost = g + h
-                    # print("===")
-                    # print("current node : " , current_node)
-                    # print("node being viewed : ", [i,j])
-                    # print("f(n) : ", g , " + " , h , " = " , n_cost)
-                    # print("===")
-                    # print("f(n) : ", n_cost)
                     if [i,j] not in self.open_list:
                         self.open_list.append( [i, j] )
                         self.node_key.append( [i,j] )
                         self.node_fval.append(n_cost)  # cell value
         if self.visit_neighbor_astar(i, j) == 8:
             self.restricted_cells.append( [i ,j] )
-        # else:
-        #     print("time to backtrack $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         return  n_cost
 
     # Functionality: removes the heuristic and fn value for the new current node from list
@@ -121,42 +96,14 @@ class move:
         cost = 9999
         inc_backtrack = 0
         for i in list:
-            index = [ i[1] , i[2]]
-            # if index in self.a_visit:
-            #     print( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" )
-            #     for j in self.est_cost:
-            #         if j[0] == index:
-            #             print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-            #             print(j)
-            #             print(self.est_cost)
             if i[0] <= cost and i[0] != 9000:
-                #if [ i[1], i[2] ] in self.a_visit:
-                # print(" in ASDDASDASDSAD")
-                # print(i[0])
-                # print(" positin ")
-                # print(  [i[1],i[2]] )
                 cost = i[0]
                 pos_i = i[1]
                 pos_j = i[2]
-                # print(" in ASDDASDASDSAD")
-                # print(i[0])
-                # print(" positin ")
-                # print(  [i[1],i[2]] )
-                # cost = i[0]
-                # pos_i = i[1]
-                # pos_j = i[2]
             if i[0] == 9000:
                 inc_backtrack += 1
 
         if inc_backtrack==4:
-            # print("DAMN WE REALLY NEED TO BACKTRACK $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-            # print()
-            # print()
-            # print("open list:" , self.open_list)
-            # print("closed list:", self.closed_list)
-            # print()
-            # print()
-
             position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
             pos_i = position[0]
             pos_j = position[1]
@@ -167,10 +114,7 @@ class move:
 
     def backtracking(self, pos):
         self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
-        # print("adding pos in restricted_cells : ", pos  )
-        # print( self.restricted_cells )
         self.restricted_cells.append(pos)
-        #self.closed_list.append(pos)
         self.closed_list.pop()
         if self.closed_list:
             index = self.closed_list[-1]
@@ -185,17 +129,11 @@ class move:
     def a_star(self):
         self.open_list.append( [1,1] )
         self.maze_array[3][1] = 8
-
         self.maze_array[1][1] = 0
-        #print(self.maze_array)
         self.node_key.append( [1,1] )
         self.closed_list.append([1,1])
         self.node_fval = [5000]
         current_node = [1,1]
-        prev_cost = 5000
-        prev_cell = [1,1]
-
-        status = False
 
         while self.open_list:
             status = False
@@ -223,9 +161,12 @@ class move:
                 current_node = np
                 self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
                 self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
-                self.a_visit.append( [np[0], np[1]] )
+                self.a_visit.append( [np[0], np[1]] )   # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
                 self.closed_list.append(np)
                 self.est_cost.append([np, result[0]])  # [index,cost]
+                if self.current_move:
+                    self.current_move.clear()
+                self.current_move.append( np )
         print(self.open_list)
 
     def player_move_dfs(self):
@@ -325,83 +266,80 @@ class move:
             j = random.randint(1, self.m.col - 2)
         return [i,j]
 
-    def fire_movement(self):
+    def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())
-        self.player_move_BFS( pos[0], pos[1])
-        # make a function that would check the open cells around the fire
-        # if 4 are open then use dir_4
-        # if 3 then dir_3
-        # if 2 then dir_2
-        # if 1 then dir
-        # dir_4 = random.randint(0, 4)  # This is for the fire to randomly decide its own direction
-
-        # check number of free neighbors
-        map = self.m.get_arr()
-        # check these neighbors
-        #    ,8,
-        #   4   6
-        #    ,2,
-
-#########
+        status = False  # This boolean variable will be utilized to stop traversing when target is reached
+        self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
 
 ############ &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-############### BFS ########################
+############### BFS & DFS MOVEMENT FOR PLAYER ########################
 
-    def player_move_BFS(self, i , j):
-        # self.q has the list of current fire  cells
-        target = [1, 1] # **************************** THIS WILL CONSTANTLY CHANGE
-        status = False  # This boolean variable will be utilized to stop traversing when target is reached
-        self.visit_Neighbor_bfs(i, j, target ,status)   #<- function that adds parent node to list of visited cells to be tracked
+    def fire_movement_process(self, status, number):
+        status = self.player_move_BFS(status, number)
+        return status
 
-        while self.q or status == False:
-            if self.q:
+    def player_move_BFS(self, status, number):
+        if self.q:
+            if number == 0 :
                 cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node and removes to tackle duplicate nodes
+                self.cur_n_fire.append(cur_n)
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-
-                self.highlight_cur_node(start_point,end_point, (255, 0, 0)) # CAN BE REMOVED: THIS IS TO HIGHLIGH CURRENT CELL
-
+                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
-                status = self.visit_Neighbor_bfs(start_point - 1, end_point, target, status)  # move up
+                status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
+            if number == 1:
+                cur_n = self.cur_n_fire[-1]
+                start_point = cur_n[0]  # get index i for current node
+                end_point = cur_n[1]  # get index j for current node
+                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                status = self.visit_Neighbor_bfs(start_point + 1, end_point, target, status)  # move down
+                status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
+            if number == 2:
+                cur_n = self.cur_n_fire[-1]
+                start_point = cur_n[0]  # get index i for current node
+                end_point = cur_n[1]  # get index j for current node
+                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                status = self.visit_Neighbor_bfs(start_point, end_point - 1, target, status)  # move left
+                status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
+            if number == 3:
+                cur_n = self.cur_n_fire[-1]
+                start_point = cur_n[0]  # get index i for current node
+                end_point = cur_n[1]  # get index j for current node
+                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                status = self.visit_Neighbor_bfs(start_point, end_point + 1, target, status)  # move right
-            else:   # This condition checks if prob. value of 0 for the open cell then that cell is added in queue again for future estimation (this cell is neighbor of fire cells)
-                if self.last_fire_cells:    # last position of cell on fire - func. above will check its neighbor(determine that if they are open) and start from there just incase queue gets empty
-                    print(" q  is empty - append away: " , self.q)
+                status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
+                self.cur_n_fire.pop()
+
+        else:   # This condition checks if prob. value of 0 for the open cell then that cell is added in queue again for future estimation (this cell is neighbor of fire cells)
+            if self.last_fire_cells:    # last position of cell on fire - func. above will check its neighbor(determine that if they are open) and start from there just incase queue gets empty
+                print(" q  is empty - append away: " , self.q)
+                if self.last_fire_cells:
                     cur_n = self.last_fire_cells[-1]
-                    self.q.append(cur_n)
-                else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
-                    self.q.append( cur_n )
-        print(" List of visited nodes " , self.f_list_of_visited_nodes)
-        print("duplicate nodes:" , self.dup)
-        self.q_visited.clear()
-        self.f_list_of_visited_nodes.clear()
-        self.q.clear()
+                else:
+                    cur_n = self.fire_start_pos(self.m.get_arr())
+                self.q.append(cur_n)
+            else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
+                cur_n = self.cur_n_fire[-1]
+                self.q.append( cur_n )
+                self.cur_n_fire.pop()
+        return status
 
-    def visit_Neighbor_bfs(self,i, j , target, status):
+    def visit_Neighbor_bfs(self,i, j , status):
         prob = self.fire_cells[-1]  # retrieves the prob to generate a fire cell
 
         if status == True:  # if Target state is reached in other neighbors - This would return True as well instead of traversing (this should not be reached)
             return True
 
-        if [i , j] == target:   # Returns true to stop fire traverse if it reaches player
+        if [i , j] == self.current_move[-1]: #self.current_move:   # Returns true to stop fire traverse if it reaches player
             color = (0, 0, 0)#(178, 103, 100)
             self.m.player_movement(i, j, color, "open")
             return True
 
         if prob >=0.5:  # if probability is more than 0.5 generate fire cell
-            # if [i , j] == target:   # Returns true to stop fire traverse if it reaches player
-            #     color = (0, 0, 0)#(178, 103, 100)
-            #     print("FINITO ###########")
-            #     self.m.player_movement(i, j, color, "open")
-            #     return True
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
                     pos = [i,j]
@@ -416,119 +354,86 @@ class move:
                     self.last_fire_cells.append( [i,j] )
         else:
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
-                # print(" prob less than 0.5 : " , [i,j])
-                #
-                # if [i, j] in self.q:
-                #     print("[DUPLICATE] : " , [i,j] , "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-                #     self.highlight_cur_node(i, j, (0, 0, 0))
-                # p = self.fire_prob(i, j, self.m.get_arr()) # if prob is close to 0 and cell is not on fire this gen fire for the next traverse
-                # self.fire_cells.append(p)
                 if [i,j] not in self.q:
                     self.q.append([i,j])    # the empty cell where there is no fire is again added to list of nodes that has to be visited in the future
-
         self.fire_cells.pop(-1)
         return status
 
-    #
-    # def player_move_BFS(self, i , j):
-    #     # self.q has the list of current fire  cells
-    #     color = (0, 0, 204)   # blue color for starting point
-    #     #self.m.m_pattern(i , j, (255, 128, 0), "start")
-    #     target = [1, 1] # **************************** THIS WILL CONSTANTLY CHANGE
-    #     status = False  # This boolean variable will be utilized to stop traversing when target is reached
-    #     self.visit_Neighbor_bfs(i, j, target ,status)   #<- function that adds parent node to list of visited cells to be tracked
-    #
-    #     while self.q or status == False:
-    #         if self.q:
-    #             cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node and removes to tackle duplicate nodes
-    #             start_point = cur_n[0]  # get index i for current node
-    #             end_point = cur_n[1]  # get index j for current node
-    #
-    #             self.highlight_cur_node(start_point,end_point, (255, 0, 0)) # CAN BE REMOVED: THIS IS TO HIGHLIGH CURRENT CELL
-    #
-    #             #self.current_node(start_point,end_point)
-    #
-    #             #p = self.fire_prob(start_point - 1, end_point, self.m.get_arr())  # generate prob
-    #             self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
-    #             status = self.visit_Neighbor_bfs(start_point - 1, end_point, target, status)  # move up
-    #
-    #             #p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
-    #             self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-    #             status = self.visit_Neighbor_bfs(start_point + 1, end_point, target, status)  # move down
-    #
-    #             #p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
-    #             self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-    #             status = self.visit_Neighbor_bfs(start_point, end_point - 1, target, status)  # move left
-    #
-    #             #p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
-    #             self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-    #             status = self.visit_Neighbor_bfs(start_point, end_point + 1, target, status)  # move right
-    #         else:   # This condition checks if prob. value of 0 for the open cell then that cell is added in queue again for future estimation (this cell is neighbor of fire cells)
-    #             if self.last_fire_cells:    # last position of cell on fire - func. above will check its neighbor(determine that if they are open) and start from there just incase queue gets empty
-    #                 print(" q  is empty - append away: " , self.q)
-    #                 cur_n = self.last_fire_cells[-1]
-    #                 self.q.append(cur_n)
-    #             else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
-    #                 self.q.append( cur_n )
-    #             #self.q.append(cur_n)
-    #             #print(self.q)
-    #             #status = True
-    #     print(" List of visited nodes " , self.f_list_of_visited_nodes)
-    #     print("duplicate nodes:" , self.dup)
-    #     self.q_visited.clear()
-    #     self.f_list_of_visited_nodes.clear()
-    #     self.q.clear()
-    #
-    # def visit_Neighbor_bfs(self,i, j , target, status):
-    #     prob = self.fire_cells[-1]  # retrieves the prob to generate a fire cell
-    #
-    #     if status == True:  # if Target state is reached in other neighbors - This would return True as well instead of traversing (this should not be reached)
-    #         return True
-    #
-    #     if [i , j] == target:   # Returns true to stop fire traverse if it reaches player
-    #         color = (0, 0, 0)#(178, 103, 100)
-    #         self.m.player_movement(i, j, color, "open")
-    #         return True
-    #
-    #     if prob >=0.5:  # if probability is more than 0.5 generate fire cell
-    #         # if [i , j] == target:   # Returns true to stop fire traverse if it reaches player
-    #         #     color = (0, 0, 0)#(178, 103, 100)
-    #         #     print("FINITO ###########")
-    #         #     self.m.player_movement(i, j, color, "open")
-    #         #     return True
-    #         if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
-    #             if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
-    #                 pos = [i,j]
-    #                 # p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
-    #                 # self.fire_cells.append(p)
-    #                 self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
-    #                 self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
-    #                 #self.current_node(i, j)
-    #                 color = (255, 128, 0)
-    #                 self.m.player_movement(i, j, color, "fire")
-    #                 #self.highlight_cur_node(i, j, (51, 153, 255))
-    #                 self.last_fire_cells.append( [i,j] )
-    #     else:
-    #         if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
-    #             # print(" prob less than 0.5 : " , [i,j])
-    #             #
-    #             # if [i, j] in self.q:
-    #             #     print("[DUPLICATE] : " , [i,j] , "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    #             #     self.highlight_cur_node(i, j, (0, 0, 0))
-    #             # p = self.fire_prob(i, j, self.m.get_arr()) # if prob is close to 0 and cell is not on fire this gen fire for the next traverse
-    #             # self.fire_cells.append(p)
-    #             if [i,j] not in self.q:
-    #                 self.q.append([i,j])    # the empty cell where there is no fire is again added to list of nodes that has to be visited in the future
-    #
-    #     self.fire_cells.pop(-1)
-    #     return status
+
 
 
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
 
     def current_node(self,q_v,q_l_v,i,j):
-        # self.q_visited.append([i,j])
-        # self.q_list_of_visited_nodes.append([i,j])
         q_v.append([i,j])   # queues visited # not really used - might use it in future - self.q_visited.append([i,j])
         q_l_v.append([i,j]) # queue of all list of visited nodes - self.q_list_of_visited_nodes.append([i,j])
+
+
+    def player_move_dfs(self):
+        # Algorithm: Add the starting position as parent node
+        # Go to neighbor (using function call visit_neighbor_dfs)
+        # that function calls func that checks if cell is visited or not
+
+        # DFS: when this function starts traversing, it keeps travelling in one direction until no neighbor can be visited
+        # or it is already visited, in that case it backtracks to the previous node (removing current node from top of stack
+        # and setting the active node to it - does the same if no neighbor is able to be visited)
+
+        color = (0, 0, 204)   # blue color for starting point
+        self.m.m_pattern(self.start_i , self.start_j, (0, 0, 204), "start")
+        target = [self.target_i, self.target_j]
+        color = (204, 0, 102)
+        self.m.m_pattern(self.target_i, self.target_j, color, "open")
+
+        self.q.append( [self.start_i, self.start_j] )   # adds parent node to list of nodes
+        self.current_node(self.q_visited, self.q_list_of_visited_nodes,self.start_i, self.start_j)   # adds parent node to list of visited nodes and as active node
+
+        pos = self.q[-1]  # peek the top most element on stack ( in this sit. get index of parent node to start traversing)
+        i = pos[0]
+        j = pos[1]
+        p = deque()
+        p = self.visit_neighbor_dfs( i , j, target,False)
+        print("end : " , self.q)
+
+    def visit_neighbor_dfs(self, i , j, target, status):
+        if status is not True:  # If target state is fou,d traverse_dfs would return true to stop traversing any further
+            status = self.traverse_dfs(i - 1, j, target, status)  # up
+
+        if status is not True:
+            status = self.traverse_dfs(i + 1, j, target, status) # down
+
+        if status is not True:
+            status = self.traverse_dfs(i , j + 1, target, status)  # right
+
+        if status is not True:
+            status = self.traverse_dfs(i, j - 1, target, status) # left
+
+        if  status == True: #To step further traversing when target state is reached
+            return True
+
+        if self.q:
+            self.q.pop()    # the element will only pop after checking the moves to its neighbor are completed or not
+            color = (255,255,255) #   (55,0,255) # blue color when backtracked
+            self.m.player_movement(i, j, color, "back track")
+        return False
+
+    # Functionality:  To check cell is visited or not
+    def traverse_dfs(self, i, j , target, status):
+        if status == True:  # if Target state is reached in other neighbors - This would return True as well instead of traversing (this should not be reached)
+            return True
+
+        if [i , j] == target:   # Returns True and changes color of target when it is reached
+            color = (178, 103, 100)
+            self.m.player_movement(i, j, color, "open")
+            return True
+
+        if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
+            if [i,j] not in self.q_list_of_visited_nodes:
+                pos = [i,j]
+                self.q.append(pos)
+                self.current_node(self.q_visited, self.q_list_of_visited_nodes, i, j)
+                color = (178, 0, 178)
+                self.m.player_movement(i, j, color, "open")
+                self.m.player_movement(i, j, (255, 255, 9), "open")
+                status = self.visit_neighbor_dfs(i, j, target, status)
+        return status
