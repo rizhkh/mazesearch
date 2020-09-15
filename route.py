@@ -285,7 +285,7 @@ class move:
                 self.cur_n_fire.append(cur_n)
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
@@ -293,7 +293,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
@@ -301,7 +301,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
@@ -309,7 +309,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_cur_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
@@ -327,6 +327,9 @@ class move:
                 self.q.append( cur_n )
                 self.cur_n_fire.pop()
         return status
+
+    def highlight_fire_node(self, i ,j, color):
+        self.m.player_movement(i, j , color, "fire")
 
     def visit_Neighbor_bfs(self,i, j , status):
         prob = self.fire_cells[-1]  # retrieves the prob to generate a fire cell
