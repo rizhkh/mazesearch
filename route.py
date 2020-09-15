@@ -99,7 +99,6 @@ class move:
                     # print("f(n) : ", g , " + " , h , " = " , n_cost)
                     # print("===")
                     # print("f(n) : ", n_cost)
-                    print()
                     if [i,j] not in self.open_list:
                         self.open_list.append( [i, j] )
                         self.node_key.append( [i,j] )

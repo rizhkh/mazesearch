@@ -152,7 +152,8 @@ class maze:
         #
         ######
 
-        array = obj.maze_generate_BFS()
+        #array = obj.maze_generate_BFS( self.maze_array )
+        array = obj.maze_generate_DFS()
         #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
         array = obj.make_path_door(array)
         array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
@@ -160,7 +161,7 @@ class maze:
         #obj.clear_start
         self.maze_array = array
 
-        print(self.maze_array)
+        #print(self.maze_array)
 
 
         #########
