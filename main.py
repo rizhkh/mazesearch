@@ -152,8 +152,9 @@ class maze:
         #
         ######
 
-
-        array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.maze_generate_BFS()
+        #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.make_path_door(array)
         array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
         #array = obj.DELETETHISFUNCT()
         #obj.clear_start
