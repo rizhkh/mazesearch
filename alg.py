@@ -187,3 +187,34 @@ class mazeGen:
         arr[i][j - 3] = 1
         arr[i-1][j - 1] = 1
         return arr
+
+
+
+    def DELETETHISFUNCT(self):
+        self.maze_array[8][1] = 8
+        self.maze_array[8][2] = 8
+        self.maze_array[8][3] = 8
+        self.maze_array[8][4] = 8
+        self.maze_array[8][5] = 8
+        self.maze_array[8][6] = 8
+        self.maze_array[8][7] = 8
+        self.maze_array[8][8] = 8
+
+
+        self.maze_array[1][8] = 8
+        self.maze_array[2][8] = 8
+        self.maze_array[3][8] = 8
+        self.maze_array[4][8] = 8
+        self.maze_array[5][8] = 8
+        self.maze_array[6][8] = 8
+        self.maze_array[7][8] = 8
+        self.maze_array[8][8] = 8
+
+        self.maze_array[6][7] = 8
+        self.maze_array[6][6] = 8
+
+        self.maze_array[7][4] = 8
+        self.maze_array[6][4] = 8
+        self.maze_array[5][4] = 8
+
+        return self.maze_array

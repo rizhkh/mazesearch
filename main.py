@@ -152,14 +152,15 @@ class maze:
         #
         ######
 
-        # #array = obj.maze_generate_BFS( self.maze_array )
+        #array = obj.maze_generate_BFS( self.maze_array )
         # array = obj.maze_generate_DFS()
         # #array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # #array = obj.make_path_door(array)
+        # array = obj.make_path_door(array)
         # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        # #array = obj.DELETETHISFUNCT()
-        # #obj.clear_start
-        # self.maze_array = array
+        array = obj.DELETETHISFUNCT()
+        #obj.clear_start
+
+        self.maze_array = array
 
         #print(self.maze_array)
 
@@ -170,8 +171,6 @@ class maze:
         ## $$$$$$$ MAKE SURE YOU ADD THE CODE TO CLEAR THE STARTING AND ENDING POSITION BLOCKS
 
         self.map_values() # To map values on 2d array maze map
-
-
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
 
     def start_game(self, obj):

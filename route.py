@@ -322,10 +322,12 @@ class move:
                 else:
                     cur_n = self.fire_start_pos(self.m.get_arr())
                 self.q.append(cur_n)
+                print("IM HERE 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
             else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
                 cur_n = self.cur_n_fire[-1]
                 self.q.append( cur_n )
                 self.cur_n_fire.pop()
+                print("IM HERE 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222")
         return status
 
     def highlight_fire_node(self, i ,j, color):
@@ -362,16 +364,12 @@ class move:
         self.fire_cells.pop(-1)
         return status
 
-
-
-
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
 
     def current_node(self,q_v,q_l_v,i,j):
         q_v.append([i,j])   # queues visited # not really used - might use it in future - self.q_visited.append([i,j])
         q_l_v.append([i,j]) # queue of all list of visited nodes - self.q_list_of_visited_nodes.append([i,j])
-
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node
