@@ -172,6 +172,11 @@ class move:
         self.restricted_cells.append(pos)
         #self.closed_list.append(pos)
         self.closed_list.pop()
+        # if self.closed_list:
+        #     index = self.closed_list[-1]
+        # else:
+        #     index = [1,1]
+        #     self.closed_list.clear()
         index = self.closed_list[-1]
         return index
 
@@ -195,62 +200,30 @@ class move:
 
         while self.open_list:
             status = False
-            # print("new WHILE loop starting with pos: " , current_node)
-
             if current_node == [0,0]:
                 break
-
-            #self.clearItem_new_current_node(current_node[0], current_node[1])
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
                 break
-
-            # temp_a = 0
-            # temp_b =0
-            # explored_neighbor = 0 # stored in this shape [f(n),g(n)]
             index_i = current_node[0]
             index_j = current_node[1]
-            nc1 = 0
-            nc2 = 0
-            pos = 0
-            pos2=0
-
-
-
-            self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node) , index_i - 1, index_j ] )
-            self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node) , index_i + 1, index_j ] )
-            self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node) , index_i, index_j - 1 ] )
-            self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node) , index_i, index_j + 1 ] )
-
-            # print(self.net_cost)
-
+            self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node) , index_i + 1, index_j ] ) # down
+            self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node) , index_i, index_j - 1 ] ) # right
+            self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node) , index_i - 1, index_j ] ) # up
+            self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node) , index_i, index_j + 1 ] ) # left
             result = self.get_net_cost(self.net_cost, current_node)   # results is [cost,index]
 
             if result[0] == 9000:
-                # print("BACKTRACKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                # print(self.closed_list)
                 current_node = self.closed_list[-1]
-                # print("current active node: " , current_node)
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
                 status = True
-                # print()
-                # print()
-
             self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
             if status == False:
                 np = result[1]
-                # print(" new current node is: ", np)
-                # print("old current node : " , current_node)
                 self.open_list.remove( [current_node[0] , current_node[1] ] )
-                #self.clearItem_new_current_node(current_node[0], current_node[1])
-
                 current_node = np
-                # prev_cost = nc
-                # prev_cell = current_node
-
                 self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
                 self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
-
                 self.a_visit.append( [np[0], np[1]] )
                 self.closed_list.append(np)
                 self.est_cost.append([np, result[0]])  # [index,cost]
