@@ -156,16 +156,16 @@ class maze:
         #
         ######
 
-        # array = obj.maze_generate_BFS( self.maze_array )
-        # # array = obj.maze_generate_DFS()
-        # ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # array = obj.make_path_door(array)
-        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        # self.maze_array = array
-
-
-        array = obj.DELETETHISFUNCT()
+        array = obj.maze_generate_BFS( self.maze_array )
+        # array = obj.maze_generate_DFS()
+        ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.make_path_door(array)
+        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
         self.maze_array = array
+
+
+        # array = obj.DELETETHISFUNCT()
+        # self.maze_array = array
 
 
         #obj.clear_start
