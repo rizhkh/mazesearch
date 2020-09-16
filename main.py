@@ -151,33 +151,23 @@ class maze:
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
-        #array = obj.maze_generate_BFS()   # Generates map with BFS algorithm with dfs traversing as pathways with open and blocked cells
-        #array = obj.maze_generate_DFS()    # Generates map with DFS algorithm with dfs traversing as pathways with open and blocked cells
-        #
-        ######
 
-        array = obj.maze_generate_BFS( self.maze_array )
-        # array = obj.maze_generate_DFS()
-        ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        array = obj.make_path_door(array)
-        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        self.maze_array = array
-
-
-        # array = obj.DELETETHISFUNCT()
+        # array = obj.maze_generate_BFS( self.maze_array )
+        # # array = obj.maze_generate_DFS()
+        # ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        # array = obj.make_path_door(array)
+        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
         # self.maze_array = array
 
 
+        array = obj.DELETETHISFUNCT()
+        self.maze_array = array
+
+
         #obj.clear_start
-
-
         ####print(self.maze_array)
-
-
         #########
         #self.render_maze()  # Renders the map
-
-        ## $$$$$$$ MAKE SURE YOU ADD THE CODE TO CLEAR THE STARTING AND ENDING POSITION BLOCKS
 
         self.map_values() # To map values on 2d array maze map
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
@@ -211,14 +201,15 @@ class maze:
             move_player = b.player_move_process(move_player)
 
             if move_player == [ obj.row - 2, obj.col - 2 ]:
-                print("hello")
+                print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
                 break
 
             if move_player == 88:
-                print("hello")
+                print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
                 #break
 
             if status == True:
+                print("444444444444444444444444444444444444444")
                 break
 
             i += 1
