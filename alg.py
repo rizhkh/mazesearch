@@ -159,7 +159,26 @@ class mazeGen:
             for j in range(1,self.m.col-1):
                 if j==1 or i==self.m.row-2:
                     arr[i][j] = 1
+
+        for i in range( 1, self.m.col-1):
+            for j in range(1,self.m.col-1):
+                if arr[i][j] == 8:
+                    inc = 0
+                    inc = inc + self.create_path(i-1,j,arr)
+                    inc = inc + self.create_path(i+1, j, arr)
+                    inc = inc + self.create_path(i, j-1, arr)
+                    inc = inc + self.create_path(i, j+1, arr)
+                    if inc==2:
+                        arr[i][j] = 1
+
+
         return arr
+
+    # facilitates make_path_door - Creates a door between closed paths
+    def create_path(self,i,j,arr):
+        if arr[i][j] != 8:
+            return 1
+        return 0
 
     def clear_start(self, arr, start, end):
         i = self.m.row - 2
@@ -190,7 +209,7 @@ class mazeGen:
 
     def DELETETHISFUNCT(self):
         self.maze_array[8][1] = 8
-        self.maze_array[8][2] = 8
+        self.maze_array[8][2] = 1
         self.maze_array[8][3] = 8
         self.maze_array[8][4] = 8
         self.maze_array[8][5] = 8
