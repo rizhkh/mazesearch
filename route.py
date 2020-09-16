@@ -103,7 +103,8 @@ class move:
         return [ cost, index ]
 
     def backtracking(self, pos):
-        self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
+        #self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
+        self.m.player_movement(pos[0], pos[1], (255, 0, 0), "player")
         self.restricted_cells.append(pos)
         self.closed_list.pop()
         if self.closed_list:
@@ -125,6 +126,11 @@ class move:
         move = self.player_move_process([1,1])
         return move
 
+    def new_target(self):
+        pos = self.fire_pos[-1]
+        self.target_i = pos[0]
+        self.target_j = pos[1]
+
     def player_move_process(self,current_node):
         current_node = self.a_star(current_node)
         return current_node
@@ -133,16 +139,15 @@ class move:
         if self.open_list:
             status = False
 
-            if  current_node in self.fire_cells:
-                print(1)
-                return True
-            if self.maze_array[current_node[0]][current_node[1]] == 1100:
-                print(2)
-                return True
+            if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
+                print(self.maze_array)
+                return 88
+
             if current_node == [0,0]:
                 return True
+
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
-                return True
+                return 88
             index_i = current_node[0]
             index_j = current_node[1]
             self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node) , index_i + 1, index_j ] ) # down
@@ -155,14 +160,18 @@ class move:
                 current_node = self.closed_list[-1]
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
+
                 status = True
             self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
             if status == False:
                 np = result[1]
                 self.open_list.remove( [current_node[0] , current_node[1] ] )
                 current_node = np
-                self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
-                self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
+                #self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
+                #self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
+                self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
+                self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
+
                 self.a_visit.append( [np[0], np[1]] )   # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
                 self.closed_list.append(np)
                 self.est_cost.append([np, result[0]])  # [index,cost]
@@ -315,8 +324,11 @@ class move:
             j = random.randint(1, self.m.col - 2)
         return [i,j]
 
+    fire_pos = []
+
     def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())
+        self.fire_pos.append( pos )
         status = False  # This boolean variable will be utilized to stop traversing when target is reached
         self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
 
@@ -334,7 +346,7 @@ class move:
                 self.cur_n_fire.append(cur_n)
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
@@ -342,7 +354,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
@@ -350,7 +362,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
@@ -358,7 +370,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
@@ -380,7 +392,7 @@ class move:
         return status
 
     def highlight_fire_node(self, i ,j, color):
-        self.m.player_movement(i, j , color, "fire")
+        self.m.player_movement(i, j , color, 'fire')
 
     def visit_Neighbor_bfs(self,i, j , status):
         prob = self.fire_cells[-1]  # retrieves the prob to generate a fire cell
@@ -390,11 +402,13 @@ class move:
 
         if [i , j] == self.current_move[-1]: #self.current_move:   # Returns true to stop fire traverse if it reaches player
             color = (0, 0, 0)#(178, 103, 100)
-            self.m.player_movement(i, j, color, "open")
+            self.highlight_fire_node(i, j, (255, 0, 0))
+            #self.m.player_movement(i, j, color, "fire")
             return True
 
         if prob >=0.5:  # if probability is more than 0.5 generate fire cell
-            if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
+            #if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
+            if self.maze_array[i][j] != 8:
                 if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
                     pos = [i,j]
                     # p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
@@ -403,7 +417,9 @@ class move:
                     self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
                     #self.current_node(i, j)
                     color = (255, 128, 0)
-                    self.m.player_movement(i, j, color, "fire")
+                    #self.maze_array[i][j] = 1111
+                    self.highlight_fire_node(i, j, (255, 0, 0))
+                    #self.m.player_movement(i, j, color, 'fire')
                     #self.highlight_cur_node(i, j, (51, 153, 255))
                     self.last_fire_cells.append( [i,j] )
         else:
