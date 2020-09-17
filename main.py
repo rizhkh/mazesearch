@@ -105,7 +105,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.01) # PLAYER
+        time.sleep(0.02) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -152,16 +152,16 @@ class maze:
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
 
-        # array = obj.maze_generate_BFS( self.maze_array )
-        # # array = obj.maze_generate_DFS()
-        # ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # array = obj.make_path_door(array)
-        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        # self.maze_array = array
-
-
-        array = obj.DELETETHISFUNCT()
+        array = obj.maze_generate_BFS( self.maze_array )
+        # array = obj.maze_generate_DFS()
+        ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.make_path_door(array)
+        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
         self.maze_array = array
+
+        #
+        # array = obj.DELETETHISFUNCT()
+        # self.maze_array = array
 
 
         #obj.clear_start
