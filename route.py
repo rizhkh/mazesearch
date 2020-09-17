@@ -52,6 +52,9 @@ class move:
     prev_steps = []
     restrct_cells = []
 
+    number = [1]
+    prev = []
+
     def __init__(self , scrn, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
         self.screen = scrn #obj.get_screen()
@@ -70,47 +73,49 @@ class move:
         return self.maze_array[i][j]
 
     # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
-    def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):#, prev_gn):
-        n_cost =9000
-        if self.visit_neighbor_astar(i,j) != 8:
-            if [i,j] not in clsed_list:
-                if [i,j] not in restrcted_cells:
+    # def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):#, prev_gn):
+    #     n_cost =9000
+    #     if self.visit_neighbor_astar(i,j) != 8:
+    #         if [i,j] not in clsed_list:
+    #             if [i,j] not in restrcted_cells:
+    #                 cn_i = current_node[0]
+    #                 cn_j = current_node[1]
+    #                 g_prev = array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
+    #                 g = g_prev + array[i][j]
+    #                 array[i][j] = g
+    #                 #dist = self.visit_neighbor_astar(i, j)
+    #                 h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
+    #                 n_cost = g + h
+    #                 if [i,j] not in opn_list:
+    #                     opn_list.append( [i, j] )
+    #
+    #
+    #     # if self.visit_neighbor_astar(i, j) == 8:
+    #     #     restrcted_cells.append( [i ,j] )
+    #     return  n_cost
+
+    def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):  # , prev_gn):
+        n_cost = 1000
+        if self.visit_neighbor_astar(i, j) != 8:
+            if [i, j] not in clsed_list:
+                if [i, j] not in restrcted_cells:
                     cn_i = current_node[0]
                     cn_j = current_node[1]
-                    g_prev = array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
+                    g_prev = array[cn_i][cn_j]  # self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
                     g = g_prev + array[i][j]
                     array[i][j] = g
                     #dist = self.visit_neighbor_astar(i, j)
                     h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
                     n_cost = g + h
-                    if [i,j] not in opn_list:
-                        opn_list.append( [i, j] )
-        if self.visit_neighbor_astar(i, j) == 8:
-            restrcted_cells.append( [i ,j] )
-        return  n_cost
+                    if [i, j] not in opn_list:
+                        opn_list.append([i, j])
+                if [i,j] in restrcted_cells:
+                    n_cost = 9000
+                    #self.m.player_movement(result[1][0], result[1][1], (255, 0, 255), "player")
 
-    # # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
-    # def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
-    #     n_cost =9000
-    #     if self.visit_neighbor_astar(i,j) != 8:
-    #         if [i,j] not in self.closed_list:
-    #             if [i,j] not in self.restricted_cells:
-    #                 cn_i = current_node[0]
-    #                 cn_j = current_node[1]
-    #                 g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
-    #                 g = g_prev + self.maze_array[i][j]
-    #                 self.maze_array[i][j] = g
-    #                 #dist = self.visit_neighbor_astar(i, j)
-    #                 h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
-    #                 n_cost = g + h
-    #                 if [i,j] not in self.open_list:
-    #                     self.open_list.append( [i, j] )
-    #     if self.visit_neighbor_astar(i, j) == 8:
-    #         self.restricted_cells.append( [i ,j] )
-    #     return  n_cost
-
-
-
+        # if self.visit_neighbor_astar(i, j) == 8:
+        #     restrcted_cells.append( [i ,j] )
+        return n_cost
 
 
     # returns smallest f(n) of the nodes being checked
@@ -136,7 +141,10 @@ class move:
         index = [ pos_i, pos_j ]
         return [ cost, index ]
 
+
+
     def backtracking(self, pos, rstrcted_cells, clsed_list):
+        print(" I WAS HERE ")
         self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
         self.m.player_movement(pos[0], pos[1], (160, 160, 160), "player")
         rstrcted_cells.append(pos)
@@ -226,57 +234,34 @@ class move:
         # return current_node
 
 
-
     def player_move_process(self,current_node):
-        current_node_astar = self.a_star(current_node)
-        # #self.m.player_movement(current_node[0], current_node[1], (0, 0, 0), "player")
+        next_step_astar = self.a_star(current_node)
+        self.m.player_movement(current_node[0], current_node[1], (0, 0, 0), "player")
         nList = deque()
-        nList = self.recompute_a_star(nList, current_node)
+        i = self.number[0]  # DONT TOUCH THIS
+        nList = self.recompute_a_star(nList, next_step_astar,i)
+        self.number.pop()# DONT TOUCH THIS
+        i += 1# DONT TOUCH THIS
+        self.number.append(i)# DONT TOUCH THIS
+
         print(nList)
-        #
-        #next_step = nList[0]
-        # if current_node_astar != next_step:
-        #     next_step not in self.closed_list
-        # #if next_step == 88:
-        #     print("!@#$%^&*()^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        #     print("        current step:", current_node)
-        #     print("        Steps from recompute : ", nList)
-        #     #current_node_astar = 88
-        #     #self.backtracking() #pos, rstrcted_cells, clsed_list):
-        #     #current_node = next_step
-        # print("current step:" , current_node)
-        # print("next step:", current_node_astar)
-        # print("next step from recompute:", next_step)
-        # print("Steps from recompute : " , nList)
-        # print()
-        # if nList == 88:
-        #     print("!@#$%^&*()^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        #     current_node = [ obj.row - 2, obj.col - 2 ]
-        #nList.clear()
+        item = nList[0]
+        if len(nList) == 1:
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " , nList[0])
+            next_step_astar = nList[0]
+            #break
 
+        next_step_recompute = nList[0]
 
-        # print("step being passed:", current_node)
-        # current_node = self.a_star(current_node)
-        # self.m.player_movement(current_node[0], current_node[1], (0, 0, 0), "player")
-        # nList = deque()
-        # nList = self.recompute_a_star(nList, current_node)
-        #
-        # next_step = nList[0]
-        # if current_node != next_step:
-        #     print("        current step:", current_node)
-        #     print("        Steps from recompute : ", nList)
-        #     #self.backtracking() #pos, rstrcted_cells, clsed_list):
-        #     #current_node = next_step
-        # print("current step:" , current_node)
-        # print("Steps from recompute : " , nList)
-        # print()
-        # if nList == 88:
-        #     print("!@#$%^&*()^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        #     current_node = [ obj.row - 2, obj.col - 2 ]
-        # nList.clear()
+        print("current step: ", current_node)
+        print("next step: " , next_step_astar )
+        print("next step in recompute: ", next_step_recompute)
 
+        if next_step_astar != next_step_recompute:
+            if next_step_recompute not in self.closed_list:
+                print("- - - - - - - - - - -- - - - - - -- - - -- - - - > this step : " , next_step_recompute)
 
-        return current_node_astar
+        return next_step_astar
 
     def a_star(self, current_node):
         if self.open_list:
@@ -311,6 +296,12 @@ class move:
 
                 status = True
             self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
+
+            if result[0] != 9000 and result[1] in self.closed_list:
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print(result[1])
+                self.m.player_movement(result[1][0], result[1][1], (255, 0, 255), "player")
+
             if status == False:
                 np = result[1]
                 self.open_list.remove( [current_node[0] , current_node[1] ] )
@@ -328,16 +319,19 @@ class move:
                 self.current_move.append( np )
         return current_node
 
-    def recompute_a_star(self, sList, current_node):
+    def recompute_a_star(self, sList, current_node, i):
         self.rcmp_open_list.append(current_node)
         self.rcmp_closed_list.append(current_node)
         #current_node = [1, 1]
         self.rcmp_current_move.append( current_node )
         array = self.maze_array.copy()
 
+        check = False
+
         while self.rcmp_open_list:
             status = False
-
+            #self.m.player_movement(current_node[0], current_node[1], (i*8, 246-(i*6), 100+(i*8)), "player")
+            self.m.player_movement(current_node[0], current_node[1], (255,255,255), "player")
             if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
                 #print(self.maze_array)
                 return 88
@@ -351,18 +345,27 @@ class move:
 
             index_i = current_node[0]
             index_j = current_node[1]
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
+            # self.rcmp_net_cost.append(
+            #     [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
+            # self.rcmp_net_cost.append(
+            #     [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
+            # self.rcmp_net_cost.append(
+            #     [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
+            # self.rcmp_net_cost.append(
+            #     [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
 
+            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
 
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
 
-            result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
+            result = self.get_net_cost(self.rcmp_net_cost, current_node, self.restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
 
             if result[0] == 9000:
                 current_node = self.rcmp_closed_list[-1]
@@ -371,6 +374,26 @@ class move:
                 status = True
             self.rcmp_net_cost.clear()  # we clear the last list so new nodes and their fn is saved
             if status == False:
+
+                #HERE IS WHERE YOU HAVE TO MAKE THE ORIGNAL A STAR TURN AROUND
+                if result[1] in self.closed_list:
+                    self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
+                    self.closed_list.append(result[1])
+                    self.restricted_cells.append(result[1])
+                    # self.restricted_cells.append(result[1])
+                    # sList = result[1]
+                    # print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                    # return sList
+                    check = True
+
+                if result[1] not in self.closed_list and check==True:
+                    print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                    self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
+                    print(result[1])
+                    #check = False
+                    sList.append(result[1])
+                    return sList
+
                 np = result[1]
                 self.rcmp_open_list.remove([current_node[0], current_node[1]])
                 current_node = np
@@ -387,7 +410,7 @@ class move:
 
         self.rcmp_open_list.clear()
         self.rcmp_closed_list.clear()
-        self.rcmp_restricted_cells.clear()  ###########################################################
+        #self.rcmp_restricted_cells.clear()  ###########################################################
         self.rcmp_a_visit.clear()
         self.rcmp_net_cost.clear()
         self.rcmp_est_cost.clear()
@@ -398,9 +421,8 @@ class move:
         print()
         # print("this is self.maze_array : ",self.maze_array)
         # print()
-        print("this is the copied array :  ")
-        print(array)
-
+        # print("this is the copied array :  ")
+        # print(array)
 
         return sList
 
@@ -651,7 +673,7 @@ class move:
                     self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
                     #self.current_node(i, j)
                     color = (255, 128, 0)
-                    self.maze_array[i][j] =  99
+                    self.maze_array[i][j] =  500
                     self.highlight_fire_node(i, j, (255, 0, 0))
                     self.last_fire_cells.append( [i,j] )
                     self.fill_fire_neighbor(i - 1,j)   # upper cell
@@ -668,7 +690,7 @@ class move:
     # Increases cell value for any open cell next to burning cell - creates the heat effect where the player knows its bad to go
     def fill_fire_neighbor(self,i,j):
         if self.maze_array[i][j] == 1:
-            self.maze_array[i][j] = 90
+            self.maze_array[i][j] = 100
 
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")

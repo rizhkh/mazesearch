@@ -105,7 +105,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.1) # PLAYER
+        time.sleep(0.01) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -206,7 +206,7 @@ class maze:
 
             if move_player == 88:
                 print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
-                #break
+                break
 
             if status == True:
                 print("444444444444444444444444444444444444444")
