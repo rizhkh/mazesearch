@@ -79,6 +79,10 @@ class move:
     def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):  # , prev_gn):
     #def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
         n_cost = 9000
+        if ([i,j] in self.fire_cells) or ([i,j] in self.last_fire_cells):
+            restrcted_cells.append([i, j])
+            return -1
+
         if self.visit_neighbor_astar(i, j) != 8:
             if [i, j] not in clsed_list:
                 if [i, j] not in restrcted_cells:
@@ -129,6 +133,14 @@ class move:
             if i[0] == 9000:
                 inc_backtrack += 1
 
+        if cost == -1:
+            print("AZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
+            position = self.backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
+            # position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
+            pos_i = position[0]
+            pos_j = position[1]
+            cost = 9000
+
         if inc_backtrack==4:
             position = self.backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
             #position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
@@ -142,9 +154,11 @@ class move:
     def backtracking(self, pos, rstrcted_cells, clsed_list):
     #def backtracking(self, pos):
         #self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
-        self.m.player_movement(pos[0], pos[1], (255, 0, 0), "player")
+        self.m.player_movement(pos[0], pos[1], (0, 0, 0), "player")
         rstrcted_cells.append(pos)
+        print("current pos in backtracking(): " , clsed_list[-1])
         clsed_list.pop()
+        print("current pos in backtracking: ", clsed_list[-1])
         if clsed_list:
             index = clsed_list[-1]
         else:
@@ -169,26 +183,68 @@ class move:
         self.target_i = pos[0]
         self.target_j = pos[1]
 
+    # def player_move_process(self,current_node):
+    #     next_step_astar = self.a_star(current_node)
+    #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
+    #     nList = deque()
+    #     nList = self.recompute_a_star(nList, next_step_astar)
+    #
+    #     if next_step_astar == 88:
+    #         return 88
+    #
+    #     if nList != 88:
+    #         item = nList[0]
+    #         print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ ", item)
+    #         if len(nList) == 1:
+    #             next_step_astar = nList[0]
+    #             # print(" asdasdasdasd",self.prev_steps)
+    #             while self.prev_steps:
+    #                 index = self.prev_steps[-1]
+    #                 self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
+    #                 self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
+    #                 self.prev_steps.pop()
+    #                 # print(" asdasdasdasd", self.prev_steps)
+    #             # break
+    #         next_step_recompute = nList[0]
+    #
+    #     else:
+    #         next_step_recompute = current_node
+    #     # item = nList[0]
+    #     # print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ " , item)
+    #     # if len(nList) == 1:
+    #     #     next_step_astar = nList[0]
+    #     #     # print(" asdasdasdasd",self.prev_steps)
+    #     #     while self.prev_steps:
+    #     #         index = self.prev_steps[-1]
+    #     #         self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
+    #     #         self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
+    #     #         self.prev_steps.pop()
+    #     #         # print(" asdasdasdasd", self.prev_steps)
+    #     #     #break
+    #     #
+    #     # next_step_recompute = nList[0]
+    #     return next_step_astar
+
     def player_move_process(self,current_node):
         next_step_astar = self.a_star(current_node)
-        self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
-        nList = deque()
-        nList = self.recompute_a_star(nList, next_step_astar)
-
-        item = nList[0]
-        print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ " , item)
-        if len(nList) == 1:
-            next_step_astar = nList[0]
-            # print(" asdasdasdasd",self.prev_steps)
-            while self.prev_steps:
-                index = self.prev_steps[-1]
-                self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
-                self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
-                self.prev_steps.pop()
-                # print(" asdasdasdasd", self.prev_steps)
-            #break
-
-        next_step_recompute = nList[0]
+        # self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
+        # nList = deque()
+        # nList = self.recompute_a_star(nList, next_step_astar)
+        #
+        # item = nList[0]
+        # print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ " , item)
+        # if len(nList) == 1:
+        #     next_step_astar = nList[0]
+        #     # print(" asdasdasdasd",self.prev_steps)
+        #     while self.prev_steps:
+        #         index = self.prev_steps[-1]
+        #         self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
+        #         self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
+        #         self.prev_steps.pop()
+        #         # print(" asdasdasdasd", self.prev_steps)
+        #     #break
+        #
+        # next_step_recompute = nList[0]
         return next_step_astar
 
     # def player_move_process(self,current_node):
@@ -227,7 +283,10 @@ class move:
 
 
             if result[0] == 9000:
+                print("ass")
+                print("current pos" , current_node)
                 current_node = self.closed_list[-1]
+                print("new pos", current_node)
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
 
@@ -310,25 +369,26 @@ class move:
                 #HERE IS WHERE YOU HAVE TO MAKE THE ORIGNAL A STAR TURN AROUND
                 # On this condition - the recompute finally turns around and looks for another path
                 # the check condition as long as its true will save the cells that need to be backtracked
-                if result[1] in self.closed_list:
-                    self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
-                    # self.closed_list.append(result[1])
-                    # self.restricted_cells.append(result[1])
-                    # self.restricted_cells.append(result[1])
-                    # sList = result[1]
-                    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-                    # return sList
-                    self.prev_steps.append(result[1])
-                    check = True
 
-                # this condition is true when recompute finds a path that is not in the visited list - when that open cell is found thats where you will start again from
-                if result[1] not in self.closed_list and check==True:
-                    print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-                    self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
-                    # print(result[1])
-                    #check = False
-                    sList.append(result[1])
-                    return sList
+                # if result[1] in self.closed_list:
+                #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
+                #     # self.closed_list.append(result[1])
+                #     # self.restricted_cells.append(result[1])
+                #     # self.restricted_cells.append(result[1])
+                #     # sList = result[1]
+                #     print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+                #     # return sList
+                #     self.prev_steps.append(result[1])
+                #     check = True
+                #
+                # # this condition is true when recompute finds a path that is not in the visited list - when that open cell is found thats where you will start again from
+                # if result[1] not in self.closed_list and check==True:
+                #     print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                #     self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
+                #     # print(result[1])
+                #     #check = False
+                #     sList.append(result[1])
+                #     return sList
 
                 np = result[1]
                 # if current_node in self.rcmp_open_list:
@@ -453,7 +513,7 @@ class move:
         q = random.uniform(0, 1)
         q_pow = pow((1 - q), n)
         p = 1 - q_pow
-        return p
+        return 1#p
 
     def fire_start_pos(self , arr):
         i = j = self.m.col-1
@@ -465,7 +525,7 @@ class move:
     fire_pos = []
 
     def init_fire(self):
-        pos = self.fire_start_pos(self.m.get_arr())
+        pos = [7,12] #self.fire_start_pos(self.m.get_arr())
         self.fire_pos.append( pos )
         status = False  # This boolean variable will be utilized to stop traversing when target is reached
         self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
@@ -484,7 +544,7 @@ class move:
                 self.cur_n_fire.append(cur_n)
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
@@ -492,7 +552,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
@@ -500,7 +560,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
@@ -508,7 +568,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
