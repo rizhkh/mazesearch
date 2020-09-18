@@ -80,8 +80,7 @@ class move:
     #def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
         n_cost = 9000
 
-
-        ##### COMMENT THIS BELOW FOR STRATEGY ONE
+        #### COMMENT THIS BELOW FOR STRATEGY ONE
         if ([i,j] in self.fire_cells) or ([i,j] in self.last_fire_cells):
             restrcted_cells.append([i, j])
             return -1
@@ -168,56 +167,12 @@ class move:
         self.target_i = pos[0]
         self.target_j = pos[1]
 
-    # def player_move_process(self,current_node):
-    #     next_step_astar = self.a_star(current_node)
-    #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
-    #     nList = deque()
-    #     nList = self.recompute_a_star(nList, next_step_astar)
-    #
-    #     if next_step_astar == 88:
-    #         return 88
-    #
-    #     if nList != 88:
-    #         item = nList[0]
-    #         print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ ", item)
-    #         if len(nList) == 1:
-    #             next_step_astar = nList[0]
-    #             # print(" asdasdasdasd",self.prev_steps)
-    #             while self.prev_steps:
-    #                 index = self.prev_steps[-1]
-    #                 self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
-    #                 self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
-    #                 self.prev_steps.pop()
-    #                 # print(" asdasdasdasd", self.prev_steps)
-    #             # break
-    #         next_step_recompute = nList[0]
-    #
-    #     else:
-    #         next_step_recompute = current_node
-    #     # item = nList[0]
-    #     # print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ " , item)
-    #     # if len(nList) == 1:
-    #     #     next_step_astar = nList[0]
-    #     #     # print(" asdasdasdasd",self.prev_steps)
-    #     #     while self.prev_steps:
-    #     #         index = self.prev_steps[-1]
-    #     #         self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
-    #     #         self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
-    #     #         self.prev_steps.pop()
-    #     #         # print(" asdasdasdasd", self.prev_steps)
-    #     #     #break
-    #     #
-    #     # next_step_recompute = nList[0]
-    #     return next_step_astar
-
     def player_move_process(self,current_node):
         # FOR STRATEGY ONE
         #
         # LOOK AT THE CODE IN get_net_cost expand_neighbor_astar MAKE CHANGES
         # next_step_astar = self.a_star(current_node)
         # return next_step_astar
-
-
         next_step_astar = self.a_star(current_node)
         # self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
         # nList = deque()
@@ -239,10 +194,6 @@ class move:
         # next_step_recompute = nList[0]
         return next_step_astar
 
-    # def player_move_process(self,current_node):
-    #     current_node = self.a_star(current_node)
-    #     return current_node
-
     def a_star(self, current_node):
         if self.open_list:
             status = False
@@ -258,21 +209,13 @@ class move:
                 return 88
             index_i = current_node[0]
             index_j = current_node[1]
-            # self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node) , index_i + 1, index_j ] ) # down
-            # self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node) , index_i, index_j - 1 ] ) # right
-            # self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node) , index_i - 1, index_j ] ) # up
-            # self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node) , index_i, index_j + 1 ] ) # left
 
             self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
             self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
 
-
-            #result = self.get_net_cost(self.net_cost, current_node)   # results is [cost,index]
-
             result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
-
 
             if result[0] == 9000:
                 print("ass")
@@ -288,10 +231,8 @@ class move:
                 np = result[1]
                 if self.open_list:
                     self.open_list.remove([current_node[0], current_node[1]])
-                #self.open_list.remove( [current_node[0] , current_node[1] ] )
                 current_node = np
-                #self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
-                #self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
+
                 self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
                 self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
 
@@ -301,6 +242,7 @@ class move:
                 if self.current_move:
                     self.current_move.clear()
                 self.current_move.append( np )
+                print(self.maze_array)
         return current_node
 
 
@@ -513,8 +455,8 @@ class move:
         while arr[i][j] == 8:
             # i = random.randint(1, self.m.col - 2)  # This would generate the random position of the fire
             # j = random.randint(1, self.m.col - 2)
-            i = random.randint(2, self.m.col - 3)  # This would generate the random position of the fire
-            j = random.randint(2, self.m.col - 3)
+            i = random.randint(3, self.m.col - 6)  # This would generate the random position of the fire
+            j = random.randint(3, self.m.col - 6)
         return [i,j]
 
     fire_pos = []

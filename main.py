@@ -116,22 +116,22 @@ class maze:
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
 
-    #Functionality: Converts closed mazes into open deadend spaces
-    def render_maze(self):
-        num = random.randint(0, 3)
-        for i in range(2, self.row-2):
-            for j in range(2, self.col-2):
-                if self.maze_array[i][j]==0:
-                    n2 = random.randint(0, 3)
-                    if num == 1 and n2== 0 and self.maze_array[i-1][j]  == 8:
-                        self.maze_array[i-1][j] = 1
-                    if num == 1 and n2== 1 and self.maze_array[i+1][j]  == 8:
-                        self.maze_array[i+1][j] = 1
-                    if num == 1 and n2== 2 and self.maze_array[i][j-1]  == 8:
-                        self.maze_array[i][j-1] = 1
-                    if num == 1 and n2== 3 and self.maze_array[i][j+1] == 8:
-                        self.maze_array[i][j+1] = 1
-                    #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
+    # #Functionality: Converts closed mazes into open deadend spaces
+    # def render_maze(self):
+    #     num = random.randint(0, 3)
+    #     for i in range(2, self.row-2):
+    #         for j in range(2, self.col-2):
+    #             if self.maze_array[i][j]==0:
+    #                 n2 = random.randint(0, 3)
+    #                 if num == 1 and n2== 0 and self.maze_array[i-1][j]  == 8:
+    #                     self.maze_array[i-1][j] = 1
+    #                 if num == 1 and n2== 1 and self.maze_array[i+1][j]  == 8:
+    #                     self.maze_array[i+1][j] = 1
+    #                 if num == 1 and n2== 2 and self.maze_array[i][j-1]  == 8:
+    #                     self.maze_array[i][j-1] = 1
+    #                 if num == 1 and n2== 3 and self.maze_array[i][j+1] == 8:
+    #                     self.maze_array[i][j+1] = 1
+    #                 #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
 
     #Functionality: maps values to 2d maze
     def map_values(self):
@@ -162,15 +162,16 @@ class maze:
         #
         # array = obj.DELETETHISFUNCT()
         # self.maze_array = array
-
-
-        #obj.clear_start
-        ####print(self.maze_array)
-        #########
-        #self.render_maze()  # Renders the map
+        #row - 2
 
         self.map_values() # To map values on 2d array maze map
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
+        self.mark_start_end(1,1,self.row - 2,self.col - 2)
+
+    def mark_start_end(self,start_i,start_j,i,j):
+        self.maze_generator(self.screen, (255, 51, 255), start_i * (self.box_width + 1), start_j * (self.box_height + 1))
+        self.maze_generator(self.screen , (255, 51, 255), i * (self.box_width + 1), j * (self.box_height + 1))
+
 
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen

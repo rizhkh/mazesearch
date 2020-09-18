@@ -22,7 +22,7 @@ class mazeGen:
     def calc_prob(self):
         # prob = number of filled cells/NxN -> number of filled cells = prob * (NxN) - have an int set to number of filled cells , random whenever you num = 1 ,
         # set cell as filled and decrement number of filled cells n--
-        p =  random.uniform(0, 1)
+        p =  0.3#random.uniform(0, 1)
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
@@ -155,10 +155,10 @@ class mazeGen:
         self.q_list_of_visited_nodes.append([i,j])
 
     def make_path_door(self,arr):
-        for i in range( 1, self.m.col-1):
-            for j in range(1,self.m.col-1):
-                if j==1 or i==self.m.row-2:
-                    arr[i][j] = 1
+        # for i in range( 1, self.m.col-1):
+        #     for j in range(1,self.m.col-1):
+        #         if j==1 or i==self.m.row-2:
+        #             arr[i][j] = 1
 
         for i in range( 1, self.m.col-1):
             for j in range(1,self.m.col-1):
