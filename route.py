@@ -79,6 +79,9 @@ class move:
     def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):  # , prev_gn):
     #def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
         n_cost = 9000
+
+
+        ##### COMMENT THIS BELOW FOR STRATEGY ONE
         if ([i,j] in self.fire_cells) or ([i,j] in self.last_fire_cells):
             restrcted_cells.append([i, j])
             return -1
@@ -101,24 +104,6 @@ class move:
             restrcted_cells.append([i, j])
         return n_cost
 
-        # n_cost =9000
-        # if self.visit_neighbor_astar(i,j) != 8:
-        #     if [i,j] not in self.closed_list:
-        #         if [i,j] not in self.restricted_cells:
-        #             cn_i = current_node[0]
-        #             cn_j = current_node[1]
-        #             g_prev = self.maze_array[cn_i][cn_j] #self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
-        #             g = g_prev + self.maze_array[i][j]
-        #             self.maze_array[i][j] = g
-        #             #dist = self.visit_neighbor_astar(i, j)
-        #             h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
-        #             n_cost = g + h
-        #             if [i,j] not in self.open_list:
-        #                 self.open_list.append( [i, j] )
-        # if self.visit_neighbor_astar(i, j) == 8:
-        #     self.restricted_cells.append( [i ,j] )
-        # return  n_cost
-
     # returns smallest f(n) of the nodes being checked
     def get_net_cost(self, list, current_node, rstrcted_cells, clsed_lists):
     #def get_net_cost(self, list, current_node):
@@ -133,7 +118,7 @@ class move:
             if i[0] == 9000:
                 inc_backtrack += 1
 
-        if cost == -1:
+        if cost == -1:  #   COMMENT THIS IF YOU WANT TO JUST RUN STRATEGY ONE
             print("AZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
             position = self.backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
             # position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
@@ -226,6 +211,13 @@ class move:
     #     return next_step_astar
 
     def player_move_process(self,current_node):
+        # FOR STRATEGY ONE
+        #
+        # LOOK AT THE CODE IN get_net_cost expand_neighbor_astar MAKE CHANGES
+        # next_step_astar = self.a_star(current_node)
+        # return next_step_astar
+
+
         next_step_astar = self.a_star(current_node)
         # self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
         # nList = deque()
