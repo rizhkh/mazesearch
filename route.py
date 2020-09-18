@@ -152,13 +152,13 @@ class move:
         return [ cost, index ]
 
     def backtracking(self, pos, rstrcted_cells, clsed_list):
-    #def backtracking(self, pos):
-        #self.m.player_movement(pos[0], pos[1], (255, 0, 0), "open")
-        self.m.player_movement(pos[0], pos[1], (0, 0, 0), "player")
+
+        self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
+        self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
         rstrcted_cells.append(pos)
-        print("current pos in backtracking(): " , clsed_list[-1])
+        #print("current pos in backtracking(): " , clsed_list[-1])
         clsed_list.pop()
-        print("current pos in backtracking: ", clsed_list[-1])
+        #print("current pos in backtracking: ", clsed_list[-1])
         if clsed_list:
             index = clsed_list[-1]
         else:
@@ -513,19 +513,22 @@ class move:
         q = random.uniform(0, 1)
         q_pow = pow((1 - q), n)
         p = 1 - q_pow
-        return 1#p
+        return p
 
     def fire_start_pos(self , arr):
         i = j = self.m.col-1
-        while arr[ i ][ j ] == 8:
-            i = random.randint(1, self.m.col - 2)  # This would generate the random position of the fire
-            j = random.randint(1, self.m.col - 2)
+        #while arr[ i ][ j ] == 8:
+        while arr[i][j] == 8:
+            # i = random.randint(1, self.m.col - 2)  # This would generate the random position of the fire
+            # j = random.randint(1, self.m.col - 2)
+            i = random.randint(2, self.m.col - 3)  # This would generate the random position of the fire
+            j = random.randint(2, self.m.col - 3)
         return [i,j]
 
     fire_pos = []
 
     def init_fire(self):
-        pos = [7,12] #self.fire_start_pos(self.m.get_arr())
+        pos = self.fire_start_pos(self.m.get_arr())
         self.fire_pos.append( pos )
         status = False  # This boolean variable will be utilized to stop traversing when target is reached
         self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
@@ -620,12 +623,26 @@ class move:
                     #self.m.player_movement(i, j, color, 'fire')
                     #self.highlight_cur_node(i, j, (51, 153, 255))
                     self.last_fire_cells.append( [i,j] )
+                    self.fill_fire_neighbor(i - 1,j)   # upper cell
+                    self.fill_fire_neighbor(i + 1, j)  # down cell
+                    self.fill_fire_neighbor(i, j - 1)  # left cell
+                    self.fill_fire_neighbor(i, j + 1)  # right cell
+
         else:
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 if [i,j] not in self.q:
                     self.q.append([i,j])    # the empty cell where there is no fire is again added to list of nodes that has to be visited in the future
         self.fire_cells.pop(-1)
         return status
+
+    def fill_fire_neighbor(self,i,j):
+        if self.maze_array[i][j] != 8:
+            if self.maze_array[i][j] == 1:
+                self.maze_array[i][j] = 100
+            else:
+                self.maze_array[i][j] = self.maze_array[i][j] + 50
+        # if self.maze_array[i][j] == 1:
+        #     self.maze_array[i][j] = 100
 
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")

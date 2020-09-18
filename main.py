@@ -15,8 +15,8 @@ class maze:
     PYGAMEHEIGHT = 300  # Do not change this: This is window sizing
     row = 20  # row
     col = 20  # col
-    box_width = 15
-    box_height = 15
+    box_width = 20
+    box_height = 20
     maze_array = np.zeros((0, 0), dtype=int)
     player_movement = [[1, 1]]
     first_row = 0
