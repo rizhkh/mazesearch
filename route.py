@@ -138,7 +138,7 @@ class move:
     def backtracking(self, pos, rstrcted_cells, clsed_list):
 
         self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
-        self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
+        self.m.player_movement(pos[0], pos[1], (0, 0, 0), "player")
         rstrcted_cells.append(pos)
         #print("current pos in backtracking(): " , clsed_list[-1])
         clsed_list.pop()
@@ -173,7 +173,11 @@ class move:
         # LOOK AT THE CODE IN get_net_cost expand_neighbor_astar MAKE CHANGES
         # next_step_astar = self.a_star(current_node)
         # return next_step_astar
+        #My own Implemented Strategy
         next_step_astar = self.a_star(current_node)
+        return next_step_astar
+
+        #next_step_astar = self.a_star(current_node)
         # self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
         # nList = deque()
         # nList = self.recompute_a_star(nList, next_step_astar)
@@ -192,8 +196,83 @@ class move:
         #     #break
         #
         # next_step_recompute = nList[0]
-        return next_step_astar
+        #return next_step_astar
 
+
+    # STRATEGY ONE CODE BUT TRY TO REPLACE IT WITH UNIFORM COST SEARCH
+    def expand_neighbor_usc(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):  # , prev_gn):
+    #def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
+        n_cost = 9000
+        if self.visit_neighbor_astar(i, j) != 8:
+            if [i, j] not in clsed_list:
+                if [i, j] not in restrcted_cells:
+                    cn_i = current_node[0]
+                    cn_j = current_node[1]
+                    g_prev = array[cn_i][
+                        cn_j]  # self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
+                    g = g_prev + array[i][j]
+                    array[i][j] = g
+                    # dist = self.visit_neighbor_astar(i, j)
+                    h = self.calc_heuristic(i, j, self.target_i, self.target_j, g)
+                    n_cost = g + h
+                    if [i, j] not in opn_list:
+                        opn_list.append([i, j])
+        if self.visit_neighbor_astar(i, j) == 8:
+            restrcted_cells.append([i, j])
+        return n_cost
+
+    def a_star_strategy1(self, current_node):
+        if self.open_list:
+            status = False
+
+            if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
+                return 88
+
+            if current_node == [0,0]:
+                return True
+
+            if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
+                return self.a_visit
+            index_i = current_node[0]
+            index_j = current_node[1]
+
+            self.net_cost.append( [ self.expand_neighbor_usc( index_i + 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
+            self.net_cost.append( [ self.expand_neighbor_usc( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
+            self.net_cost.append( [ self.expand_neighbor_usc( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
+            self.net_cost.append( [ self.expand_neighbor_usc( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
+
+            result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
+
+            if result[0] == 9000:
+                print("ass")
+                print("current pos" , current_node)
+                current_node = self.closed_list[-1]
+                print("new pos", current_node)
+                if current_node not in self.open_list:
+                    self.open_list.append(current_node)
+
+                status = True
+            self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
+            if status == False:
+                np = result[1]
+                if self.open_list:
+                    self.open_list.remove([current_node[0], current_node[1]])
+                current_node = np
+
+                self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
+                self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
+
+                self.a_visit.append( [np[0], np[1]] )   # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
+                self.closed_list.append(np)
+                self.est_cost.append([np, result[0]])  # [index,cost]
+                if self.current_move:
+                    self.current_move.clear()
+                self.current_move.append( np )
+        return current_node
+
+
+
+### DONT TOUCH THIS
     def a_star(self, current_node):
         if self.open_list:
             status = False
@@ -447,7 +526,8 @@ class move:
         q = random.uniform(0, 1)
         q_pow = pow((1 - q), n)
         p = 1 - q_pow
-        return p
+        #return p
+        return 1
 
     def fire_start_pos(self , arr):
         i = j = self.m.col-1

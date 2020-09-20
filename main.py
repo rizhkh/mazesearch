@@ -172,7 +172,6 @@ class maze:
         self.maze_generator(self.screen, (255, 51, 255), start_i * (self.box_width + 1), start_j * (self.box_height + 1))
         self.maze_generator(self.screen , (255, 51, 255), i * (self.box_width + 1), j * (self.box_height + 1))
 
-
     def start_game(self, obj):
         ThingsToAppearOnScreen_Display = self.screen
         self.maze_array = np.zeros((self.row, self.col), dtype=int)
@@ -195,6 +194,31 @@ class maze:
         b.init_fire()
         #b.new_target()
 
+        # ####### ******** STRATEGY ONE ******** ##################
+        # i = 0
+        # status = False
+        # while i<5 or status == False:
+        #     move_player = b.a_star_strategy1(move_player)
+        #     status = b.fire_movement_process(status,i)
+        #     #self.player_movement(last_move[0], last_move[1], (255, 198, 102), "player")
+        #
+        #     if move_player == [ obj.row - 2, obj.col - 2 ]:
+        #         print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+        #         break
+        #
+        #     if move_player == 88:
+        #         print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
+        #         break
+        #
+        #     if status == True:
+        #         print("444444444444444444444444444444444444444")
+        #         break
+        #
+        #     i += 1
+        #     if i==5:
+        #         i=0
+
+        # ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
         i = 0
         status = False
         while i<5 or status == False:
