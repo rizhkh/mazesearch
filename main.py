@@ -4,6 +4,7 @@ import numpy as np
 #import alg
 import time
 from alg import *
+from ast import literal_eval
 from route import *
 from sys import exit
 from collections import deque
@@ -105,7 +106,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.1) # PLAYER
+        #time.sleep(0.1) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -193,6 +194,14 @@ class maze:
         move_player = b.player_init()
         b.init_fire()
         #b.new_target()
+        l = b.uniform_cost_search([1,1])
+        print( l )
+        for i in l:
+            if l.get(i) != None:
+                cn_i = l.get(i)
+                c_i = cn_i[0]
+                c_j = cn_i[1]
+                self.player_movement(c_i, c_j, (0, 0, 0), "player")
 
         # ####### ******** STRATEGY ONE ******** ##################
         # i = 0
@@ -219,27 +228,27 @@ class maze:
         #         i=0
 
         # ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
-        i = 0
-        status = False
-        while i<5 or status == False:
-            status = b.fire_movement_process(status,i)
-            move_player = b.player_move_process(move_player)
-
-            if move_player == [ obj.row - 2, obj.col - 2 ]:
-                print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-                break
-
-            if move_player == 88:
-                print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
-                break
-
-            if status == True:
-                print("444444444444444444444444444444444444444")
-                break
-
-            i += 1
-            if i==5:
-                i=0
+        # i = 0
+        # status = False
+        # while i<5 or status == False:
+        #     status = b.fire_movement_process(status,i)
+        #     move_player = b.player_move_process(move_player)
+        #
+        #     if move_player == [ obj.row - 2, obj.col - 2 ]:
+        #         print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+        #         break
+        #
+        #     if move_player == 88:
+        #         print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
+        #         break
+        #
+        #     if status == True:
+        #         print("444444444444444444444444444444444444444")
+        #         break
+        #
+        #     i += 1
+        #     if i==5:
+        #         i=0
 
         # b.cls_start_end_points()
         # b.fire_movement()

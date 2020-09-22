@@ -3,6 +3,7 @@ import main
 import alg
 #from main import maze
 from collections import deque
+from ast import literal_eval
 import random
 import time
 
@@ -57,6 +58,19 @@ class move:
     number = [1]
     prev = []
 
+    prev_fn = []
+
+    # usc_dist = []
+    # usc_processed = []
+    # usc_prev = []
+    # usc_pq = []
+
+    usc_pq_list = []
+    usc_dist = dict()
+    usc_processed = dict()
+    usc_prev = dict()
+    usc_pq = dict()
+    usc_visited = []
 
     def __init__(self , scrn, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
@@ -110,7 +124,7 @@ class move:
         cost = 9999
         inc_backtrack = 0
         for i in list:
-            if i[0] <= cost and i[0] != 9000:
+            if i[0] < cost and i[0] != 9000:
                 cost = i[0]
                 pos_i = i[1]
                 pos_j = i[2]
@@ -157,6 +171,7 @@ class move:
     def player_init(self):
         self.open_list.append([1, 1])
         self.closed_list.append([1,1])
+        self.prev_fn.append(9000)
         current_node = [1, 1]
         self.current_move.append( current_node )
         move = self.player_move_process([1,1])
@@ -221,54 +236,114 @@ class move:
             restrcted_cells.append([i, j])
         return n_cost
 
-    def a_star_strategy1(self, current_node):
-        if self.open_list:
-            status = False
+# usc_dest = []
+# usc_processed = []
+# usc_prev = []
+#usc_pq = []
 
-            if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
-                return 88
+############################### UNIFORM COST SEARCH
 
-            if current_node == [0,0]:
-                return True
+    def uniform_cost_search(self, current_node):
+        ## current node is in this form [ [1,1] ]
 
-            if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
-                return self.a_visit
-            index_i = current_node[0]
-            index_j = current_node[1]
+        for i in range(1,19):
+            for j in range(1,19):
+                if self.maze_array[i][j]==8:
+                    self.usc_dist[repr([i, j])] = 5555  # 'infinity'     # processed stores in format : [ [1,1] ]
+                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
+                    self.usc_prev[repr([i, j])] = None
+                else:
+                    self.usc_dist[repr([i, j])] = 1000  # 'infinity'     # processed stores in format : [ [1,1] ]
+                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
+                    self.usc_prev[repr([i, j])] = None
 
-            self.net_cost.append( [ self.expand_neighbor_usc( index_i + 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
-            self.net_cost.append( [ self.expand_neighbor_usc( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
-            self.net_cost.append( [ self.expand_neighbor_usc( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
-            self.net_cost.append( [ self.expand_neighbor_usc( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
 
-            result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
+        self.usc_dist[ repr(current_node) ] = 0
+        self.usc_pq[ repr(current_node) ] = self.usc_dist[ repr(current_node) ]
+        self.usc_pq_list.append( [current_node, self.usc_dist[ repr(current_node) ]] )     # this is for while loop
+        self.usc_prev[ repr(current_node) ] = current_node
 
-            if result[0] == 9000:
-                print("ass")
-                print("current pos" , current_node)
-                current_node = self.closed_list[-1]
-                print("new pos", current_node)
-                if current_node not in self.open_list:
-                    self.open_list.append(current_node)
+        self.usc_dist[ repr([1,2]) ] = 2
+        self.usc_pq[ repr([1,2]) ] = self.usc_dist[ repr([1,2]) ]
+        self.usc_pq_list.append( [ [1,2], self.usc_dist[ repr([1,2]) ]] )     # this is for while loop
+        self.usc_prev[ repr([1,2]) ] = None
+        self.usc_processed[repr([1, 2])] = False
 
-                status = True
-            self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
-            if status == False:
-                np = result[1]
-                if self.open_list:
-                    self.open_list.remove([current_node[0], current_node[1]])
-                current_node = np
+        self.usc_dist[ repr([2,1]) ] = 2
+        self.usc_pq[ repr([2,1]) ] = self.usc_dist[ repr([2,1]) ]
+        self.usc_pq_list.append( [ [2,1], self.usc_dist[ repr([2,1]) ]] )     # this is for while loop
+        self.usc_prev[ repr([2,1]) ] = None
+        self.usc_processed[repr([2, 1])] = False
 
-                self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
-                self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
 
-                self.a_visit.append( [np[0], np[1]] )   # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
-                self.closed_list.append(np)
-                self.est_cost.append([np, result[0]])  # [index,cost]
-                if self.current_move:
-                    self.current_move.clear()
-                self.current_move.append( np )
-        return current_node
+        pprev = []
+        print("hello")
+        print(self.usc_pq_list)
+        #while self.usc_pq_list:
+        while self.usc_pq:
+            # try to have two fringe - one dict and one list
+            #node = self.usc_pq_list.pop()    # returns [ [i,j] ,  distance ]
+            print("List before pop : " , self.usc_pq)
+            index = min(self.usc_pq, key=self.usc_pq.get)
+            index2 = literal_eval(index)
+            if index2 == [self.target_i,self.target_j]:
+                print("MADE IT &$$$$$$$$$$$$$$$")
+                break
+            self.m.player_movement(index2[0], index2[1], (0, 0, 255), "player")
+            self.m.player_movement(index2[0], index2[1], (255, 255, 102), "player")
+
+            #current_node = index
+            val = self.usc_pq.pop( index )
+            node = [index,val]
+            print("current node : " , node )
+            print("List after pop : ", self.usc_pq)
+            print()
+
+            self.usc_visited.append( literal_eval(node[0]) )
+            if node[0] in self.usc_processed:
+                if self.usc_processed.get( node[0] ) == False:
+                    cn = literal_eval(node[0])  # converts string back to list
+                    print(cn)
+                    cn_i = cn[0]    # currentnode_index_i in while loop
+                    cn_j = cn[1]
+                    child = [
+                        [cn_i - 1,cn_j] ,
+                        [cn_i + 1,cn_j] ,
+                        [cn_i , cn_j-1] ,
+                        [cn_i , cn_j+1] ,
+                    ]
+                    print("current node :" , cn , " and neighbors : " , child)
+                    for i in child:
+                        if self.maze_array[i[0]][i[1]] != 8:
+                            if i not in self.usc_visited:
+                                print("exploring current child : " , i)
+                                d = self.usc_dist[repr([cn_i,cn_j])] + self.maze_array[i[0]][i[1]]
+                                #self.usc_dist[repr([cn_i,cn_j])]
+                                uvw = self.usc_dist[repr(i)]
+                                # print("d : " , d)
+                                # print("uvw : ", uvw)
+                                if d < uvw:
+                                    # print("zxxzxzxx")
+                                    self.usc_dist[repr(i)] = d
+                                    self.usc_pq[repr(i)] = d
+                                    self.usc_prev[repr(i)] = [cn_i, cn_j]
+                                    pprev.append([[i], [[cn_i, cn_j]]])
+                                    #current_node = i
+                    # if self.usc_dist[  repr(i)  ] != 'infinity':
+                    #     d = self.maze_array[ cn_i, cn_j ] + self.maze_array[ i[0],i[1] ]
+                    #     if d < self.usc_dist[ repr(i) ]:
+                    #         print()
+                    #         self.usc_dist[ repr(i) ] = d
+                    #         self.usc_pq[ repr(i) ] = d
+                    #         self.usc_pq_list.append([[i], self.usc_dist[repr(i)]])
+                    #         #self.usc_pq[ repr(i) ] = [ [i] , d ] # update key
+                    #
+                    #         self.usc_prev[ repr(i) ] = [cn_i,cn_j]
+                    #         pprev.append( [ [i],[[cn_i,cn_j]] ] )
+                    # else:
+                    #     self.usc_dist[repr(i)] = self.maze_array[ i[0],i[1] ]
+                self.usc_processed[ repr([cn_i, cn_j]) ] = True
+        return self.usc_prev
 
 
 
@@ -293,8 +368,23 @@ class move:
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
             self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
-
+            print(self.net_cost)
             result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
+
+
+            # last_fn = self.prev_fn[-1]
+            #
+            # if last_fn < result[0]:
+            #     print(current_node , "  " , self.net_cost , " | " , last_fn)
+            #     self.prev_fn.pop(0)
+            #     self.prev_fn.append(result[0])
+            #     self.closed_list.pop()
+            #     current_node = self.closed_list[-1]
+            #     status = True
+            #
+            # if result[0] < last_fn:
+            #     self.prev_fn.append(result[0])
+
 
             if result[0] == 9000:
                 print("ass")
@@ -655,6 +745,7 @@ class move:
                 self.maze_array[i][j] = 100
             else:
                 self.maze_array[i][j] = self.maze_array[i][j] + 50
+
         # if self.maze_array[i][j] == 1:
         #     self.maze_array[i][j] = 100
 
