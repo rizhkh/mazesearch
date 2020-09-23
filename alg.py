@@ -83,7 +83,6 @@ class mazeGen:
         filled_cells = []
         filled_cells.append(self.calc_prob())
         arr = array
-        print(arr)
         arr = self.visit_Neighbor_bfs(self.start_i, self.start_j, filled_cells , arr)
         self.current_node(self.start_i, self.start_j)   # Sets parent node as current node and adds it to list of visited nodes and in queue of nodes
         if not self.q:

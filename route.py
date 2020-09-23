@@ -130,7 +130,6 @@ class move:
                 inc_backtrack += 1
 
         if cost == -1:  #   COMMENT THIS IF YOU WANT TO JUST RUN STRATEGY ONE
-            print("AZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
             position = self.backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
             # position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
             pos_i = position[0]
@@ -286,7 +285,6 @@ class move:
             status = False
 
             if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
-                print(self.maze_array)
                 return 88
 
             if current_node == [0,0]:
@@ -304,6 +302,8 @@ class move:
             result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
 
             if result[0] == 9000:
+                if not self.closed_list:
+                    return False
                 current_node = self.closed_list[-1]
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
@@ -533,8 +533,7 @@ class move:
             # j = random.randint(1, self.m.col - 2)
             i = random.randint(3, self.m.col - 4)  # This would generate the random position of the fire
             j = random.randint(2, self.m.col - 4)
-        return [4, 8]
-        #return [i,j]
+        return [i,j]
 
     def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())
@@ -594,8 +593,8 @@ class move:
                 else:
                     cur_n = self.fire_start_pos(self.m.get_arr())
                 self.q.append(cur_n)
-                print("IM HERE 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-                print(cur_n)
+                # print("IM HERE 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+                # print(cur_n)
             else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
                 cur_n = self.cur_n_fire[-1]
                 self.q.append( cur_n )

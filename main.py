@@ -106,7 +106,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.1) # PLAYER
+        time.sleep(0.07) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -153,16 +153,16 @@ class maze:
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
 
-        # array = obj.maze_generate_BFS( self.maze_array )
-        # # array = obj.maze_generate_DFS()
-        # ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        # array = obj.make_path_door(array)
-        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        # self.maze_array = array
+        array = obj.maze_generate_BFS( self.maze_array )
+        # array = obj.maze_generate_DFS()
+        ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        array = obj.make_path_door(array)
+        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
+        self.maze_array = array
 
         #
-        array = obj.DELETETHISFUNCT()
-        self.maze_array = array
+        # array = obj.DELETETHISFUNCT()
+        # self.maze_array = array
         #row - 2
 
         self.map_values() # To map values on 2d array maze map
@@ -205,69 +205,70 @@ class maze:
 
 
         ####### ******** STRATEGY ONE For A STAR ******** ##################
-        move_player = b.player_init()
-        move_player = b.a_star_SOne(move_player)
-        b.init_fire()
-        i = 0
-        j = 0
-        status = False
-        if type(move_player) == bool:
-            if move_player==False:
-                print(" Target Not Reachable! ")
-        if type(move_player) == list:
-            while i<5 or status == False:
-                # if j == 88:
-                #     print(" DIED! ")
-                #     break
-
-                if j == len(move_player):
-                    print(" Target Reached! ")
-                    break
-
-
-                status = b.fire_movement_process(status, i)
-                current_move = move_player[j]
-
-                if self.maze_array[ current_move[0] ][ current_move[1] ] == 4:
-                    print(" DIED! ")
-                    break
-
-                if j < len(move_player):
-                    self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
-                    self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
-                    if status == True:
-                        print(" Game Over! ")
-                        break
-                i += 1
-                j += 1
-                if i==5:
-                    i=0
-
-
-        # ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
         # move_player = b.player_init()
+        # move_player = b.a_star_SOne(move_player)
         # b.init_fire()
         # i = 0
+        # j = 0
         # status = False
-        # while i<5 or status == False:
-        #     status = b.fire_movement_process(status,i)
-        #     move_player = b.player_move_process(move_player)
+        # if type(move_player) == bool:
+        #     if move_player==False:
+        #         print(" Target Not Reachable! ")
+        # if type(move_player) == list:
+        #     while i<5 or status == False:
         #
-        #     if move_player == [ obj.row - 2, obj.col - 2 ]:
-        #         print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-        #         break
+        #         if j == len(move_player):
+        #             print(" Target Reached! ")
+        #             break
         #
-        #     if move_player == 88:
-        #         print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
-        #         break
+        #         status = b.fire_movement_process(status, i)
+        #         current_move = move_player[j]
         #
-        #     if status == True:
-        #         print("444444444444444444444444444444444444444")
-        #         break
+        #         if self.maze_array[ current_move[0] ][ current_move[1] ] == 4:
+        #             print(" DIED! ")
+        #             break
         #
-        #     i += 1
-        #     if i==5:
-        #         i=0
+        #         if j < len(move_player):
+        #             self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
+        #             self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
+        #             if status == True:
+        #                 print(" Game Over! ")
+        #                 break
+        #         i += 1
+        #         j += 1
+        #         if i==5:
+        #             i=0
+
+
+        ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
+        move_player = b.player_init()
+        b.init_fire()
+        i = 0
+        status = False
+        while i<5 or status == False:
+            status = b.fire_movement_process(status,i)
+            move_player = b.player_move_process(move_player)
+
+            if type(move_player) == bool:
+                if move_player==False:
+                    print("Target Not Reachable !")
+                    break
+
+            if move_player == [ obj.row - 2, obj.col - 2 ]:
+                print(" Target Reached")
+                break
+
+            if move_player == 88:
+                print(" DIED !")
+                break
+
+            if status == True:
+                print(" DIED")
+                break
+
+            i += 1
+            if i==5:
+                i=0
 
         # b.cls_start_end_points()
         # b.fire_movement()
