@@ -254,9 +254,6 @@ class maze:
         i = 0
         status = False
         already_visited = []
-        new_move = []
-        rs = []
-        moves_list = []
         inc = 0
         inc_stop = 0
         moves_list = b.recompute_a_star_Two(move_player,'returnList')
@@ -269,9 +266,9 @@ class maze:
         else:
             print(moves_list)
             currentmove = moves_list.pop(0)
-            print("current move : ", currentmove)
 
             while i < 5 or status == False:
+                status = b.fire_movement_process(status, i)
                 sttus = b.recompute_a_star_Two(currentmove,'returnBool')
                 if sttus == True:
                     self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
@@ -282,9 +279,9 @@ class maze:
                     else:
                         currentmove = moves_list.pop(0)
                         already_visited.append(currentmove)
-                    print("current move : " , currentmove)
                 else:
                     print("PATH CHANGED ****************************************************")
+                    print(moves_list)
                     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
                     if type(moves_list) == bool or moves_list == 66:

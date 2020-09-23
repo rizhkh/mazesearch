@@ -793,9 +793,9 @@ class move:
     def fill_fire_neighbor(self,i,j):
         if self.maze_array[i][j] != 8:
             if self.maze_array[i][j] == 1:
-                self.maze_array[i][j] = 100
+                self.maze_array[i][j] = 3
             else:
-                self.maze_array[i][j] = self.maze_array[i][j] + 50
+                self.maze_array[i][j] = self.maze_array[i][j] + 1
 
         # if self.maze_array[i][j] == 1:
         #     self.maze_array[i][j] = 100
