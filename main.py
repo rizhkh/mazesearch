@@ -228,7 +228,9 @@ class maze:
                 status = b.fire_movement_process(status, i)
                 current_move = move_player[j]
 
-                #print( self.maze_array )
+                if self.maze_array[ current_move[0] ][ current_move[1] ] == 4:
+                    print(" DIED! ")
+                    break
 
                 if j < len(move_player):
                     self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
