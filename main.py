@@ -257,6 +257,8 @@ class maze:
         new_move = []
         rs = []
         moves_list = []
+        inc = 0
+        inc_stop = 0
         moves_list = b.recompute_a_star_Two(move_player,'returnList')
 
         if type(moves_list) == bool:
@@ -269,36 +271,45 @@ class maze:
             currentmove = moves_list.pop(0)
             print("current move : ", currentmove)
 
-        while i < 5 or status == False:
-            sttus = b.recompute_a_star_Two(currentmove,'returnBool')
-            if sttus == True:
-                self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
-                #self.player_movement(currentmove[0], currentmove[1], (255, 255, 102), "player")
-                if currentmove == [18, 18]:
-                    print("Target Reached")
-                    break
+            while i < 5 or status == False:
+                sttus = b.recompute_a_star_Two(currentmove,'returnBool')
+                if sttus == True:
+                    self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
+                    #self.player_movement(currentmove[0], currentmove[1], (255, 255, 102), "player")
+                    if currentmove == [18, 18]:
+                        print("Target Reached")
+                        break
+                    else:
+                        currentmove = moves_list.pop(0)
+                        already_visited.append(currentmove)
+                    print("current move : " , currentmove)
                 else:
-                    currentmove = moves_list.pop(0)
-                    already_visited.append(currentmove)
-                print("current move : " , currentmove)
-            else:
-                print("PATH CHANGED ****************************************************")
-                moves_list = b.recompute_a_star_Two(move_player, 'returnList')
-                print(moves_list)
-                if type(moves_list) == bool or moves_list == 66:
-                    print("Target Not reachable")
-                    break
-                else:
-                    currentmove =  already_visited[-2] #moves_list.pop(0)
-                    print("STARTING AGAIN----------------------------------------------------")
-                    self.player_movement(currentmove[0], currentmove[1], (0, 0, 255), "player")
+                    print("PATH CHANGED ****************************************************")
+                    moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
-            i += 1
-            if i == 5:
-                i = 0
+                    if type(moves_list) == bool or moves_list == 66:
+                        print("Target Not reachable")
+                        break
+                    else:
+                        currentmove = already_visited[-2]  # moves_list.pop(0)
+                        print("STARTING AGAIN----------------------------------------------------")
 
-        for k in already_visited:
-            self.player_movement(k[0], k[1], (199, 156, 85), "player")
+                        if inc_stop >= 15:
+                            print("ERROR")
+                            break
+                        if inc>=10 :    # if backtracking is stuck between two spots and is not moving - then all cells that are added in restricted cells are removed for a new path computation
+                            b.rcmp_clear_restricted()
+                            inc = 0
+                        #b.rcmp_clear_restricted()
+                        self.player_movement(currentmove[0], currentmove[1], (0, 0, 255), "player")
+                        inc_stop += 1  # this is to confirm that infinite loop is on and break the loop
+                i += 1
+                inc += 1
+                if i == 5:
+                    i = 0
+
+            for k in already_visited:
+                self.player_movement(k[0], k[1], (199, 156, 85), "player")
 
 
 

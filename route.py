@@ -404,6 +404,9 @@ class move:
             index = [0,0]
         return index
 
+    def rcmp_clear_restricted(self):
+        self.rcmp_restricted_cells.clear()
+
     def recompute_a_star_Two(self, current_node, mode):
 
         if mode == 'returnList':
