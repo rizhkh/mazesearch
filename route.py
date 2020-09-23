@@ -367,6 +367,8 @@ class move:
 
 
             if result[0] == 9000:
+                if not self.closed_list:
+                    return False
                 current_node = self.closed_list[-1]
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
@@ -531,7 +533,8 @@ class move:
             # j = random.randint(1, self.m.col - 2)
             i = random.randint(3, self.m.col - 4)  # This would generate the random position of the fire
             j = random.randint(2, self.m.col - 4)
-        return [i,j]
+        return [4, 8]
+        #return [i,j]
 
     def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())

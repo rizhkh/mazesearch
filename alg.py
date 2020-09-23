@@ -221,7 +221,7 @@ class mazeGen:
         self.maze_array[1][8] = 8
         self.maze_array[2][8] = 8
         self.maze_array[3][8] = 8
-        self.maze_array[4][8] = 8
+        self.maze_array[4][8] = 1
         self.maze_array[5][8] = 8
         self.maze_array[6][8] = 8
         self.maze_array[7][8] = 8

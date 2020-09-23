@@ -106,7 +106,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        #time.sleep(0.1) # PLAYER
+        time.sleep(0.1) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -191,9 +191,6 @@ class maze:
         b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
 
-        move_player = b.player_init()
-        b.init_fire()
-
         #b.new_target()
 
         # ####### ******** STRATEGY ONE Uniform cost search ******** ##################
@@ -208,10 +205,15 @@ class maze:
 
 
         ####### ******** STRATEGY ONE For A STAR ******** ##################
+        move_player = b.player_init()
         move_player = b.a_star_SOne(move_player)
+        b.init_fire()
         i = 0
         j = 0
         status = False
+        if type(move_player) == bool:
+            if move_player==False:
+                print(" Target Not Reachable! ")
         if type(move_player) == list:
             while i<5 or status == False:
                 # if j == 88:
@@ -239,7 +241,10 @@ class maze:
                 if i==5:
                     i=0
 
+
         # ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
+        # move_player = b.player_init()
+        # b.init_fire()
         # i = 0
         # status = False
         # while i<5 or status == False:
