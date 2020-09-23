@@ -106,7 +106,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.07) # PLAYER
+        time.sleep(0.01) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -203,8 +203,8 @@ class maze:
         #         self.player_movement(c_i, c_j, (0, 0, 0), "player")
 
 
-
-        ####### ******** STRATEGY ONE For A STAR ******** ##################
+        #
+        # ###### ******** STRATEGY ONE For A STAR ******** ##################
         # move_player = b.player_init()
         # move_player = b.a_star_SOne(move_player)
         # b.init_fire()
@@ -240,35 +240,101 @@ class maze:
         #             i=0
 
 
-        ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
+        # ###### ******** STRATEGY TWO For A STAR ******** ################## RECOMPUTE
+
+        # i run one outside the while loop
+        # use that list as my steps
+        # if it returns true - keep using orignal list and pop
+        # if false - pop(0) from orignal and keep popping until you have True
+        # one you have True - replace orignal list with where you got the true
+        # now use that list
+
         move_player = b.player_init()
         b.init_fire()
         i = 0
         status = False
-        while i<5 or status == False:
-            status = b.fire_movement_process(status,i)
-            move_player = b.player_move_process(move_player)
+        already_visited = []
+        new_move = []
+        rs = []
+        moves_list = []
+        moves_list = b.recompute_a_star_Two(move_player,'returnList')
 
-            if type(move_player) == bool:
-                if move_player==False:
-                    print("Target Not Reachable !")
+        if type(moves_list) == bool:
+            print("Target Not reachable")
+        if moves_list==66:
+            print("Target Not reachable")
+
+        else:
+            print(moves_list)
+            currentmove = moves_list.pop(0)
+            print("current move : ", currentmove)
+
+        while i < 5 or status == False:
+            sttus = b.recompute_a_star_Two(currentmove,'returnBool')
+            if sttus == True:
+                self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
+                #self.player_movement(currentmove[0], currentmove[1], (255, 255, 102), "player")
+                if currentmove == [18, 18]:
+                    print("Target Reached")
                     break
-
-            if move_player == [ obj.row - 2, obj.col - 2 ]:
-                print(" Target Reached")
-                break
-
-            if move_player == 88:
-                print(" DIED !")
-                break
-
-            if status == True:
-                print(" DIED")
-                break
+                else:
+                    currentmove = moves_list.pop(0)
+                    already_visited.append(currentmove)
+                print("current move : " , currentmove)
+            else:
+                print("PATH CHANGED ****************************************************")
+                moves_list = b.recompute_a_star_Two(move_player, 'returnList')
+                print(moves_list)
+                if type(moves_list) == bool or moves_list == 66:
+                    print("Target Not reachable")
+                    break
+                else:
+                    currentmove =  already_visited[-2] #moves_list.pop(0)
+                    print("STARTING AGAIN----------------------------------------------------")
+                    self.player_movement(currentmove[0], currentmove[1], (0, 0, 255), "player")
 
             i += 1
-            if i==5:
-                i=0
+            if i == 5:
+                i = 0
+
+        for k in already_visited:
+            self.player_movement(k[0], k[1], (199, 156, 85), "player")
+
+
+
+        ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
+        # move_player = b.player_init()
+        # b.init_fire()
+        # i = 0
+        # status = False
+        # while i<5 or status == False:
+        #     status = b.fire_movement_process(status,i)
+        #     move_player = b.player_move_process(move_player)
+        #
+        #     if type(move_player) == bool:
+        #         if move_player==False:
+        #             print("Target Not Reachable !")
+        #             break
+        #
+        #     if move_player == [ obj.row - 2, obj.col - 2 ]:
+        #         print(" Target Reached")
+        #         break
+        #
+        #     if move_player == 88:
+        #         print(" DIED !")
+        #         break
+        #
+        #     if status == True:
+        #         print(" DIED")
+        #         break
+        #
+        #     i += 1
+        #     if i==5:
+        #         i=0
+
+
+
+
 
         # b.cls_start_end_points()
         # b.fire_movement()

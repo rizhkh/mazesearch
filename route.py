@@ -28,21 +28,18 @@ class move:
 
     f_visit = []  # fire cell
     f_list_of_visited_nodes = []
-    dup = 0
     cur_n_fire = []
-
     fire_pos = []
 
     open_list = deque()
     closed_list = []
-    val = []
-    node_key_fval = [] # [ ['position','func(n)'] ]
-    book_list = {} # To book keep index and their func values
+    # node_key_fval = [] # [ ['position','func(n)'] ]
+    # book_list = {} # To book keep index and their func values
     restricted_cells = []
-    a_visit = []
+    a_visit = []    # Keeps track of visited node for the route that will be used
     net_cost = []
     est_cost = [] #dict()  # stores [index,cost]
-    current_move = [ ]
+    current_move = [ ]  # stores current_move
 
     rcmp_open_list = deque()
     rcmp_closed_list = []
@@ -52,23 +49,22 @@ class move:
     rcmp_est_cost = [] #dict()  # stores [index,cost]
     rcmp_current_move = [ ]
 
-
-
     non_repeat = []
     prev_steps = []
     restrct_cells = []
-
     number = [1]
     prev = []
-
     prev_fn = []
 
+    val = []
     usc_pq_list = []
     usc_dist = dict()
     usc_processed = dict()
     usc_prev = dict()
     usc_pq = dict()
     usc_visited = []
+
+
 
     def __init__(self , scrn, arr, obj):
         self.m = obj    #Copy the ref address in an empty obj -> point towards the orignal address
@@ -81,7 +77,7 @@ class move:
         dx = abs(current_i - goal_i)
         dy = abs(current_j - goal_j)
         h = distance  * (dx + dy)
-        return (dx + dy) # LOOOOOOK AT THISESSSSSSSSSSSSSSSSSSSSSSSSSS
+        return (dx + dy)
 
     # Returns the cell value of the current explored neighbor cell from map
     def visit_neighbor_astar(self, i, j):
@@ -89,10 +85,7 @@ class move:
 
     # CHANGE THIS FUNCTION TO WHERE A LIST STORES INDEX POSITION and F(N)
     def expand_neighbor_astar(self, i, j, current_node, array, clsed_list, restrcted_cells, opn_list):  # , prev_gn):
-    #def expand_neighbor_astar(self, i, j, current_node):#, prev_gn):
         n_cost = 9000
-
-        #### COMMENT THIS BELOW FOR STRATEGY ONE
         if ([i,j] in self.fire_cells) or ([i,j] in self.last_fire_cells):
             restrcted_cells.append([i, j])
             return -1
@@ -117,7 +110,6 @@ class move:
 
     # returns smallest f(n) of the nodes being checked
     def get_net_cost(self, list, current_node, rstrcted_cells, clsed_lists):
-    #def get_net_cost(self, list, current_node):
         pos_i = pos_j = 0
         cost = 9999
         inc_backtrack = 0
@@ -150,20 +142,14 @@ class move:
         self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
         self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
         rstrcted_cells.append(pos)
-        #print("current pos in backtracking(): " , clsed_list[-1])
         clsed_list.pop()
-        #####
-        ####
-        ## ADDED CODE RIGHT HERE
         if pos in self.a_visit:
             ind = self.a_visit.index(pos)
             self.a_visit.pop(ind)
-        #print("current pos in backtracking: ", clsed_list[-1])
         if clsed_list:
             index = clsed_list[-1]
         else:
             index = [0,0]
-        #index = self.closed_list[-1]
         return index
 
 
@@ -179,36 +165,16 @@ class move:
         move = self.player_move_process([1,1])
         return move
 
-    def new_target(self):
-        pos = self.fire_pos[-1]
-        self.target_i = pos[0]
-        self.target_j = pos[1]
+    # def new_target(self):
+    #     pos = self.fire_pos[-1]
+    #     self.target_i = pos[0]
+    #     self.target_j = pos[1]
 
     def player_move_process(self,current_node):
         #My own Implemented Strategy
         next_step_astar = self.a_star(current_node)
         return next_step_astar
 
-        #next_step_astar = self.a_star(current_node)
-        # self.m.player_movement(current_node[0], current_node[1], (255, 255, 102), "player")
-        # nList = deque()
-        # nList = self.recompute_a_star(nList, next_step_astar)
-        #
-        # item = nList[0]
-        # print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ " , item)
-        # if len(nList) == 1:
-        #     next_step_astar = nList[0]
-        #     # print(" asdasdasdasd",self.prev_steps)
-        #     while self.prev_steps:
-        #         index = self.prev_steps[-1]
-        #         self.m.player_movement(index[0], index[1], (255, 153, 51), "player")
-        #         self.m.player_movement(index[0], index[1], (255, 255, 255), "player")
-        #         self.prev_steps.pop()
-        #         # print(" asdasdasdasd", self.prev_steps)
-        #     #break
-        #
-        # next_step_recompute = nList[0]
-        #return next_step_astar
 
 ############################### UNIFORM COST SEARCH
     def uniform_cost_search(self, current_node):
@@ -326,8 +292,22 @@ class move:
                     self.current_move.clear()
                 self.current_move.append( np )
         return current_node
-
-
+    #
+    # def clear_all_lists(self):
+    #     self.open_list.clear()
+    #     self.closed_list.clear()
+    #     self.restricted_cells.clear() # Not sure about this
+    #     self.current_move.clear() # Not sure about this
+    #     self.est_cost.clear()
+    #
+    # def print_all_lists(self):
+    #     print("========")
+    #     print("open : ", self.open_list.clear() )
+    #     print("closed : ",self.closed_list.clear() )
+    #     print("restricted : ",self.restricted_cells.clear() ) # Not sure about this
+    #     print("move ", self.current_move.clear() ) # Not sure about this
+    #     print("est cost ", self.est_cost.clear() )
+    #     print("========")
 
     def a_star_SOne(self, current_node):
         while self.open_list:
@@ -345,26 +325,11 @@ class move:
             index_i = current_node[0]
             index_j = current_node[1]
 
-            self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
+            self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node, self.maze_array , self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
             self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
             result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
-
-
-            # last_fn = self.prev_fn[-1]
-            #
-            # if last_fn < result[0]:
-            #     print(current_node , "  " , self.net_cost , " | " , last_fn)
-            #     self.prev_fn.pop(0)
-            #     self.prev_fn.append(result[0])
-            #     self.closed_list.pop()
-            #     current_node = self.closed_list[-1]
-            #     status = True
-            #
-            # if result[0] < last_fn:
-            #     self.prev_fn.append(result[0])
-
 
             if result[0] == 9000:
                 if not self.closed_list:
@@ -393,7 +358,62 @@ class move:
                 # print(self.maze_array)
         return False
 
-    def recompute_a_star(self, sList, current_node):
+    def return_restrcted_cells(self):
+        return self.rcmp_restricted_cells
+
+    def rcmget_net_cost(self, list, current_node, rstrcted_cells, clsed_lists):
+        pos_i = pos_j = 0
+        cost = 9999
+        inc_backtrack = 0
+        for i in list:
+            if i[0] < cost and i[0] != 9000:
+                cost = i[0]
+                pos_i = i[1]
+                pos_j = i[2]
+            if i[0] == 9000:
+                inc_backtrack += 1
+
+        if cost == -1:  #   COMMENT THIS IF YOU WANT TO JUST RUN STRATEGY ONE
+            position = self.rcmp_backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
+            # position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
+            pos_i = position[0]
+            pos_j = position[1]
+            cost = 9000
+
+        if inc_backtrack==4:
+            position = self.rcmp_backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
+            #position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
+            pos_i = position[0]
+            pos_j = position[1]
+            cost = 9000
+
+        index = [ pos_i, pos_j ]
+        return [ cost, index ]
+
+    def rcmp_backtracking(self, pos, rstrcted_cells, clsed_list):
+        self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
+        self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
+        rstrcted_cells.append(pos)
+        clsed_list.pop()
+        if pos in self.a_visit:
+            ind = self.a_visit.index(pos)
+            self.a_visit.pop(ind)
+        if clsed_list:
+            index = clsed_list[-1]
+        else:
+            index = [0,0]
+        return index
+
+    def recompute_a_star_Two(self, current_node, mode):
+
+        if mode == 'returnList':
+            self.rcmp_open_list.clear()
+            self.rcmp_closed_list.clear()
+            #self.rcmp_restricted_cells.clear()  ###########################################################
+            self.rcmp_a_visit.clear()
+            self.rcmp_net_cost.clear()
+            self.rcmp_est_cost.clear()
+
         self.rcmp_open_list.append(current_node)
         self.rcmp_closed_list.append(current_node)
         #current_node = [1, 1]
@@ -404,30 +424,46 @@ class move:
 
         while self.rcmp_open_list:
             status = False
-            self.m.player_movement(current_node[0], current_node[1], (0, 0, 255), "player")
             if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
                 #print(self.maze_array)
                 return 88
 
             if current_node == [0,0]:
-                return True
+                return 66
 
-            if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
-                break
+            if current_node == [self.target_i,self.target_j] and mode == 'returnList': #IF CURRENT NODE IS GOAL CELL
+                print("YES")
+                al = self.rcmp_a_visit[:]
+
+                self.rcmp_open_list.clear()
+                self.rcmp_closed_list.clear()
+                #self.rcmp_restricted_cells.clear()  ###########################################################
+                self.rcmp_a_visit.clear()
+                self.rcmp_net_cost.clear()
+                self.rcmp_est_cost.clear()
+                return al
+
+            if current_node == [self.target_i,self.target_j] and mode == 'returnBool': #IF CURRENT NODE IS GOAL CELL
+                self.rcmp_open_list.clear()
+                self.rcmp_closed_list.clear()
+                #self.rcmp_restricted_cells.clear()  ###########################################################
+                self.rcmp_a_visit.clear()
+                self.rcmp_net_cost.clear()
+                self.rcmp_est_cost.clear()
+                return True
+                # print("YES")
+                # al = self.rcmp_a_visit[:]
+                #
+                # self.rcmp_open_list.clear()
+                # self.rcmp_closed_list.clear()
+                # self.rcmp_restricted_cells.clear()  ###########################################################
+                # self.rcmp_a_visit.clear()
+                # self.rcmp_net_cost.clear()
+                # self.rcmp_est_cost.clear()
+                # return al
 
             index_i = current_node[0]
             index_j = current_node[1]
-            # self.rcmp_net_cost.append(
-            #     [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
-            # self.rcmp_net_cost.append(
-            #     [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
-            # self.rcmp_net_cost.append(
-            #     [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
-            # self.rcmp_net_cost.append(
-            #     [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
-
-            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
-
             self.rcmp_net_cost.append(
                 [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
             self.rcmp_net_cost.append(
@@ -437,9 +473,12 @@ class move:
             self.rcmp_net_cost.append(
                 [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
 
-            result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
+            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
+            result = self.rcmget_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
 
             if result[0] == 9000:
+                if not self.rcmp_closed_list:
+                    return False
                 current_node = self.rcmp_closed_list[-1]
                 if current_node not in self.rcmp_open_list:
                     self.rcmp_open_list.append(current_node)
@@ -471,6 +510,111 @@ class move:
                 #     sList.append(result[1])
                 #     return sList
 
+                np = result[1]
+                self.rcmp_open_list.remove([current_node[0], current_node[1]])
+                current_node = np
+                # self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
+                # self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
+                self.rcmp_a_visit.append([np[0], np[1]])  # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
+                self.rcmp_closed_list.append(np)
+                self.rcmp_est_cost.append([np, result[0]])  # [index,cost]
+                if self.rcmp_current_move:
+                    self.rcmp_current_move.clear()
+                self.rcmp_current_move.append(np)
+        #print(" $ " , self.open_list)
+        sList = self.rcmp_a_visit.copy()
+
+        self.rcmp_open_list.clear()
+        self.rcmp_closed_list.clear()
+        #self.rcmp_restricted_cells.clear()  ###########################################################
+        self.rcmp_a_visit.clear()
+        self.rcmp_net_cost.clear()
+        self.rcmp_est_cost.clear()
+        #print("value of passed list sList : " ,sList)
+        # print("this is self.maze_array : ",self.maze_array)
+        # print()
+        # print("this is the copied array :  ")
+        # print(array)
+
+        return False
+
+
+    def recompute_a_star(self, sList, current_node):
+        self.rcmp_open_list.append(current_node)
+        self.rcmp_closed_list.append(current_node)
+        #current_node = [1, 1]
+        self.rcmp_current_move.append( current_node )
+        array = self.maze_array.copy()
+
+        check = False
+
+        while self.rcmp_open_list:
+            status = False
+            self.m.player_movement(current_node[0], current_node[1], (0, 0, 255), "player")
+            if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
+                #print(self.maze_array)
+                return 88
+
+            if current_node == [0,0]:
+                return True
+
+            if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
+                break
+
+            index_i = current_node[0]
+            index_j = current_node[1]
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
+
+            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
+
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
+            self.rcmp_net_cost.append(
+                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
+
+            result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
+
+            if result[0] == 9000:
+                current_node = self.rcmp_closed_list[-1]
+                if current_node not in self.rcmp_open_list:
+                    self.rcmp_open_list.append(current_node)
+                status = True
+            self.rcmp_net_cost.clear()  # we clear the last list so new nodes and their fn is saved
+            if status == False:
+                #HERE IS WHERE YOU HAVE TO MAKE THE ORIGNAL A STAR TURN AROUND
+                # On this condition - the recompute finally turns around and looks for another path
+                # the check condition as long as its true will save the cells that need to be backtracked
+
+                # if result[1] in self.closed_list:
+                #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
+                #     # self.closed_list.append(result[1])
+                #     # self.restricted_cells.append(result[1])
+                #     # self.restricted_cells.append(result[1])
+                #     # sList = result[1]
+                #     print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+                #     # return sList
+                #     self.prev_steps.append(result[1])
+                #     check = True
+                #
+                # # this condition is true when recompute finds a path that is not in the visited list - when that open cell is found thats where you will start again from
+                # if result[1] not in self.closed_list and check==True:
+                #     print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                #     self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
+                #     # print(result[1])
+                #     #check = False
+                #     sList.append(result[1])
+                #     return sList
                 np = result[1]
                 # if current_node in self.rcmp_open_list:
                 #     self.rcmp_open_list.remove([current_node[0], current_node[1]])
