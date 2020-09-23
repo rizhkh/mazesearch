@@ -153,16 +153,16 @@ class maze:
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
         array = []
 
-        array = obj.maze_generate_BFS( self.maze_array )
-        # array = obj.maze_generate_DFS()
-        ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
-        array = obj.make_path_door(array)
-        array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
-        self.maze_array = array
+        # array = obj.maze_generate_BFS( self.maze_array )
+        # # array = obj.maze_generate_DFS()
+        # ##array = obj.generate_maze_no_alg()  # To generate maze with out any algorithm
+        # array = obj.make_path_door(array)
+        # array = obj.clear_start(array , [1,1] , [self.last_row , self.last_col])
+        # self.maze_array = array
 
         #
-        # array = obj.DELETETHISFUNCT()
-        # self.maze_array = array
+        array = obj.DELETETHISFUNCT()
+        self.maze_array = array
         #row - 2
 
         self.map_values() # To map values on 2d array maze map
@@ -193,39 +193,51 @@ class maze:
 
         move_player = b.player_init()
         b.init_fire()
-        #b.new_target()
-        l = b.uniform_cost_search([1,1])
-        print( l )
-        for i in l:
-            if l.get(i) != None:
-                cn_i = l.get(i)
-                c_i = cn_i[0]
-                c_j = cn_i[1]
-                self.player_movement(c_i, c_j, (0, 0, 0), "player")
 
-        # ####### ******** STRATEGY ONE ******** ##################
-        # i = 0
-        # status = False
-        # while i<5 or status == False:
-        #     move_player = b.a_star_strategy1(move_player)
-        #     status = b.fire_movement_process(status,i)
-        #     #self.player_movement(last_move[0], last_move[1], (255, 198, 102), "player")
-        #
-        #     if move_player == [ obj.row - 2, obj.col - 2 ]:
-        #         print("hellozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-        #         break
-        #
-        #     if move_player == 88:
-        #         print("hellossssssssssssssssssssssssssssssssssssssssssssssssssssss")
-        #         break
-        #
-        #     if status == True:
-        #         print("444444444444444444444444444444444444444")
-        #         break
-        #
-        #     i += 1
-        #     if i==5:
-        #         i=0
+        #b.new_target()
+
+        # ####### ******** STRATEGY ONE Uniform cost search ******** ##################
+        # l = b.uniform_cost_search([1,1])
+        # for i in l:
+        #     if l.get(i) != None:
+        #         cn_i = l.get(i)
+        #         c_i = cn_i[0]
+        #         c_j = cn_i[1]
+        #         self.player_movement(c_i, c_j, (0, 0, 0), "player")
+
+
+
+        ####### ******** STRATEGY ONE For A STAR ******** ##################
+        move_player = b.a_star_SOne(move_player)
+        i = 0
+        j = 0
+        status = False
+        if type(move_player) == list:
+            while i<5 or status == False:
+                # if j == 88:
+                #     print(" DIED! ")
+                #     break
+
+                if j == len(move_player):
+                    print(" Target Reached! ")
+                    break
+
+
+                status = b.fire_movement_process(status, i)
+                current_move = move_player[j]
+
+                #print( self.maze_array )
+
+                if j < len(move_player):
+                    self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
+                    self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
+                    if status == True:
+                        print(" Game Over! ")
+                        break
+                i += 1
+                j += 1
+                if i==5:
+                    i=0
 
         # ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
         # i = 0

@@ -209,7 +209,7 @@ class mazeGen:
 
     def DELETETHISFUNCT(self):
         self.maze_array[8][1] = 8
-        self.maze_array[8][2] = 1
+        self.maze_array[8][2] = 8
         self.maze_array[8][3] = 8
         self.maze_array[8][4] = 8
         self.maze_array[8][5] = 8
@@ -219,7 +219,7 @@ class mazeGen:
 
 
         self.maze_array[1][8] = 8
-        self.maze_array[2][8] = 1
+        self.maze_array[2][8] = 8
         self.maze_array[3][8] = 8
         self.maze_array[4][8] = 8
         self.maze_array[5][8] = 8
