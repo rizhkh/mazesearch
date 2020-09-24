@@ -1,4 +1,5 @@
 import numpy as np
+import startprgm
 import main
 import alg
 #from main import maze
@@ -269,9 +270,6 @@ class move:
                     self.open_list.remove([current_node[0], current_node[1]])
                 current_node = np
 
-                self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
-                self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
-
                 self.a_visit.append( [np[0], np[1]] )   # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
                 self.closed_list.append(np)
                 self.est_cost.append([np, result[0]])  # [index,cost]
@@ -376,7 +374,8 @@ class move:
     # IT USES BFS TO MOVE
     ### FIRE GENERATION
 
-    def fire_prob(self, i,j,arr):
+    # Functionalty: returns the prob rate (follows the formula 1-(1-q)^k) to firemovement function and if the prob is more than 0.5 then cell will be on fire
+    def fire_prob(self, i,j,arr, flammability):
         n = 0   # number of neighbors
         if  arr[i-1][j] == 1 or arr[i-1][j] == 0:   # check neighbor on top
             n += 1
@@ -386,7 +385,7 @@ class move:
             n += 1
         if  arr[i][j+1] == 1 or arr[i][j+1] == 0:   # check neighbor on right
             n += 1
-        q = random.uniform(0, 1)
+        q = flammability#random.uniform(0, 1)
         q_pow = pow((1 - q), n)
         p = 1 - q_pow
         return p
@@ -397,6 +396,7 @@ class move:
             i = random.randint(3, self.m.col - 4)  # This would generate the random position of the fire
             j = random.randint(2, self.m.col - 4)
         return [i,j]
+
 
     def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())
@@ -421,7 +421,9 @@ class move:
 # self.f_list_of_visited_nodes.clear()
 # self.fire_pos.clear()
 
+
     # ADD DETAILS
+    # Follows BFS algorithm where the neighbors are expanded, current node is added to list of visited nodes and the next node selected is from the left mose side in queue
     def player_move_BFS(self, status, number, flammability):
         if self.q:
             if number == 0 :
@@ -430,8 +432,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
-                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
+                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )  # add the prob. value of cell being on fire in a list for next time step
+                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
             if number == 1:
@@ -439,8 +441,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
+                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
+                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
             if number == 2:
@@ -448,8 +450,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
+                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
+                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
             if number == 3:
@@ -457,8 +459,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
-                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
+                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
+                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
 
