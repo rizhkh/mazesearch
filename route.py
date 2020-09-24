@@ -95,8 +95,7 @@ class move:
                 if [i, j] not in restrcted_cells:
                     cn_i = current_node[0]
                     cn_j = current_node[1]
-                    g_prev = array[cn_i][
-                        cn_j]  # self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
+                    g_prev = array[cn_i][cn_j]  # self.get_gVal( [cn_i,cn_j] ) # g(n) of current cell currently stored
                     g = g_prev + array[i][j]
                     array[i][j] = g
                     # dist = self.visit_neighbor_astar(i, j)
@@ -108,7 +107,7 @@ class move:
             restrcted_cells.append([i, j])
         return n_cost
 
-    # returns smallest f(n) of the nodes being checked
+    # returns smallest f(n) of the nodes being checked and also calls backtracking function incase player is at a dead end
     def get_net_cost(self, list, current_node, rstrcted_cells, clsed_lists):
         pos_i = pos_j = 0
         cost = 9999
@@ -138,6 +137,7 @@ class move:
         index = [ pos_i, pos_j ]
         return [ cost, index ]
 
+    #Functionality: Helps player backtrack incase of a deadend situation
     def backtracking(self, pos, rstrcted_cells, clsed_list):
         self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
         self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
@@ -152,10 +152,10 @@ class move:
             index = [0,0]
         return index
 
-
     # NOTE: WHEN YOU ARE ABOUT TO BACKTRACK - ADD THAT CURRENT NODE TO CLOSED NODES
     # TO BACKTRACK KEEP A TRACK OF PREV_NODE AND CHECK AT THE TIME OF BACKTRACKING IF ITS IN CLOSED_LIST OR OPEN_LIST AND CHANGE CURRENT NODE TO THAT
 
+    #Functionality: Initializes the players possion on the board / maze
     def player_init(self):
         self.open_list.append([1, 1])
         self.closed_list.append([1,1])
@@ -165,87 +165,12 @@ class move:
         move = self.player_move_process([1,1])
         return move
 
-    # def new_target(self):
-    #     pos = self.fire_pos[-1]
-    #     self.target_i = pos[0]
-    #     self.target_j = pos[1]
-
+    #Functionality: calls a star algorithm
     def player_move_process(self,current_node):
-        #My own Implemented Strategy
         next_step_astar = self.a_star(current_node)
         return next_step_astar
 
-
-############################### UNIFORM COST SEARCH
-    def uniform_cost_search(self, current_node):
-        ## current node is in this form [ [1,1] ]
-        for i in range(1,19):
-            for j in range(1,19):
-                if self.maze_array[i][j]==8:
-                    self.usc_dist[repr([i, j])] = 5555  # 'infinity'     # processed stores in format : [ [1,1] ]
-                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
-                    self.usc_prev[repr([i, j])] = None
-                else:
-                    self.usc_dist[repr([i, j])] = 1000  # 'infinity'     # processed stores in format : [ [1,1] ]
-                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
-                    self.usc_prev[repr([i, j])] = None
-
-        self.usc_dist[ repr(current_node) ] = 0
-        self.usc_pq[ repr(current_node) ] = self.usc_dist[ repr(current_node) ]
-        self.usc_pq_list.append( [current_node, self.usc_dist[ repr(current_node) ]] )     # this is for while loop
-        self.usc_prev[ repr(current_node) ] = current_node
-
-        self.usc_dist[ repr([1,2]) ] = 2
-        self.usc_pq[ repr([1,2]) ] = self.usc_dist[ repr([1,2]) ]
-        self.usc_pq_list.append( [ [1,2], self.usc_dist[ repr([1,2]) ]] )     # this is for while loop
-        self.usc_prev[ repr([1,2]) ] = None
-        self.usc_processed[repr([1, 2])] = False
-
-        self.usc_dist[ repr([2,1]) ] = 2
-        self.usc_pq[ repr([2,1]) ] = self.usc_dist[ repr([2,1]) ]
-        self.usc_pq_list.append( [ [2,1], self.usc_dist[ repr([2,1]) ]] )     # this is for while loop
-        self.usc_prev[ repr([2,1]) ] = None
-        self.usc_processed[repr([2, 1])] = False
-
-        pprev = []
-        while self.usc_pq:
-            index = min(self.usc_pq, key=self.usc_pq.get)
-            index2 = literal_eval(index)
-            if index2 == [self.target_i,self.target_j]:
-                break
-            self.m.player_movement(index2[0], index2[1], (0, 0, 255), "player")
-            self.m.player_movement(index2[0], index2[1], (255, 255, 102), "player")
-            #current_node = index
-            val = self.usc_pq.pop( index )
-            node = [index,val]
-            self.usc_visited.append( literal_eval(node[0]) )
-            if node[0] in self.usc_processed:
-                if self.usc_processed.get( node[0] ) == False:
-                    cn = literal_eval(node[0])  # converts string back to list
-                    cn_i = cn[0]    # currentnode_index_i in while loop
-                    cn_j = cn[1]
-                    child = [
-                        [cn_i - 1,cn_j] ,
-                        [cn_i + 1,cn_j] ,
-                        [cn_i , cn_j-1] ,
-                        [cn_i , cn_j+1] ,
-                    ]
-                    for i in child:
-                        if self.maze_array[i[0]][i[1]] != 8:
-                            if i not in self.usc_visited:
-                                d = self.usc_dist[repr([cn_i,cn_j])] + self.maze_array[i[0]][i[1]]
-                                uvw = self.usc_dist[repr(i)]
-                                if d < uvw:
-                                    self.usc_dist[repr(i)] = d
-                                    self.usc_pq[repr(i)] = d
-                                    self.usc_prev[repr(i)] = [cn_i, cn_j]
-                                    pprev.append([[i], [[cn_i, cn_j]]])
-                                    #current_node = i
-                self.usc_processed[ repr([cn_i, cn_j]) ] = True
-        return self.usc_prev
-
-
-### DONT TOUCH THIS
+###  A STAR ALGORITHM FOR MY OWN IMPLEMENTED SOLUTION
     def a_star(self, current_node):
         if self.open_list:
             status = False
@@ -261,26 +186,35 @@ class move:
             index_i = current_node[0]
             index_j = current_node[1]
 
+            # Checks neighbors and returns the f(n) of the each explored neighbor
             self.net_cost.append( [ self.expand_neighbor_astar( index_i + 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list), index_i + 1, index_j ] ) # down
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j - 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j - 1 ] ) # right
             self.net_cost.append( [ self.expand_neighbor_astar( index_i - 1, index_j, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i - 1, index_j ] ) # up
             self.net_cost.append( [ self.expand_neighbor_astar( index_i, index_j + 1, current_node, self.maze_array, self.closed_list , self.restricted_cells, self.open_list) , index_i, index_j + 1 ] ) # left
+
+            # Compares and chooses the appropriate f(n) for the next cell - in this case, it chooses the smallest value while book keeping all visited cells, barriers etc
             result = self.get_net_cost(self.net_cost, current_node, self.restricted_cells, self.closed_list)  # results is [cost,index]
 
+            # Result value of 9000 indicates that no direction is open to explore (either blocked or already explored) - this will then remove current node and add it list of visited nodes
+            # ( if it is a dead end then it will select a node from a list of visited nodes that has neighbors in list of open nodes list and explore that - it systematically tracks back to that node
+            # e.g instead of jumping back from node 9 to 6 instanty - it checks node 8,7 before it does making sure these nodes have no available neighbors in open cells)
+            # Note: No node is removed from closed list at all. Once that node is visited it is visted that cannot be reversed according to the algorithm
             if result[0] == 9000:
                 if not self.closed_list:
                     return False
                 current_node = self.closed_list[-1]
                 if current_node not in self.open_list:
                     self.open_list.append(current_node)
-
                 status = True
-            self.net_cost.clear()   # we clear the last list so new nodes and their fn is saved
+
+            self.net_cost.clear()   # clear the last list so new nodes and their fn is saved for newer iteration
+
+            # adds the current node in the fringe when they are explored
             if status == False:
                 np = result[1]
                 if self.open_list:
-                    self.open_list.remove([current_node[0], current_node[1]])
-                current_node = np
+                    self.open_list.remove([current_node[0], current_node[1]])   # removes node from open list when it is being added to closed list
+                current_node = np   # To highligh nodes on the canvas board
 
                 self.m.player_movement(np[0], np[1], (0, 0, 255), "player")
                 self.m.player_movement(np[0], np[1], (255, 255, 102), "player")
@@ -291,24 +225,13 @@ class move:
                 if self.current_move:
                     self.current_move.clear()
                 self.current_move.append( np )
-        return current_node
-    #
-    # def clear_all_lists(self):
-    #     self.open_list.clear()
-    #     self.closed_list.clear()
-    #     self.restricted_cells.clear() # Not sure about this
-    #     self.current_move.clear() # Not sure about this
-    #     self.est_cost.clear()
-    #
-    # def print_all_lists(self):
-    #     print("========")
-    #     print("open : ", self.open_list.clear() )
-    #     print("closed : ",self.closed_list.clear() )
-    #     print("restricted : ",self.restricted_cells.clear() ) # Not sure about this
-    #     print("move ", self.current_move.clear() ) # Not sure about this
-    #     print("est cost ", self.est_cost.clear() )
-    #     print("========")
+        return current_node # returns the current node index position
 
+
+    # Algorithms below are the same A star algorithms just with very small changes to get the results according to mentioned strategy description
+    # These algorithms follow the same functionality as above
+
+    ###  A STAR ALGORITHM FOR STRATEGY ONE - different function because this function returns complete list or bool
     def a_star_SOne(self, current_node):
         while self.open_list:
             status = False
@@ -356,70 +279,24 @@ class move:
                     self.current_move.clear()
                 self.current_move.append( np )
                 # print(self.maze_array)
-        return False
+        return False    # For strategy one - it returns false if there is no path to the target. This function returns the complete route when it
+        # reaches the target - then the object calling it runs the path in the maze and as per strategy one if it is in the way of fire cell it will die
 
-    def return_restrcted_cells(self):
-        return self.rcmp_restricted_cells
 
-    def rcmget_net_cost(self, list, current_node, rstrcted_cells, clsed_lists):
-        pos_i = pos_j = 0
-        cost = 9999
-        inc_backtrack = 0
-        for i in list:
-            if i[0] < cost and i[0] != 9000:
-                cost = i[0]
-                pos_i = i[1]
-                pos_j = i[2]
-            if i[0] == 9000:
-                inc_backtrack += 1
-
-        if cost == -1:  #   COMMENT THIS IF YOU WANT TO JUST RUN STRATEGY ONE
-            position = self.rcmp_backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
-            # position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
-            pos_i = position[0]
-            pos_j = position[1]
-            cost = 9000
-
-        if inc_backtrack==4:
-            position = self.rcmp_backtracking(current_node, rstrcted_cells, clsed_lists)  # self.backtracking( [i[1],i[2]] )
-            #position = self.backtracking(current_node) #self.backtracking( [i[1],i[2]] )
-            pos_i = position[0]
-            pos_j = position[1]
-            cost = 9000
-
-        index = [ pos_i, pos_j ]
-        return [ cost, index ]
-
-    def rcmp_backtracking(self, pos, rstrcted_cells, clsed_list):
-        self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
-        self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
-        rstrcted_cells.append(pos)
-        clsed_list.pop()
-        if pos in self.a_visit:
-            ind = self.a_visit.index(pos)
-            self.a_visit.pop(ind)
-        if clsed_list:
-            index = clsed_list[-1]
-        else:
-            index = [0,0]
-        return index
-
+    ###  A STAR ALGORITHM FOR STRATEGY TWP - Same as above with a little small tweaks according to run Strategy 2 from description
     def rcmp_clear_restricted(self):
         self.rcmp_restricted_cells.clear()
 
     def recompute_a_star_Two(self, current_node, mode):
-
         if mode == 'returnList':
             self.rcmp_open_list.clear()
             self.rcmp_closed_list.clear()
-            #self.rcmp_restricted_cells.clear()  ###########################################################
             self.rcmp_a_visit.clear()
             self.rcmp_net_cost.clear()
             self.rcmp_est_cost.clear()
 
         self.rcmp_open_list.append(current_node)
         self.rcmp_closed_list.append(current_node)
-        #current_node = [1, 1]
         self.rcmp_current_move.append( current_node )
         array = self.maze_array.copy()
 
@@ -428,7 +305,6 @@ class move:
         while self.rcmp_open_list:
             status = False
             if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
-                #print(self.maze_array)
                 return 88
 
             if current_node == [0,0]:
@@ -440,7 +316,6 @@ class move:
 
                 self.rcmp_open_list.clear()
                 self.rcmp_closed_list.clear()
-                #self.rcmp_restricted_cells.clear()  ###########################################################
                 self.rcmp_a_visit.clear()
                 self.rcmp_net_cost.clear()
                 self.rcmp_est_cost.clear()
@@ -449,134 +324,13 @@ class move:
             if current_node == [self.target_i,self.target_j] and mode == 'returnBool': #IF CURRENT NODE IS GOAL CELL
                 self.rcmp_open_list.clear()
                 self.rcmp_closed_list.clear()
-                #self.rcmp_restricted_cells.clear()  ###########################################################
                 self.rcmp_a_visit.clear()
                 self.rcmp_net_cost.clear()
                 self.rcmp_est_cost.clear()
                 return True
-                # print("YES")
-                # al = self.rcmp_a_visit[:]
-                #
-                # self.rcmp_open_list.clear()
-                # self.rcmp_closed_list.clear()
-                # self.rcmp_restricted_cells.clear()  ###########################################################
-                # self.rcmp_a_visit.clear()
-                # self.rcmp_net_cost.clear()
-                # self.rcmp_est_cost.clear()
-                # return al
 
             index_i = current_node[0]
             index_j = current_node[1]
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
-
-            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
-            result = self.rcmget_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
-
-            if result[0] == 9000:
-                if not self.rcmp_closed_list:
-                    return False
-                current_node = self.rcmp_closed_list[-1]
-                if current_node not in self.rcmp_open_list:
-                    self.rcmp_open_list.append(current_node)
-                status = True
-            self.rcmp_net_cost.clear()  # we clear the last list so new nodes and their fn is saved
-            if status == False:
-
-                #HERE IS WHERE YOU HAVE TO MAKE THE ORIGNAL A STAR TURN AROUND
-                # On this condition - the recompute finally turns around and looks for another path
-                # the check condition as long as its true will save the cells that need to be backtracked
-
-                # if result[1] in self.closed_list:
-                #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
-                #     # self.closed_list.append(result[1])
-                #     # self.restricted_cells.append(result[1])
-                #     # self.restricted_cells.append(result[1])
-                #     # sList = result[1]
-                #     print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-                #     # return sList
-                #     self.prev_steps.append(result[1])
-                #     check = True
-                #
-                # # this condition is true when recompute finds a path that is not in the visited list - when that open cell is found thats where you will start again from
-                # if result[1] not in self.closed_list and check==True:
-                #     print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-                #     self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
-                #     # print(result[1])
-                #     #check = False
-                #     sList.append(result[1])
-                #     return sList
-
-                np = result[1]
-                self.rcmp_open_list.remove([current_node[0], current_node[1]])
-                current_node = np
-                # self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
-                # self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
-                self.rcmp_a_visit.append([np[0], np[1]])  # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
-                self.rcmp_closed_list.append(np)
-                self.rcmp_est_cost.append([np, result[0]])  # [index,cost]
-                if self.rcmp_current_move:
-                    self.rcmp_current_move.clear()
-                self.rcmp_current_move.append(np)
-        #print(" $ " , self.open_list)
-        sList = self.rcmp_a_visit.copy()
-
-        self.rcmp_open_list.clear()
-        self.rcmp_closed_list.clear()
-        #self.rcmp_restricted_cells.clear()  ###########################################################
-        self.rcmp_a_visit.clear()
-        self.rcmp_net_cost.clear()
-        self.rcmp_est_cost.clear()
-        #print("value of passed list sList : " ,sList)
-        # print("this is self.maze_array : ",self.maze_array)
-        # print()
-        # print("this is the copied array :  ")
-        # print(array)
-
-        return False
-
-
-    def recompute_a_star(self, sList, current_node):
-        self.rcmp_open_list.append(current_node)
-        self.rcmp_closed_list.append(current_node)
-        #current_node = [1, 1]
-        self.rcmp_current_move.append( current_node )
-        array = self.maze_array.copy()
-
-        check = False
-
-        while self.rcmp_open_list:
-            status = False
-            self.m.player_movement(current_node[0], current_node[1], (0, 0, 255), "player")
-            if (current_node in self.fire_cells) or (current_node in self.last_fire_cells):
-                #print(self.maze_array)
-                return 88
-
-            if current_node == [0,0]:
-                return True
-
-            if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
-                break
-
-            index_i = current_node[0]
-            index_j = current_node[1]
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j - 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j - 1])  # right
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i - 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i - 1, index_j])  # up
-            self.rcmp_net_cost.append(
-                [self.expand_neighbor_astar(index_i, index_j + 1, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i, index_j + 1])  # left
-
-            #result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
-
             self.rcmp_net_cost.append(
                 [self.expand_neighbor_astar(index_i + 1, index_j, current_node, array, self.rcmp_closed_list , self.rcmp_restricted_cells, self.rcmp_open_list), index_i + 1, index_j])  # down
             self.rcmp_net_cost.append(
@@ -589,95 +343,57 @@ class move:
             result = self.get_net_cost(self.rcmp_net_cost, current_node, self.rcmp_restricted_cells, self.rcmp_closed_list)  # results is [cost,index]
 
             if result[0] == 9000:
+                if not self.rcmp_closed_list:
+                    return False
                 current_node = self.rcmp_closed_list[-1]
                 if current_node not in self.rcmp_open_list:
                     self.rcmp_open_list.append(current_node)
                 status = True
             self.rcmp_net_cost.clear()  # we clear the last list so new nodes and their fn is saved
             if status == False:
-                #HERE IS WHERE YOU HAVE TO MAKE THE ORIGNAL A STAR TURN AROUND
-                # On this condition - the recompute finally turns around and looks for another path
-                # the check condition as long as its true will save the cells that need to be backtracked
-
-                # if result[1] in self.closed_list:
-                #     self.m.player_movement(current_node[0], current_node[1], (255, 255, 255), "player")
-                #     # self.closed_list.append(result[1])
-                #     # self.restricted_cells.append(result[1])
-                #     # self.restricted_cells.append(result[1])
-                #     # sList = result[1]
-                #     print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-                #     # return sList
-                #     self.prev_steps.append(result[1])
-                #     check = True
-                #
-                # # this condition is true when recompute finds a path that is not in the visited list - when that open cell is found thats where you will start again from
-                # if result[1] not in self.closed_list and check==True:
-                #     print("TRUIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-                #     self.m.player_movement(current_node[0], current_node[1], (255, 153, 51), "player")
-                #     # print(result[1])
-                #     #check = False
-                #     sList.append(result[1])
-                #     return sList
                 np = result[1]
-                # if current_node in self.rcmp_open_list:
-                #     self.rcmp_open_list.remove([current_node[0], current_node[1]])
-                # else:
-                #     time.sleep(10)
-                print(" >> ",self.rcmp_open_list)
-                print(" >> ", current_node)
                 self.rcmp_open_list.remove([current_node[0], current_node[1]])
                 current_node = np
                 # self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
                 # self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
                 self.rcmp_a_visit.append([np[0], np[1]])  # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
                 self.rcmp_closed_list.append(np)
-                self.rcmp_est_cost.append([np, result[0]])  # [index,cost]
+                self.rcmp_est_cost.append([np, result[0]])
                 if self.rcmp_current_move:
                     self.rcmp_current_move.clear()
                 self.rcmp_current_move.append(np)
-        #print(" $ " , self.open_list)
         sList = self.rcmp_a_visit.copy()
 
         self.rcmp_open_list.clear()
         self.rcmp_closed_list.clear()
-        #self.rcmp_restricted_cells.clear()  ###########################################################
         self.rcmp_a_visit.clear()
         self.rcmp_net_cost.clear()
         self.rcmp_est_cost.clear()
-        #print("value of passed list sList : " ,sList)
-        # print("this is self.maze_array : ",self.maze_array)
-        # print()
-        # print("this is the copied array :  ")
-        # print(array)
+        return False
 
-        return sList
 
-## FIRE GENERATION
+    # CODE BELOW INITIALIZES FIRE POSITION AND MOVEMENT
+    # IT USES BFS TO MOVE
+    ### FIRE GENERATION
+
     def fire_prob(self, i,j,arr):
         n = 0   # number of neighbors
         if  arr[i-1][j] == 1 or arr[i-1][j] == 0:   # check neighbor on top
             n += 1
-
         if  arr[i+1][j] == 1 or arr[i+1][j] == 0:   # check neighbor on bottom
             n += 1
-
         if  arr[i][j-1] == 1 or arr[i][j-1] == 0:   # check neighbor on left
             n += 1
-
         if  arr[i][j+1] == 1 or arr[i][j+1] == 0:   # check neighbor on right
             n += 1
         q = random.uniform(0, 1)
         q_pow = pow((1 - q), n)
         p = 1 - q_pow
-        #return p
-        return 1
+        return p
 
     def fire_start_pos(self , arr):
         i = j = self.m.col-1
-        #while arr[ i ][ j ] == 8:
         while arr[i][j] == 8:
-            # i = random.randint(1, self.m.col - 2)  # This would generate the random position of the fire
-            # j = random.randint(1, self.m.col - 2)
             i = random.randint(3, self.m.col - 4)  # This would generate the random position of the fire
             j = random.randint(2, self.m.col - 4)
         return [i,j]
@@ -688,14 +404,25 @@ class move:
         status = False  # This boolean variable will be utilized to stop traversing when target is reached
         self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
 
-############ &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-############### BFS & DFS MOVEMENT FOR PLAYER ########################
+    def clear_fire_list(self):
+        self.cur_n_fire.clear()
+        self.fire_cells.clear()
+        self.f_visit.clear()
+        self.f_list_of_visited_nodes.clear()
+        self.fire_pos.clear()
 
-    def fire_movement_process(self, status, number):
-        status = self.player_move_BFS(status, number)   # Fire spreads using BFS algorithm
+    def fire_movement_process(self, status, number, flammability):
+        status = self.player_move_BFS(status, number, flammability)   # Fire spreads using BFS algorithm
         return status
 
-    def player_move_BFS(self, status, number):
+# self.cur_n_fire.clear()
+# self.fire_cells.clear()
+# self.f_visit.clear()
+# self.f_list_of_visited_nodes.clear()
+# self.fire_pos.clear()
+
+    # ADD DETAILS
+    def player_move_BFS(self, status, number, flammability):
         if self.q:
             if number == 0 :
                 cur_n = self.q.popleft()    # Takes the element present at start in queue(where it stores neighbor) as active node and removes to tackle duplicate nodes
@@ -703,7 +430,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
+                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )  # add the prob. value of cell being on fire in a list for next time step
+                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
             if number == 1:
@@ -711,7 +439,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
             if number == 2:
@@ -719,7 +448,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
             if number == 3:
@@ -727,7 +457,8 @@ class move:
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
-                self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                #self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr()) )
+                self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
 
@@ -735,13 +466,10 @@ class move:
         else:
             if self.last_fire_cells:    # last position of cell on fire - func. above will check its neighbor(determine that if they are open) and start from there just incase queue gets empty
                 if self.last_fire_cells:    # chooses the newest added open cell from the list as current node to be set on fire - In this case this should have at most 1 cell
-                    #cur_n = self.last_fire_cells[-1]
                     cur_n = self.last_fire_cells[-1]
                 else:
                     cur_n = self.fire_start_pos(self.m.get_arr())
                 self.q.append(cur_n)
-                # print("IM HERE 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-                # print(cur_n)
             else:   #just incase queue gets emptied. Last open cell gets added to queue of nodes to be checked - This should not be reached
                 cur_n = self.cur_n_fire[-1]
                 self.q.append( cur_n )
@@ -760,22 +488,15 @@ class move:
         if [i , j] == self.current_move[-1]: #self.current_move:   # Returns true to stop fire traverse if it reaches player
             color = (0, 0, 0)#(178, 103, 100)
             self.highlight_fire_node(i, j, (255, 0, 0))
-            #self.m.player_movement(i, j, color, "fire")
             return True
 
         if prob >=0.5:  # if probability is more than 0.5 generate fire cell
-            #if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
             if self.maze_array[i][j] != 8:
                 if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
                     pos = [i,j]
-                    # p = self.fire_prob(i, j, self.m.get_arr())  # generate prob
-                    # self.fire_cells.append(p)
                     self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
                     self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
-                    #self.current_node(i, j)
                     color = (255, 0, 0)
-                    #self.maze_array[i][j] = 1111
-                    #self.highlight_fire_node(i, j, (255, 0, 0))
                     self.m.player_movement(i, j, color,'fire')
                     self.last_fire_cells.append( [i,j] )
                     self.fill_fire_neighbor(i - 1,j)   # upper cell
@@ -797,9 +518,6 @@ class move:
             else:
                 self.maze_array[i][j] = self.maze_array[i][j] + 1
 
-        # if self.maze_array[i][j] == 1:
-        #     self.maze_array[i][j] = 100
-
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
 
@@ -807,6 +525,9 @@ class move:
     def current_node(self,q_v,q_l_v,i,j):
         q_v.append([i,j])   # queues visited # not really used - might use it in future - self.q_visited.append([i,j])
         q_l_v.append([i,j]) # queue of all list of visited nodes - self.q_list_of_visited_nodes.append([i,j])
+
+
+    # UNUSED ALGORITHMS THAT WERE IMPLEMENTED BUT NOT USED
 
     def player_move_dfs(self):
         # Algorithm: Add the starting position as parent node
@@ -875,3 +596,70 @@ class move:
                 self.m.player_movement(i, j, (255, 255, 9), "open")
                 status = self.visit_neighbor_dfs(i, j, target, status)
         return status
+
+    def uniform_cost_search(self, current_node):
+        ## current node is in this form [ [1,1] ]
+        for i in range(1,19):
+            for j in range(1,19):
+                if self.maze_array[i][j]==8:
+                    self.usc_dist[repr([i, j])] = 5555  # 'infinity'     # processed stores in format : [ [1,1] ]
+                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
+                    self.usc_prev[repr([i, j])] = None
+                else:
+                    self.usc_dist[repr([i, j])] = 1000  # 'infinity'     # processed stores in format : [ [1,1] ]
+                    self.usc_processed[repr([i, j])] = False  # processed stores in format : [ [i,j] ]
+                    self.usc_prev[repr([i, j])] = None
+
+        self.usc_dist[ repr(current_node) ] = 0
+        self.usc_pq[ repr(current_node) ] = self.usc_dist[ repr(current_node) ]
+        self.usc_pq_list.append( [current_node, self.usc_dist[ repr(current_node) ]] )     # this is for while loop
+        self.usc_prev[ repr(current_node) ] = current_node
+
+        self.usc_dist[ repr([1,2]) ] = 2
+        self.usc_pq[ repr([1,2]) ] = self.usc_dist[ repr([1,2]) ]
+        self.usc_pq_list.append( [ [1,2], self.usc_dist[ repr([1,2]) ]] )     # this is for while loop
+        self.usc_prev[ repr([1,2]) ] = None
+        self.usc_processed[repr([1, 2])] = False
+
+        self.usc_dist[ repr([2,1]) ] = 2
+        self.usc_pq[ repr([2,1]) ] = self.usc_dist[ repr([2,1]) ]
+        self.usc_pq_list.append( [ [2,1], self.usc_dist[ repr([2,1]) ]] )     # this is for while loop
+        self.usc_prev[ repr([2,1]) ] = None
+        self.usc_processed[repr([2, 1])] = False
+
+        pprev = []
+        while self.usc_pq:
+            index = min(self.usc_pq, key=self.usc_pq.get)
+            index2 = literal_eval(index)
+            if index2 == [self.target_i,self.target_j]:
+                break
+            self.m.player_movement(index2[0], index2[1], (0, 0, 255), "player")
+            self.m.player_movement(index2[0], index2[1], (255, 255, 102), "player")
+            #current_node = index
+            val = self.usc_pq.pop( index )
+            node = [index,val]
+            self.usc_visited.append( literal_eval(node[0]) )
+            if node[0] in self.usc_processed:
+                if self.usc_processed.get( node[0] ) == False:
+                    cn = literal_eval(node[0])  # converts string back to list
+                    cn_i = cn[0]    # currentnode_index_i in while loop
+                    cn_j = cn[1]
+                    child = [
+                        [cn_i - 1,cn_j] ,
+                        [cn_i + 1,cn_j] ,
+                        [cn_i , cn_j-1] ,
+                        [cn_i , cn_j+1] ,
+                    ]
+                    for i in child:
+                        if self.maze_array[i[0]][i[1]] != 8:
+                            if i not in self.usc_visited:
+                                d = self.usc_dist[repr([cn_i,cn_j])] + self.maze_array[i[0]][i[1]]
+                                uvw = self.usc_dist[repr(i)]
+                                if d < uvw:
+                                    self.usc_dist[repr(i)] = d
+                                    self.usc_pq[repr(i)] = d
+                                    self.usc_prev[repr(i)] = [cn_i, cn_j]
+                                    pprev.append([[i], [[cn_i, cn_j]]])
+                                    #current_node = i
+                self.usc_processed[ repr([cn_i, cn_j]) ] = True
+        return self.usc_prev

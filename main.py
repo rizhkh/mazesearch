@@ -106,7 +106,7 @@ class maze:
             self.maze_array[i, j] = 4
             self.maze_generator(screen, color, i * (self.box_width + 1), j * (self.box_height + 1))
             pygame.display.flip()
-        time.sleep(0.01) # PLAYER
+        time.sleep(0.05) # PLAYER
 
     # This is not color blocked cells
     def m_pattern_for_blockedpaths(self,i,j):
@@ -117,23 +117,6 @@ class maze:
         self.maze_generator(screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
         pygame.display.flip()
 
-    # #Functionality: Converts closed mazes into open deadend spaces
-    # def render_maze(self):
-    #     num = random.randint(0, 3)
-    #     for i in range(2, self.row-2):
-    #         for j in range(2, self.col-2):
-    #             if self.maze_array[i][j]==0:
-    #                 n2 = random.randint(0, 3)
-    #                 if num == 1 and n2== 0 and self.maze_array[i-1][j]  == 8:
-    #                     self.maze_array[i-1][j] = 1
-    #                 if num == 1 and n2== 1 and self.maze_array[i+1][j]  == 8:
-    #                     self.maze_array[i+1][j] = 1
-    #                 if num == 1 and n2== 2 and self.maze_array[i][j-1]  == 8:
-    #                     self.maze_array[i][j-1] = 1
-    #                 if num == 1 and n2== 3 and self.maze_array[i][j+1] == 8:
-    #                     self.maze_array[i][j+1] = 1
-    #                 #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
-
     #Functionality: maps values to 2d maze
     def map_values(self):
         for i in range(1, self.row-1):
@@ -142,12 +125,15 @@ class maze:
                     self.maze_array[i][j] = 1
                     #self.maze_generator(self.screen, (0, 128, 0), i * (self.box_width + 1), j * (self.box_height + 1))
 
-    def val_for_Astr(self):
-        for i in range(1, self.row-1):
-            for j in range(1, self.col-1):
-                if self.maze_array[i][j] == 1:
-                    self.maze_array[i][j] = 0
+    # def val_for_Astr(self):
+    #     for i in range(1, self.row-1):
+    #         for j in range(1, self.col-1):
+    #             if self.maze_array[i][j] == 1:
+    #                 self.maze_array[i][j] = 0
 
+    def mark_start_end(self,start_i,start_j,i,j):
+        self.maze_generator(self.screen, (255, 51, 255), start_i * (self.box_width + 1), start_j * (self.box_height + 1))
+        self.maze_generator(self.screen , (255, 51, 255), i * (self.box_width + 1), j * (self.box_height + 1))
 
     def generate_maze(self, obj):
         # THIS IS WHERE YOU KNOW WHAT MAZE YOU ARE GENERATING
@@ -169,86 +155,45 @@ class maze:
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
         self.mark_start_end(1,1,self.row - 2,self.col - 2)
 
-    def mark_start_end(self,start_i,start_j,i,j):
-        self.maze_generator(self.screen, (255, 51, 255), start_i * (self.box_width + 1), start_j * (self.box_height + 1))
-        self.maze_generator(self.screen , (255, 51, 255), i * (self.box_width + 1), j * (self.box_height + 1))
+    def strategy_one(self, b, flammability):    # b is the object
+        move_player = b.player_init()
+        move_player = b.a_star_SOne(move_player)
+        b.init_fire()
+        i = 0
+        j = 0
+        status = False
+        if type(move_player) == bool:
+            if move_player == False:
+                print(" Target Not Reachable! ")
+            if move_player == True:
+                print(" Target Not Reachable! ")
 
-    def start_game(self, obj):
-        ThingsToAppearOnScreen_Display = self.screen
-        self.maze_array = np.zeros((self.row, self.col), dtype=int)
-        self.Apply_border(self.maze_array)  # Sets array values for the border
+        if type(move_player) == list:
+            while i < 5 or status == False:
 
-        pygame.display.set_caption("TITLE", "ASD")
-        pygame.display.flip()
+                if j == len(move_player):
+                    print(" Target Reached! ")
+                    break
 
-        # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
-        a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
-        self.generate_maze(a)   # This function draws the maze
+                status = b.fire_movement_process(status, i, flammability)
+                current_move = move_player[j]
 
-        #print(self.maze_array)
-        pygame.display.flip()
+                if self.maze_array[current_move[0]][current_move[1]] == 4:
+                    print(" DIED! ")
+                    break
 
-        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
-        pygame.display.flip()
+                if j < len(move_player):
+                    self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
+                    self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
+                    if status == True:
+                        print(" Game Over! ")
+                        break
+                i += 1
+                j += 1
+                if i == 5:
+                    i = 0
 
-        #b.new_target()
-
-        # ####### ******** STRATEGY ONE Uniform cost search ******** ##################
-        # l = b.uniform_cost_search([1,1])
-        # for i in l:
-        #     if l.get(i) != None:
-        #         cn_i = l.get(i)
-        #         c_i = cn_i[0]
-        #         c_j = cn_i[1]
-        #         self.player_movement(c_i, c_j, (0, 0, 0), "player")
-
-
-        #
-        # ###### ******** STRATEGY ONE For A STAR ******** ##################
-        # move_player = b.player_init()
-        # move_player = b.a_star_SOne(move_player)
-        # b.init_fire()
-        # i = 0
-        # j = 0
-        # status = False
-        # if type(move_player) == bool:
-        #     if move_player==False:
-        #         print(" Target Not Reachable! ")
-        # if type(move_player) == list:
-        #     while i<5 or status == False:
-        #
-        #         if j == len(move_player):
-        #             print(" Target Reached! ")
-        #             break
-        #
-        #         status = b.fire_movement_process(status, i)
-        #         current_move = move_player[j]
-        #
-        #         if self.maze_array[ current_move[0] ][ current_move[1] ] == 4:
-        #             print(" DIED! ")
-        #             break
-        #
-        #         if j < len(move_player):
-        #             self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
-        #             self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
-        #             if status == True:
-        #                 print(" Game Over! ")
-        #                 break
-        #         i += 1
-        #         j += 1
-        #         if i==5:
-        #             i=0
-
-
-        # ###### ******** STRATEGY TWO For A STAR ******** ################## RECOMPUTE
-
-        # i run one outside the while loop
-        # use that list as my steps
-        # if it returns true - keep using orignal list and pop
-        # if false - pop(0) from orignal and keep popping until you have True
-        # one you have True - replace orignal list with where you got the true
-        # now use that list
-
+    def strategy_Two(self, b, flammability):    # b is the object
         move_player = b.player_init()
         b.init_fire()
         i = 0
@@ -268,7 +213,7 @@ class maze:
             currentmove = moves_list.pop(0)
 
             while i < 5 or status == False:
-                status = b.fire_movement_process(status, i)
+                status = b.fire_movement_process(status, i, flammability)
                 sttus = b.recompute_a_star_Two(currentmove,'returnBool')
                 if sttus == True:
                     self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
@@ -281,7 +226,6 @@ class maze:
                         already_visited.append(currentmove)
                 else:
                     print("PATH CHANGED ****************************************************")
-                    print(moves_list)
                     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
                     if type(moves_list) == bool or moves_list == 66:
@@ -308,9 +252,179 @@ class maze:
             for k in already_visited:
                 self.player_movement(k[0], k[1], (199, 156, 85), "player")
 
+    def strategy_Own(self, b, flammability):    # b is the object
+        move_player = b.player_init()
+        b.init_fire()
+        i = 0
+        status = False
+        while i<5 or status == False:
+            status = b.fire_movement_process(status,i,flammability)
+            move_player = b.player_move_process(move_player)
+
+            if type(move_player) == bool:
+                if move_player==False:
+                    print("Target Not Reachable !")
+                    break
+
+            if move_player == [18, 18]:#[ obj.row - 2, obj.col - 2 ]:
+                print(" Target Reached")
+                break
+
+            if move_player == 88:
+                print(" DIED !")
+                break
+
+            if status == True:
+                print(" DIED")
+                break
+
+            i += 1
+            if i==5:
+                i=0
+
+        b.clear_fire_list()
 
 
-        ####### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
+
+    def start_game(self, obj):
+        ThingsToAppearOnScreen_Display = self.screen
+        self.maze_array = np.zeros((self.row, self.col), dtype=int)
+        self.Apply_border(self.maze_array)  # Sets array values for the border
+
+        pygame.display.set_caption("TITLE", "ASD")
+        pygame.display.flip()
+
+        # Note: The passed oject has the ref address that way I do not ahve to initialize new obj
+        a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
+        self.generate_maze(a)   # This function draws the maze
+
+        pygame.display.flip()
+
+        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
+        pygame.display.flip()
+
+        # HOW TO STORE DATA: Have a list with successess as 1 and q,
+        # run this code in a loop atleast 10 times on every Target not reachable re-run the test again while being in the loop
+        # store how many times you died in those 10 tries and generate plot
+        List_result = []
+
+        ###### ******** STRATEGY ONE For A STAR ******** ##################
+        count = 0
+        flammability = 0.4
+        while count<1:
+            #self.strategy_one(b , flammability)     # This should return results
+
+            #self.strategy_Two(b , flammability)
+
+            self.strategy_Own(b , flammability)
+            #b.clear_fire_list()
+            window_display_status = False
+            # pygame.quit()
+            # exit()
+
+            count += 1
+
+        # move_player = b.player_init()
+        # move_player = b.a_star_SOne(move_player)
+        # b.init_fire()
+        # i = 0
+        # j = 0
+        # status = False
+        # if type(move_player) == bool:
+        #     if move_player==False:
+        #         print(" Target Not Reachable! ")
+        #     if move_player==True:
+        #         print(" Target Not Reachable! ")
+        #
+        # if type(move_player) == list:
+        #     while i<5 or status == False:
+        #
+        #         if j == len(move_player):
+        #             print(" Target Reached! ")
+        #             break
+        #
+        #         status = b.fire_movement_process(status, i, flammability)
+        #         current_move = move_player[j]
+        #
+        #         if self.maze_array[ current_move[0] ][ current_move[1] ] == 4:
+        #             print(" DIED! ")
+        #             break
+        #
+        #         if j < len(move_player):
+        #             self.player_movement(current_move[0], current_move[1], (0, 0, 255), "player")
+        #             self.player_movement(current_move[0], current_move[1], (255, 255, 102), "player")
+        #             if status == True:
+        #                 print(" Game Over! ")
+        #                 break
+        #         i += 1
+        #         j += 1
+        #         if i==5:
+        #             i=0
+
+
+        ###### ******** STRATEGY TWO For A STAR ******** ################## RECOMPUTE
+
+        # move_player = b.player_init()
+        # b.init_fire()
+        # i = 0
+        # status = False
+        # already_visited = []
+        # inc = 0
+        # inc_stop = 0
+        # moves_list = b.recompute_a_star_Two(move_player,'returnList')
+        #
+        # if type(moves_list) == bool:
+        #     print("Target Not reachable")
+        # if moves_list==66:
+        #     print("Target Not reachable")
+        #
+        # else:
+        #     print(moves_list)
+        #     currentmove = moves_list.pop(0)
+        #
+        #     while i < 5 or status == False:
+        #         status = b.fire_movement_process(status, i, flammability)
+        #         sttus = b.recompute_a_star_Two(currentmove,'returnBool')
+        #         if sttus == True:
+        #             self.player_movement(currentmove[0], currentmove[1], (109, 109, 85), "player")
+        #             #self.player_movement(currentmove[0], currentmove[1], (255, 255, 102), "player")
+        #             if currentmove == [18, 18]:
+        #                 print("Target Reached")
+        #                 break
+        #             else:
+        #                 currentmove = moves_list.pop(0)
+        #                 already_visited.append(currentmove)
+        #         else:
+        #             print("PATH CHANGED ****************************************************")
+        #             moves_list = b.recompute_a_star_Two(move_player, 'returnList')
+        #
+        #             if type(moves_list) == bool or moves_list == 66:
+        #                 print("Target Not reachable")
+        #                 break
+        #             else:
+        #                 currentmove = already_visited[-2]  # moves_list.pop(0)
+        #                 print("STARTING AGAIN----------------------------------------------------")
+        #
+        #                 if inc_stop >= 15:
+        #                     print("ERROR")
+        #                     break
+        #                 if inc>=10 :    # if backtracking is stuck between two spots and is not moving - then all cells that are added in restricted cells are removed for a new path computation
+        #                     b.rcmp_clear_restricted()
+        #                     inc = 0
+        #                 #b.rcmp_clear_restricted()
+        #                 self.player_movement(currentmove[0], currentmove[1], (0, 0, 255), "player")
+        #                 inc_stop += 1  # this is to confirm that infinite loop is on and break the loop
+        #         i += 1
+        #         inc += 1
+        #         if i == 5:
+        #             i = 0
+        #
+        #     for k in already_visited:
+        #         self.player_movement(k[0], k[1], (199, 156, 85), "player")
+
+
+        #
+        # ###### ******** MY OWN IMPLEMENTED STRATEGY ******** ##################
         # move_player = b.player_init()
         # b.init_fire()
         # i = 0
@@ -339,34 +453,20 @@ class maze:
         #     i += 1
         #     if i==5:
         #         i=0
+        #
 
-
-
-
-
-        # b.cls_start_end_points()
-        # b.fire_movement()
-        #b.player_move_dfs()
-        # b.a_star()
-
-        #self.val_for_Astr() # Sets values of 1 to 0 on generated map for developer
-
-        #print(self.maze_array)
-        pygame.display.flip()
-        #self.generate_maze(a)
-        #print(self.maze_array)
 
         pygame.display.flip()
-
+        pygame.display.flip()
         window_display_status = True
 
         # Keeps the window running unless specifically you hit the x to close it
-        while window_display_status:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        window_display_status = False
-                        pygame.quit()
-                        exit()
+        # while window_display_status:
+        #         for event in pygame.event.get():
+        #             if event.type == pygame.QUIT:
+        #                 window_display_status = False
+        #                 pygame.quit()
+        #                 exit()
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -377,7 +477,6 @@ if __name__ == '__main__':
     m = maze(ThingsToAppearOnScreen_Display)
     # m passed to start_game is for ref so no new object is called/copied instead I deal with the one I want to deal with
     m.start_game(m)
-    #print_hi('PyCharm')
 
 # References:
 # https://stackoverflow.com/questions/19882415/closing-pygame-window

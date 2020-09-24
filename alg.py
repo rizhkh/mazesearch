@@ -22,7 +22,7 @@ class mazeGen:
     def calc_prob(self):
         # prob = number of filled cells/NxN -> number of filled cells = prob * (NxN) - have an int set to number of filled cells , random whenever you num = 1 ,
         # set cell as filled and decrement number of filled cells n--
-        p =  0.3#random.uniform(0, 1)
+        p =  0.3 #random.uniform(0, 1)
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
@@ -220,7 +220,7 @@ class mazeGen:
         self.maze_array[1][8] = 8
         self.maze_array[2][8] = 8
         self.maze_array[3][8] = 8
-        self.maze_array[4][8] = 1
+        self.maze_array[4][8] = 8
         self.maze_array[5][8] = 8
         self.maze_array[6][8] = 8
         self.maze_array[7][8] = 8
