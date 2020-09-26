@@ -32,6 +32,7 @@ class move:
     cur_n_fire = []
     fire_pos = []
     fire_init = []
+    incr = [0] # random counter for fire cell
 
     open_list = deque()
     closed_list = []
@@ -452,7 +453,7 @@ class move:
                 self.cur_n_fire.append(cur_n)
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
@@ -460,7 +461,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
@@ -468,7 +469,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
@@ -476,7 +477,7 @@ class move:
                 cur_n = self.cur_n_fire[-1]
                 start_point = cur_n[0]  # get index i for current node
                 end_point = cur_n[1]  # get index j for current node
-                self.highlight_fire_node(start_point, end_point, (255, 0, 0))
+                #self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
@@ -494,6 +495,25 @@ class move:
                 self.q.append( cur_n )
                 self.cur_n_fire.pop()
         return status
+
+    def check_surround(self, i ,j):
+        if self.maze_array[ i + 1 ][j] != 8:
+            if self.maze_array[i + 1][j] == 4 or self.maze_array[i + 1][j] == 1111:
+                return True
+
+        if self.maze_array[ i - 1 ][j] != 8:
+            if self.maze_array[i - 1][j] == 4 or self.maze_array[i - 1][j] == 1111:
+                return True
+
+        if self.maze_array[ i ][j+1] != 8:
+            if self.maze_array[i][j+1] == 4 or self.maze_array[i][j+1] == 1111:
+                return True
+
+        if self.maze_array[ i ][j-1] != 8:
+            if self.maze_array[i][j-1] == 4 or self.maze_array[i][j-1] == 1111:
+                return True
+
+        return False
 
 
     def highlight_fire_node(self, i ,j, color):
@@ -513,16 +533,35 @@ class move:
         if prob >=0.5:  # if probability is more than 0.5 generate fire cell
             if self.maze_array[i][j] != 8:
                 if [i,j] not in self.f_list_of_visited_nodes:   # Checks if current cell has not been visited already
-                    pos = [i,j]
-                    self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
-                    self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
-                    color = (255, 0, 0)
-                    self.m.player_movement(i, j, color,'fire')
-                    self.last_fire_cells.append( [i,j] )
-                    self.fill_fire_neighbor(i - 1,j)   # upper cell
-                    self.fill_fire_neighbor(i + 1, j)  # down cell
-                    self.fill_fire_neighbor(i, j - 1)  # left cell
-                    self.fill_fire_neighbor(i, j + 1)  # right cell
+                    sum = self.incr[0]
+                    sum += 1
+                    self.incr.pop()
+                    self.incr.append(sum)
+                    check_s = self.incr[0]
+
+                    check = self.check_surround(i,j)    # this check_s and this funct makes sure each fire cell has a neighbor on fire after fire is started
+                    if check==True and check_s>1:
+                        pos = [i,j]
+                        self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
+                        self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
+                        color = (255, 0, 0)
+                        self.m.player_movement(i, j, color,'fire')
+                        self.last_fire_cells.append( [i,j] )
+                        self.fill_fire_neighbor(i - 1,j)   # upper cell
+                        self.fill_fire_neighbor(i + 1, j)  # down cell
+                        self.fill_fire_neighbor(i, j - 1)  # left cell
+                        self.fill_fire_neighbor(i, j + 1)  # right cell
+                    if check<2:
+                        pos = [i,j]
+                        self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
+                        self.current_node(self.f_visit, self.f_list_of_visited_nodes,i, j)
+                        color = (255, 0, 0)
+                        self.m.player_movement(i, j, color,'fire')
+                        self.last_fire_cells.append( [i,j] )
+                        self.fill_fire_neighbor(i - 1,j)   # upper cell
+                        self.fill_fire_neighbor(i + 1, j)  # down cell
+                        self.fill_fire_neighbor(i, j - 1)  # left cell
+                        self.fill_fire_neighbor(i, j + 1)  # right cell
         else:
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 if [i,j] not in self.q:

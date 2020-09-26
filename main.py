@@ -18,12 +18,12 @@ if __name__ == '__main__':
     ThingsToAppearOnScreen_Display = pygame.display.set_mode(resolution,flags)  # This sets the width and height of the screen that pops up
     m = startprgm.start(ThingsToAppearOnScreen_Display)
     # m passed to start_game is for ref so no new object is called/copied instead I deal with the one I want to deal with
-    flamability_rate = 0.2
+    flamability_rate = 1
 
 # To run maze
     #m.start_algorithm(m, 'StrategyOne', flamability_rate) # StrategyOne , StrategyTwo, Own
-    m.start_algorithm(m, 'StrategyTwo', flamability_rate) # StrategyOne , StrategyTwo, Own
-    #m.start_algorithm(m, 'Own', flamability_rate) # StrategyOne , StrategyTwo, Own
+    #m.start_algorithm(m, 'StrategyTwo', flamability_rate) # StrategyOne , StrategyTwo, Own
+    m.start_algorithm(m, 'Own', flamability_rate) # StrategyOne , StrategyTwo, Own
 
 #To generate graphs
     # g = genData.generateData()
