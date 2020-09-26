@@ -31,6 +31,7 @@ class move:
     f_list_of_visited_nodes = []
     cur_n_fire = []
     fire_pos = []
+    fire_init = []
 
     open_list = deque()
     closed_list = []
@@ -184,6 +185,10 @@ class move:
 
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
                 return 88
+
+            if current_node == True:
+                return True
+
             index_i = current_node[0]
             index_j = current_node[1]
 
@@ -245,6 +250,9 @@ class move:
 
             if current_node == [self.target_i,self.target_j]: #IF CURRENT NODE IS GOAL CELL
                 return self.a_visit
+
+            # if current_node == True:
+            #     return True
 
             index_i = current_node[0]
             index_j = current_node[1]
@@ -397,9 +405,22 @@ class move:
             j = random.randint(2, self.m.col - 4)
         return [i,j]
 
+    def clear_path_fire(self,i,j):
+        if i!=0 and i!=19:
+            if j!=0 and j!=19:
+                self.maze_array[i + 1][j] = 1
+                self.maze_array[i - 1][j] = 1
+                self.maze_array[i][j + 1 ] = 1
+                self.maze_array[i][j - 1] = 1
+        return [i,j]
+
+    def get_fire_init_pos(self):
+        return self.fire_init[0]
 
     def init_fire(self):
         pos = self.fire_start_pos(self.m.get_arr())
+        self.fire_init.append(pos)
+        self.clear_path_fire(pos[0],pos[1])
         self.fire_pos.append( pos )
         status = False  # This boolean variable will be utilized to stop traversing when target is reached
         self.visit_Neighbor_bfs(pos[0], pos[1], status)   #<- function that adds parent node to list of visited cells to be tracked
@@ -433,7 +454,6 @@ class move:
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )  # add the prob. value of cell being on fire in a list for next time step
-                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point - 1, end_point, status)  # move up
 
             if number == 1:
@@ -442,7 +462,6 @@ class move:
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
-                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point + 1, end_point, status)  # move down
 
             if number == 2:
@@ -451,7 +470,6 @@ class move:
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
-                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point - 1, status)  # move left
 
             if number == 3:
@@ -460,7 +478,6 @@ class move:
                 end_point = cur_n[1]  # get index j for current node
                 self.highlight_fire_node(start_point, end_point, (255, 0, 0))
                 self.fire_cells.append( self.fire_prob(start_point - 1, end_point, self.m.get_arr(), flammability ) )
-                #self.fire_cells.append( flammability )  # add the prob. value of cell being on fire in a list for next time step
                 status = self.visit_Neighbor_bfs(start_point, end_point + 1, status)  # move right
                 self.cur_n_fire.pop()
 
@@ -477,6 +494,7 @@ class move:
                 self.q.append( cur_n )
                 self.cur_n_fire.pop()
         return status
+
 
     def highlight_fire_node(self, i ,j, color):
         self.m.player_movement(i, j , color, 'fire')

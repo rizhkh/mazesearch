@@ -156,10 +156,28 @@ class start:
         self.draw_maze(self.screen , (0,128,0)) # Draws out the GUI from the stored array values
         self.mark_start_end(1,1,self.row - 2,self.col - 2)
 
+    def fire_start(self, i, j):
+        if i!=0 and i!=19:
+            if j!=0 and j!=19:
+                self.maze_array[i + 1][j] = 1
+                self.maze_array[i - 1][j] = 1
+                self.maze_array[i][j + 1 ] = 1
+                self.maze_array[i][j - 1] = 1
+
+                self.maze_generator(self.screen, (255,255,255) , (i+1) * (self.box_width + 1), j * (self.box_height + 1))
+                self.maze_generator(self.screen, (255,255,255) , (i-1) * (self.box_width + 1), j * (self.box_height + 1))
+                self.maze_generator(self.screen, (255,255,255) , i * (self.box_width + 1), (j+1) * (self.box_height + 1))
+                self.maze_generator(self.screen, (255,255,255) , i * (self.box_width + 1), (j-1) * (self.box_height + 1))
+
+
     def strategy_one(self, b, flammability):    # b is the object
         move_player = b.player_init()
         move_player = b.a_star_SOne(move_player)
         b.init_fire()
+        position = b.get_fire_init_pos()
+        b.clear_path_fire(position[0] , position[1])
+        self.fire_start(position[0] , position[1])
+
         i = 0
         j = 0
         status = False
@@ -197,10 +215,15 @@ class start:
     def strategy_Two(self, b, flammability):    # b is the object
         move_player = b.player_init()
         b.init_fire()
+        position = b.get_fire_init_pos()
+        b.clear_path_fire(position[0] , position[1])
+        self.fire_start(position[0] , position[1])
+
         i = 0
         status = False
         already_visited = []
         inc = 0
+        count = 0
         inc_stop = 0
         moves_list = b.recompute_a_star_Two(move_player,'returnList')
 
@@ -226,6 +249,7 @@ class start:
                         currentmove = moves_list.pop(0)
                         already_visited.append(currentmove)
                 else:
+                    count += 1
                     print("PATH CHANGED ****************************************************")
                     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
@@ -235,6 +259,7 @@ class start:
                     else:
                         currentmove = already_visited[-2]  # moves_list.pop(0)
                         print("STARTING AGAIN----------------------------------------------------")
+                        print("count," , count)
 
                         if inc_stop >= 15:
                             print("ERROR")
@@ -250,12 +275,13 @@ class start:
                 if i == 5:
                     i = 0
 
-            for k in already_visited:
-                self.player_movement(k[0], k[1], (199, 156, 85), "player")
-
     def strategy_Own(self, b, flammability):    # b is the object
         move_player = b.player_init()
         b.init_fire()
+        position = b.get_fire_init_pos()
+        b.clear_path_fire(position[0] , position[1])
+        self.fire_start(position[0] , position[1])
+
         i = 0
         status = False
         while i<5 or status == False:
@@ -264,6 +290,10 @@ class start:
 
             if type(move_player) == bool:
                 if move_player==False:
+                    print("Target Not Reachable !")
+                    break
+
+                if move_player==True:
                     print("Target Not Reachable !")
                     break
 
