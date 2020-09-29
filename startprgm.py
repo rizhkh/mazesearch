@@ -227,6 +227,8 @@ class start:
         inc_stop = 0
         moves_list = b.recompute_a_star_Two(move_player,'returnList')
 
+        moves_made = []
+
         if type(moves_list) == bool:
             print("Target Not reachable")
         if moves_list==66:
@@ -249,8 +251,19 @@ class start:
                         currentmove = moves_list.pop(0)
                         already_visited.append(currentmove)
                 else:
-                    count += 1
-                    print("PATH CHANGED ****************************************************")
+                    #already_visited.clear()
+                    # mov = move_player
+                    # if already_visited and len(already_visited)>10:
+                    #     mov = already_visited[-5]
+                    #     moves_list = b.recompute_a_star_Two(mov, 'returnList')
+                    # if already_visited and len(already_visited) > 5:
+                    #     mov = already_visited[-1]
+                    #     moves_list = b.recompute_a_star_Two(mov, 'returnList')
+                    # else:
+                    #     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
+
+
+
                     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
                     if type(moves_list) == bool or moves_list == 66:
@@ -258,8 +271,6 @@ class start:
                         break
                     else:
                         currentmove = already_visited[-2]  # moves_list.pop(0)
-                        print("STARTING AGAIN----------------------------------------------------")
-                        print("count," , count)
 
                         if inc_stop >= 15:
                             print("ERROR")

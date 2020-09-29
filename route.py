@@ -142,7 +142,7 @@ class move:
 
     #Functionality: Helps player backtrack incase of a deadend situation
     def backtracking(self, pos, rstrcted_cells, clsed_list):
-        self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
+        # self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
         self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
         rstrcted_cells.append(pos)
         clsed_list.pop()
@@ -318,7 +318,6 @@ class move:
                 return 66
 
             if current_node == [self.target_i,self.target_j] and mode == 'returnList': #IF CURRENT NODE IS GOAL CELL
-                print("YES")
                 al = self.rcmp_a_visit[:]
 
                 self.rcmp_open_list.clear()
@@ -573,9 +572,9 @@ class move:
     def fill_fire_neighbor(self,i,j):
         if self.maze_array[i][j] != 8:
             if self.maze_array[i][j] == 1:
-                self.maze_array[i][j] = 3
+                self.maze_array[i][j] = 2
             else:
-                self.maze_array[i][j] = self.maze_array[i][j] + 1
+                self.maze_array[i][j] = self.maze_array[i][j] + 0.5
 
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
