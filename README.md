@@ -10,11 +10,14 @@ Download the complete project in one folder, import project in your IDE, compile
 
 ## For command line
 open cmd
+<br>
 Navigate to directory
+<br>
 type "python main.py"
 
 
 ## Must have Installed
 Numpy
+<br>
 Pygame
 
