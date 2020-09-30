@@ -17,9 +17,9 @@ if __name__ == '__main__':
     flamability_rate = 0.6
 
 # To run maze
-    m.start_algorithm(m, 'StrategyOne', flamability_rate) # StrategyOne , StrategyTwo, Own
+    #m.start_algorithm(m, 'StrategyOne', flamability_rate) # StrategyOne , StrategyTwo, Own
     #m.start_algorithm(m, 'StrategyTwo', flamability_rate) # StrategyOne , StrategyTwo, Own
-    #m.start_algorithm(m, 'Own', flamability_rate) # StrategyOne , StrategyTwo, Own
+    m.start_algorithm(m, 'Own', flamability_rate) # StrategyOne , StrategyTwo, Own
 
 # To generate graphs
     #g = genData.generateData()
