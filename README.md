@@ -9,12 +9,12 @@ Gui application uses different algorithms to navigate a maze using autonomous th
 Download the complete project in one folder, import project in your IDE, compile and run.
 
 ## For command line
+```
 open cmd
-<br>
 Navigate to directory
-<br>
-type "python main.py"
-
+run python
+python main.py
+```
 
 ## Must have Installed
 Numpy
