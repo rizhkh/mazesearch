@@ -235,7 +235,6 @@ class start:
             print("Target Not reachable")
 
         else:
-            print(moves_list)
             currentmove = moves_list.pop(0)
 
             while i < 5 or status == False:
@@ -251,19 +250,6 @@ class start:
                         currentmove = moves_list.pop(0)
                         already_visited.append(currentmove)
                 else:
-                    #already_visited.clear()
-                    # mov = move_player
-                    # if already_visited and len(already_visited)>10:
-                    #     mov = already_visited[-5]
-                    #     moves_list = b.recompute_a_star_Two(mov, 'returnList')
-                    # if already_visited and len(already_visited) > 5:
-                    #     mov = already_visited[-1]
-                    #     moves_list = b.recompute_a_star_Two(mov, 'returnList')
-                    # else:
-                    #     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
-
-
-
                     moves_list = b.recompute_a_star_Two(move_player, 'returnList')
 
                     if type(moves_list) == bool or moves_list == 66:
@@ -337,7 +323,7 @@ class start:
         a = mazeGen(ThingsToAppearOnScreen_Display, self.get_arr() , obj)   # MY OWN CLASS
         self.generate_maze(a)   # This function draws the maze
         pygame.display.flip()
-        b =  move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
+        b = move(ThingsToAppearOnScreen_Display, self.get_arr() , obj)
         pygame.display.flip()
         flammability = flammability_rate
 

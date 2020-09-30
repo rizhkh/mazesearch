@@ -26,9 +26,6 @@ class mazeGen:
         filled_cells = ( self.m.row * self.m.col) * p
         return  int(filled_cells)
 
-### ************ DFS  ************ ###
-
-    # NOTE: IF YOU USE THIS, MAKE SURE YOU SET THE STARTING SELF.MAZEARRAY=1 IN MAIN.PY
     def maze_generate_DFS(self):
         # Algorithm: Add the starting position as parent node
         # Go to neighbor (using function call visit_neighbor_dfs)
@@ -72,12 +69,7 @@ class mazeGen:
                     self.maze_array[i][j] = 1
                     self.visit_neighbor_dfs(i, j, filled_cells)
 
-# what if I just pass back the array and color the rest in main.py
-# make filled_cells as list and just peek it change value and thats it dont return it its more messy that way
 
-### ************ BFS  ************ ###
-
-    # ********* MAKE SURE THE BFS PSEUDOCODE MATCHES WITH DESCRIPTION
     # Functionality: Follows BFS algorithm to generaze path. Whenever a random blocked cell is during the search process, BFS algorithm jumps to next neighbor in queue
     def maze_generate_BFS(self, array):
         filled_cells = []
@@ -154,11 +146,6 @@ class mazeGen:
         self.q_list_of_visited_nodes.append([i,j])
 
     def make_path_door(self,arr):
-        # for i in range( 1, self.m.col-1):
-        #     for j in range(1,self.m.col-1):
-        #         if j==1 or i==self.m.row-2:
-        #             arr[i][j] = 1
-
         for i in range( 1, self.m.col-1):
             for j in range(1,self.m.col-1):
                 if arr[i][j] == 8:
@@ -173,12 +160,13 @@ class mazeGen:
 
         return arr
 
-    # facilitates make_path_door - Creates a door between closed paths
+    # Functionality: facilitates make_path_door - Creates a door between closed paths
     def create_path(self,i,j,arr):
         if arr[i][j] != 8:
             return 1
         return 0
 
+    #Functionality: To clear the start and goal state from barriers
     def clear_start(self, arr, start, end):
         i = self.m.row - 2
         j = self.m.col - 2
@@ -203,34 +191,3 @@ class mazeGen:
         arr[i][j - 3] = 1
         arr[i-1][j - 1] = 1
         return arr
-
-
-
-    def DELETETHISFUNCT(self):
-        self.maze_array[8][1] = 8
-        self.maze_array[8][2] = 8
-        self.maze_array[8][3] = 8
-        self.maze_array[8][4] = 8
-        self.maze_array[8][5] = 8
-        self.maze_array[8][6] = 8
-        self.maze_array[8][7] = 8
-        self.maze_array[8][8] = 8
-
-
-        self.maze_array[1][8] = 8
-        self.maze_array[2][8] = 8
-        self.maze_array[3][8] = 8
-        self.maze_array[4][8] = 8
-        self.maze_array[5][8] = 8
-        self.maze_array[6][8] = 8
-        self.maze_array[7][8] = 8
-        self.maze_array[8][8] = 8
-
-        self.maze_array[6][7] = 8
-        self.maze_array[6][6] = 8
-
-        self.maze_array[7][4] = 8
-        self.maze_array[6][4] = 8
-        self.maze_array[5][4] = 8
-
-        return self.maze_array

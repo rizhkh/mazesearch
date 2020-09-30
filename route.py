@@ -143,6 +143,7 @@ class move:
     #Functionality: Helps player backtrack incase of a deadend situation
     def backtracking(self, pos, rstrcted_cells, clsed_list):
         # self.m.player_movement(pos[0], pos[1], (0, 0, 255), "player")
+        self.m.player_movement(pos[0], pos[1], (224, 224, 224), "player")
         self.m.player_movement(pos[0], pos[1], (255, 255, 255), "player")
         rstrcted_cells.append(pos)
         clsed_list.pop()
@@ -360,8 +361,6 @@ class move:
                 np = result[1]
                 self.rcmp_open_list.remove([current_node[0], current_node[1]])
                 current_node = np
-                # self.m.player_movement(np[0], np[1], (0, 0, 255), "open")
-                # self.m.player_movement(np[0], np[1], (255, 255, 102), "open")
                 self.rcmp_a_visit.append([np[0], np[1]])  # THIS LIST HAS THE ROUTE YOUR PLAYER HAS TAKEN
                 self.rcmp_closed_list.append(np)
                 self.rcmp_est_cost.append([np, result[0]])
@@ -436,13 +435,6 @@ class move:
         status = self.player_move_BFS(status, number, flammability)   # Fire spreads using BFS algorithm
         return status
 
-# self.cur_n_fire.clear()
-# self.fire_cells.clear()
-# self.f_visit.clear()
-# self.f_list_of_visited_nodes.clear()
-# self.fire_pos.clear()
-
-
     # ADD DETAILS
     # Follows BFS algorithm where the neighbors are expanded, current node is added to list of visited nodes and the next node selected is from the left mose side in queue
     def player_move_BFS(self, status, number, flammability):
@@ -514,7 +506,6 @@ class move:
 
         return False
 
-
     def highlight_fire_node(self, i ,j, color):
         self.m.player_movement(i, j , color, 'fire')
 
@@ -546,10 +537,6 @@ class move:
                         color = (255, 0, 0)
                         self.m.player_movement(i, j, color,'fire')
                         self.last_fire_cells.append( [i,j] )
-                        self.fill_fire_neighbor(i - 1,j)   # upper cell
-                        self.fill_fire_neighbor(i + 1, j)  # down cell
-                        self.fill_fire_neighbor(i, j - 1)  # left cell
-                        self.fill_fire_neighbor(i, j + 1)  # right cell
                     if check<2:
                         pos = [i,j]
                         self.q.append(pos)  # adds node in the list of nodes that still has to be set as current nodes - in this func its the neighbor being explored
@@ -557,24 +544,12 @@ class move:
                         color = (255, 0, 0)
                         self.m.player_movement(i, j, color,'fire')
                         self.last_fire_cells.append( [i,j] )
-                        self.fill_fire_neighbor(i - 1,j)   # upper cell
-                        self.fill_fire_neighbor(i + 1, j)  # down cell
-                        self.fill_fire_neighbor(i, j - 1)  # left cell
-                        self.fill_fire_neighbor(i, j + 1)  # right cell
         else:
             if self.maze_array[i][j] == 0 or self.maze_array[i][j] == 1:
                 if [i,j] not in self.q:
                     self.q.append([i,j])    # the empty cell where there is no fire is again added to list of nodes that has to be visited in the future
         self.fire_cells.pop(-1)
         return status
-
-    #Adds extra weight to cells neighbor to cells on fire to indicate this path should not be taken
-    def fill_fire_neighbor(self,i,j):
-        if self.maze_array[i][j] != 8:
-            if self.maze_array[i][j] == 1:
-                self.maze_array[i][j] = 2
-            else:
-                self.maze_array[i][j] = self.maze_array[i][j] + 0.5
 
     def highlight_cur_node(self, i ,j, color):
         self.m.player_movement(i, j , color, "open")
