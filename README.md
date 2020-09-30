@@ -1,5 +1,5 @@
 # Maze Search
-Gui application uses different algorithms to navigate a maze using autonomous thinking factors (all decisions are made by the AI in the maze to take what steps). Player agent is suppose to escape fire cells and reach the Goal State.
+Gui application uses different algorithms to navigate a maze using autonomous thinking factors (all decisions are made by the AI in the maze to take necessary steps to reach safety - Using implemented Algorithms). Player agent is suppose to escape fire cells and reach the Goal State.
 
 <p align="center">
   <img src="maze.PNG">
